@@ -1,9 +1,9 @@
 <?php
 
-require_once '../x/annotations/Annotations.php';
-require_once '../x/annotations/AnnotationManager.php';
-require_once '../x/annotations/AnnotationParser.php';
-require_once 'Annotations.case.php';
+require_once '../lib/Annotations.php';
+require_once '../lib/AnnotationManager.php';
+require_once '../lib/AnnotationParser.php';
+require_once 'suite/Annotations.case.php';
 
 /**
  * This class implements tests for core annotations
@@ -15,7 +15,7 @@ class AnnotationsTest extends xTest
     $manager = Annotations::getManager();
     
     $manager->autoload = false; // not using an autoloader for this test script
-    $manager->cachePath = dirname(__FILE__).DS.'runtime'; // turn caching on (or else AnnotationManager will generate E_NOTICE)
+    $manager->cachePath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'runtime'; // turn caching on (or else AnnotationManager will generate E_NOTICE)
     
     // manually wipe out the cache:
     foreach (glob($manager->cachePath.DS.'*.annotations.php') as $path)
