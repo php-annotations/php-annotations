@@ -47,7 +47,7 @@ class ValidateAnnotation extends Annotation implements IValidationAnnotation
 /**
  * Specifies validation of various common property types.
  */
-class TypeAnnotation extends Annotation implements IValidationAnnotation
+class VarAnnotation extends Annotation implements IValidationAnnotation
 {
   /**
    * @var string Specifies the type of value (e.g. for validation, for
@@ -82,7 +82,7 @@ class TypeAnnotation extends Annotation implements IValidationAnnotation
     parent::initAnnotation($properties);
     
     if (!isset($this->type))
-      throw new AnnotationException('TypeAnnotation requires a type property');
+      throw new AnnotationException('VarAnnotation requires a type property');
     
     $this->type = strtolower($this->type);
   }
@@ -93,6 +93,8 @@ class TypeAnnotation extends Annotation implements IValidationAnnotation
  *
  * This may be used for other purposes besides validation, including
  * type declarations for dependency injection.
+ *
+ * @note Class/Var/Type annotations need to be unified and made PHP-DOC compatible
  */
 class ClassAnnotation extends Annotation implements IValidationAnnotation
 {
