@@ -10,9 +10,9 @@ interface IDisplayAnnotation
 }
 
 /**
- * Defines various labels and text to be displayed with the annotated property
+ * Defines various text (labels, hints, etc.) to be displayed with the annotated property
  */
-class DisplayAnnotation extends Annotation implements IDisplayAnnotation
+class TextAnnotation extends Annotation implements IDisplayAnnotation
 {
   /**
    * @var $label string The label for the input, typically displayed displayed in front of the input.
@@ -39,6 +39,17 @@ class DisplayAnnotation extends Annotation implements IDisplayAnnotation
    */
   public $help;
   
+  /**
+   * @var $watermark string A short string, typically displayed in the input itself, while empty, or until it receives focus.
+   */
+  public $watermark;
+}
+
+/**
+ * Defines various display-related metadata, such as grouping and ordering.
+ */
+class DisplayAnnotation extends Annotation implements IDisplayAnnotation
+{
   /**
    * @var $group string A group name - for use with helpers that render multiple fields as a group.
    */

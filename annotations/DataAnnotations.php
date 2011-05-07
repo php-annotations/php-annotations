@@ -12,7 +12,7 @@ interface IDataAnnotation
 /**
  * Indicates whether a property should be user-editable or not.
  */
-class EditAnnotation extends Annotation implements IDataAnnotation
+class EditableAnnotation extends Annotation implements IDataAnnotation
 {
   /**
    * @var $allow boolean Indicates whether or not a property is editable.
@@ -35,7 +35,7 @@ class ColumnAnnotation extends Annotation implements IDataAnnotation
   public $name;
 }
 
-class AssociationAnnotation extends Annotation implements IDataAnnotation
+class ReferencesAnnotation extends Annotation implements IDataAnnotation
 {
 }
 
