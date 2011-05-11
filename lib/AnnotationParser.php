@@ -140,8 +140,10 @@ class AnnotationParser
     
     $code = "return array(\n";
     foreach ($index as $key=>$array)
+    {
       if (count($array))
         $code .= "  '{$key}' => array(\n    ".implode(",\n    ",$array)."\n  ),\n";
+    }
     $code .= ");\n";
     
     return $code;

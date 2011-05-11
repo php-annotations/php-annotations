@@ -118,8 +118,11 @@ class AnnotationManager
         $file = $this->getAnnotationCache($path);
         
         if (!file_exists($file) || filemtime($path)>filemtime($file))
-          if (@file_put_contents($file, self::PHP_TAG.$this->getParser()->parseFile($path), LOCK_EX)==false || @chmod($file, $this->fileMode)==false)
+        {
+          $code = self::PHP_TAG.$this->getParser()->parseFile($path);
+          if (@file_put_contents($file, $code, LOCK_EX)==false || @chmod($file, $this->fileMode)==false)
             throw new AnnotationException(__CLASS__.'::getFileSpecs() : error writing cache file '.$file);
+        }
         
         $this->specs[$path] = include($file);
       }
