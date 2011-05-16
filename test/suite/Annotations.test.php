@@ -18,7 +18,7 @@ class AnnotationsTest extends xTest
     $manager->cachePath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'runtime'; // turn caching on (or else AnnotationManager will generate E_NOTICE)
     
     // manually wipe out the cache:
-    foreach (glob($manager->cachePath.DS.'*.annotations.php') as $path)
+    foreach (glob($manager->cachePath.DIRECTORY_SEPARATOR.'*.annotations.php') as $path)
       unlink($path);
   }
   
