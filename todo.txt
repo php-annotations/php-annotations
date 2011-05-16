@@ -1,0 +1,19 @@
+Add DataTypeAnnotation
+
+http://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.datatype%28VS.95%29.aspx
+
+Custom 	Represents a data type that is not one of the known types.
+	DateTime 	Represents an instant in time, expressed as a date and time of day.
+	Date 	Represents a data value.
+	Time 	Represents a time value.
+	Duration 	Represents a continuous time during which an object exists.
+	PhoneNumber 	Represents a phone number value.
+	Currency 	Represents a currency value.
+	Text 	Represents text that is displayed.
+	Html 	Represents an HTML file.
+	MultilineText 	Represents multiline text.
+	EmailAddress 	Represents an e-mail address.
+	Password 	Represents a password value.
+	Url 	Represents a URL value.
+	ImageUrl 	Represents a URL value that is displayed as an image instead of text.
+  
