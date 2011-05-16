@@ -59,7 +59,7 @@ defined tags:
 
 important tags for run-time reflection:
 
-  @method {type} {description} : defines a magic/virtual method
+  @method {type} {func(type arg, type arg, ...)} {description} : defines a magic/virtual method
   @param {type} {$name} {description} : defines a method or function parameter's type
   @param {type1|type2} {$name} {description} : defines a method or function parameter's type as mixed
   @property {type} {$name} {description} : defines a magic/virtual property and it's type
