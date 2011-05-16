@@ -246,7 +246,7 @@ class AnnotationParser
     {
       list($name, $value) = $match;
       
-      $type = ucfirst($name).$this->suffix;
+      $type = ucfirst(strtr($name, '-', '_')).$this->suffix;
       
       if (substr($value,0,1) == '(')
       {
