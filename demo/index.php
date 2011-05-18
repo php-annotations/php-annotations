@@ -1,5 +1,7 @@
 <?php
 
+// This example isn't by any means finished, and not yet properly documented...
+
 set_include_path(
   dirname(__FILE__)
   .PATH_SEPARATOR . dirname(dirname(__FILE__)) . '/lib'
