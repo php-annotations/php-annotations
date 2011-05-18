@@ -2,6 +2,8 @@
 
 /**
  * Specifies the required data-type of a property.
+ *
+ * @usage('property'=>true, 'inherited'=>true)
  */
 class VarAnnotation extends Annotation implements IAnnotationParser
 {
@@ -36,7 +38,8 @@ class VarAnnotation extends Annotation implements IAnnotationParser
    */
   public static function parseAnnotation($value)
   {
-    return array('type' => var_export(array_shift(explode(' ', trim($value), 2)), true));
+    $parts = explode(' ', trim($value), 2);
+    return array('type' => array_shift($parts));
   }
   
   public function initAnnotation($properties)

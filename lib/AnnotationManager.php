@@ -32,6 +32,41 @@ class AnnotationManager
   public $suffix = 'Annotation';
   
   /**
+   * @var array List of annotation types to be ignored at run-time.
+   */
+  public $ignored = array(
+    'abstract' => true,
+    'access' => true,
+    'author' => true,
+    'category' => true,
+    'copyright' => true,
+    'deprecated' => true,
+    'example' => true,
+    'filesource' => true,
+    'final' => true,
+    'global' => true,
+    'ignore' => true,
+    'internal' => true,
+    'license' => true,
+    'link' => true,
+    'name' => true,
+    'package' => true,
+    'see' => true,
+    'since' => true,
+    'static' => true,
+    'staticvar' => true,
+    'subpackage' => true,
+    'todo' => true,
+    'tutorial' => true,
+    'uses' => true,
+  );
+  
+  /**
+   * @var boolean $debug Set to TRUE to enable HTML output for debugging
+   */
+  public $debug = false;
+  
+  /**
    * @var AnnotationParser
    */
   protected $parser;
@@ -87,6 +122,8 @@ class AnnotationManager
       require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'AnnotationParser.php';
       $this->parser = new AnnotationParser;
       $this->parser->suffix = $this->suffix;
+      $this->parser->ignored = $this->ignored;
+      $this->parser->debug = $this->debug;
     }
     return $this->parser;
   }

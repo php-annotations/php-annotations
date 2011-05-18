@@ -11,9 +11,14 @@ require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'UsageAnnotation.php';
 abstract class Annotations
 {
   /**
+   * @var array Configuration for any public property of AnnotationManager.
+   */
+  public static $config;
+  
+  /**
    * @var AnnotationManager Singleton AnnotationManager instance
    */
-  public static $manager;
+  private static $manager;
   
   /**
    * @return AnnotationManager a singleton instance
@@ -24,6 +29,10 @@ abstract class Annotations
     
     if (!isset(self::$manager))
       self::$manager = new AnnotationManager;
+    
+    if (is_array(self::$config))
+      foreach (self::$config as $key => $value)
+        self::$manager->$key = $value;
     
     return self::$manager;
   }

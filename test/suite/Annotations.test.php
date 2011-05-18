@@ -12,13 +12,13 @@ class AnnotationsTest extends xTest
 {
   public function __construct()
   {
-    $manager = Annotations::getManager();
-    
-    $manager->autoload = false; // not using an autoloader for this test script
-    $manager->cachePath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'runtime'; // turn caching on (or else AnnotationManager will generate E_NOTICE)
+    Annotations::$config = array(
+      'autoload' => false, // not using an autoloader during unit tests
+      'cachePath' => dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'runtime', // turn caching on (or else AnnotationManager will generate E_NOTICE)
+    );
     
     // manually wipe out the cache:
-    foreach (glob($manager->cachePath.DIRECTORY_SEPARATOR.'*.annotations.php') as $path)
+    foreach (glob(Annotations::getManager()->cachePath.DIRECTORY_SEPARATOR.'*.annotations.php') as $path)
       unlink($path);
   }
   

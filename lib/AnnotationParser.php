@@ -30,6 +30,11 @@ class AnnotationParser
   public $suffix;
   
   /**
+   * @var array List of annotation types to be ignored at run-time.
+   */
+  public $ignored = array();
+  
+  /**
    * @param string $source The PHP source code to be parsed
    * @param string $path The path of the source file being parsed (used only for error-reporting)
    * @return string PHP source code to construct the annotations of the given PHP source code
@@ -246,6 +251,9 @@ class AnnotationParser
     {
       list($name, $value) = $match;
       
+      if (isset($this->ignored[$name]))
+        continue;
+      
       $type = ucfirst(strtr($name, '-', '_')).$this->suffix;
       
       if (substr($value,0,1) == '(')
@@ -262,7 +270,7 @@ class AnnotationParser
         $properties = $type::parseAnnotation($value);
         
         $array = "array('{$type}'";
-        foreach ($properties as $name=>$value)
+        foreach ($properties as $name => $value)
           $array .= ", '{$name}' => ".trim(var_export($value,true));
         $array .= ")";
         
