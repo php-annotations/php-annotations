@@ -2,6 +2,8 @@
 
 /**
  * Specifies validation against a minimum and/or maximum numeric value.
+ *
+ * @usage('property'=>true, 'inherited'=>true)
  */
 class RangeAnnotation extends ValidationAnnotationBase
 {

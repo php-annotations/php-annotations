@@ -2,6 +2,8 @@
 
 /**
  * Specifies validation requiring a non-empty value.
+ * 
+ * @usage('property'=>true, 'inherited'=>true)
  */
 class RequiredAnnotation extends ValidationAnnotationBase
 {
