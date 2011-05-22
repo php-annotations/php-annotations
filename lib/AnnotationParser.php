@@ -172,6 +172,7 @@ class AnnotationParser
   private function findAnnotations($str)
   {
     $str = trim(preg_replace('/^[\/\*\# \t]+/m', '', $str))."\n";
+    $str = str_replace("\r\n", "\n", $str);
     
     $state = self::SCAN;
     $nesting = 0;
@@ -179,6 +180,8 @@ class AnnotationParser
     $value = '';
     
     $matches = array();
+    
+    echo '<pre>';
     
     for ($i=0; $i<strlen($str); $i++)
     {
@@ -193,10 +196,8 @@ class AnnotationParser
             $value = '';
             $state = self::NAME;
           }
-          else
-          {
+          else if ($char != "\n" && $char != " " && $char != "\t")
             $state = self::SKIP;
-          }
           break;
         
         case self::SKIP:
@@ -214,6 +215,11 @@ class AnnotationParser
             $nesting++;
             $value = $char;
             $state = self::COPY_ARRAY;
+          }
+          else if ($char == "\n")
+          {
+            $matches[] = array($name, null);
+            $state = self::SCAN;
           }
           else
             $state = self::SKIP;
@@ -256,7 +262,12 @@ class AnnotationParser
       
       $type = ucfirst(strtr($name, '-', '_')).$this->suffix;
       
-      if (substr($value,0,1) == '(')
+      if ($value === null)
+      {
+        # value-less annotation:
+        $annotations[] = "array('$type')";
+      }
+      else if (substr($value,0,1) == '(')
       {
         # array-style annotation:
         $annotations[] = "array('$type', ".substr($value,1);

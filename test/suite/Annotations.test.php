@@ -32,7 +32,8 @@ class AnnotationsTest extends xTest
       /**
        * @doc 123
        * @note('abc')
-       * @note('123');
+       * @required
+       * @note('xyz');
        */
       class Sample {}
     ";
@@ -41,14 +42,16 @@ class AnnotationsTest extends xTest
     
     $test = eval($code);
     
-    $this->check($test['Sample'][0][0] == 'DocAnnotation');
-    $this->check($test['Sample'][0]['value'] == 123);
+    $this->check($test['Sample'][0][0] === 'DocAnnotation', 'first annotation is a DocAnnotation');
+    $this->check($test['Sample'][0]['value'] === 123, 'first annotation has the value 123');
     
-    $this->check($test['Sample'][1][0] == 'NoteAnnotation');
-    $this->check($test['Sample'][1][1] == 'abc');
+    $this->check($test['Sample'][1][0] === 'NoteAnnotation', 'second annotation is a NoteAnnotation');
+    $this->check($test['Sample'][1][1] === 'abc', 'value of second annotation is "abc"');
     
-    $this->check($test['Sample'][2][0] == 'NoteAnnotation');
-    $this->check($test['Sample'][2][1] == '123');
+    $this->check($test['Sample'][2][0] === 'RequiredAnnotation', 'third annotation is a RequiredAnnotation');
+    
+    $this->check($test['Sample'][3][0] === 'NoteAnnotation', 'last annotation is a NoteAnnotation');
+    $this->check($test['Sample'][3][1] === 'xyz', 'value of last annotation is "xyz"');
   }
   
   protected function testCanGetStaticAnnotationManager()
