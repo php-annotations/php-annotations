@@ -1,5 +1,6 @@
 <?php
 
+require 'lib/xTestException.php';
 require 'lib/xTest.php';
 require 'lib/xTestRunner.php';
 

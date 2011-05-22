@@ -51,6 +51,11 @@ abstract class xTest
         
         $test = $method->name;
         
+        $name = substr($test,4);
+        
+        if (count($_GET) && @$_GET[$name]!=='')
+          continue;
+        
         if (method_exists($this,'setup'))
           $this->setup();
         
@@ -60,7 +65,8 @@ abstract class xTest
         }
         catch (Exception $e)
         {
-          $this->result = 'Exception thrown: '.$e->getMessage()."\n".$e->getTraceAsString();
+          if (!($e instanceof xTestException))
+            $this->result = 'Exception thrown: '.$e->getMessage()."\n".$e->getTraceAsString();
         }
         
         if ($this->result!==true)
@@ -85,7 +91,7 @@ abstract class xTest
         if (method_exists($test,'teardown'))
           $test->teardown();
         
-        echo '<tr style="color:white; background:'.$color.'"><td>('.$method->getStartLine().') '.preg_replace('/([A-Z])/', ' \1', substr($test,4)).'</td><td><pre>'.htmlspecialchars($result).'</pre></td></tr>';
+        echo '<tr style="color:white; background:'.$color.'"><td>('.$method->getStartLine().') <a style="color:white" href="?'.$name.'">'.preg_replace('/([A-Z])/', ' \1', $name).'</a></td><td><pre>'.htmlspecialchars($result).'</pre></td></tr>';
       }
     }
     
@@ -120,6 +126,7 @@ abstract class xTest
   protected function fail($result=false)
   {
     $this->result = $result;
+    throw new xTestException();
   }
   
   /**
