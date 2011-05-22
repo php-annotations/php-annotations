@@ -39,7 +39,7 @@ class Person
 {
   /**
    * @var string
-   * @required()
+   * @required
    * @length(50)
    * @text('label' => 'Full Name')
    */
