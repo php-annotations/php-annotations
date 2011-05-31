@@ -1,10 +1,17 @@
 <?php
 
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'IAnnotation.php';
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'IAnnotationDelegate.php';
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'AnnotationException.php';
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'Annotation.php';
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'UsageAnnotation.php';
+/*
+ * This file is part of the php-annotation framework.
+ *
+ * (c) Rasmus Schultz <rasmus@mindplay.dk>
+ * 
+ * This software is licensed under the GNU LGPL license
+ * for more information, please see: 
+ * 
+ * <http://code.google.com/p/php-annotations>
+ */
+
+namespace Annotation;
 
 /**
  * This class manages the retrieval of Annotations from source code files
@@ -119,7 +126,6 @@ class AnnotationManager
   {
     if (!isset($this->parser))
     {
-      require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'AnnotationParser.php';
       $this->parser = new AnnotationParser;
       $this->parser->suffix = $this->suffix;
       $this->parser->ignored = $this->ignored;
@@ -202,7 +208,7 @@ class AnnotationManager
       
       $this->initialized[$key] = true;
       
-      $reflection = new ReflectionClass($class);
+      $reflection = new \ReflectionClass($class);
       $path = $reflection->getFileName();
       $specs = $this->getFileSpecs($path);
       
@@ -363,7 +369,7 @@ class AnnotationManager
   {
     if (is_object($class))
       $class = get_class($class);
-    else if ($class instanceof ReflectionClass)
+    else if ($class instanceof \ReflectionClass)
       $class = $class->getName();
     
     if (!class_exists($class, $this->autoload))
@@ -387,9 +393,9 @@ class AnnotationManager
   {
     if (is_object($class))
       $class = get_class($class);
-    else if ($class instanceof ReflectionClass)
+    else if ($class instanceof \ReflectionClass)
       $class = $class->getName();
-    else if ($class instanceof ReflectionMethod)
+    else if ($class instanceof \ReflectionMethod)
     {
       $method = $class->name;
       $class = $class->class;
@@ -419,9 +425,9 @@ class AnnotationManager
   {
     if (is_object($class))
       $class = get_class($class);
-    else if ($class instanceof ReflectionClass)
+    else if ($class instanceof \ReflectionClass)
       $class = $class->getName();
-    else if ($class instanceof ReflectionProperty)
+    else if ($class instanceof \ReflectionProperty)
     {
       $property = $class->name;
       $class = $class->class;

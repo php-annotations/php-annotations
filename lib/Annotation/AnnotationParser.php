@@ -1,6 +1,17 @@
 <?php
 
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'IAnnotationParser.php';
+/*
+ * This file is part of the php-annotation framework.
+ *
+ * (c) Rasmus Schultz <rasmus@mindplay.dk>
+ * 
+ * This software is licensed under the GNU LGPL license
+ * for more information, please see: 
+ * 
+ * <http://code.google.com/p/php-annotations>
+ */
+
+namespace Annotation;
 
 /**
  * This class implements a parser for source code annotations
@@ -275,8 +286,8 @@ class AnnotationParser
       else
       {
         # PHP-DOC-style annotation:
-        if (!in_array('IAnnotationParser', class_implements($type)))
-          throw new Exception(__CLASS__."::findAnnotations() : the {$type} Annotation does not support PHP-DOC style syntax (because it does not implement the IAnnotationParser interface)");
+        if (!in_array('Annotation\IAnnotationParser', class_implements($type)))
+          throw new AnnotationException(__CLASS__."::findAnnotations() : the {$type} Annotation does not support PHP-DOC style syntax (because it does not implement the IAnnotationParser interface)");
         
         $properties = $type::parseAnnotation($value);
         

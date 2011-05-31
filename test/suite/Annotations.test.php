@@ -1,9 +1,13 @@
 <?php
 
-require_once '../lib/Annotations.php';
-require_once '../lib/AnnotationManager.php';
-require_once '../lib/AnnotationParser.php';
 require_once 'suite/Annotations.case.php';
+
+use Annotation\IAnnotation;
+use Annotation\AnnotationParser;
+use Annotation\Annotation;
+use Annotation\Annotations;
+use Annotation\IAnnotationParser;
+use Annotation\IAnnotationDelegate;
 
 /**
  * This class implements tests for core annotations

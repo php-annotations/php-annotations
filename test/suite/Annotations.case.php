@@ -1,8 +1,15 @@
 <?php
 
-/**
+/*
  * TEST CASE: Sample Annotations
  */
+
+use Annotation\IAnnotation;
+use Annotation\AnnotationParser;
+use Annotation\Annotation;
+use Annotation\Annotations;
+use Annotation\IAnnotationParser;
+use Annotation\IAnnotationDelegate;
 
 #@Usage('class'=>true, 'property'=>true, 'method'=>true, 'inherited'=>true, 'multiple'=>true)
 class NoteAnnotation extends Annotation

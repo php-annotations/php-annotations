@@ -88,8 +88,8 @@ abstract class xTest
         if ($this->result===true)
           $passed++;
         
-        if (method_exists($test,'teardown'))
-          $test->teardown();
+        if (method_exists($this,'teardown'))
+          $this->teardown();
         
         echo '<tr style="color:white; background:'.$color.'"><td>('.$method->getStartLine().') <a style="color:white" href="?'.$name.'">'.preg_replace('/([A-Z])/', ' \1', $name).'</a></td><td><pre>'.htmlspecialchars($result).'</pre></td></tr>';
       }

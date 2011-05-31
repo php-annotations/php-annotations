@@ -1,9 +1,17 @@
 <?php
 
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'IAnnotation.php';
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'AnnotationException.php';
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'Annotation.php';
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'UsageAnnotation.php';
+/*
+ * This file is part of the php-annotation framework.
+ *
+ * (c) Rasmus Schultz <rasmus@mindplay.dk>
+ * 
+ * This software is licensed under the GNU LGPL license
+ * for more information, please see: 
+ * 
+ * <http://code.google.com/p/php-annotations>
+ */
+
+namespace Annotation;
 
 /**
  * Thin, static class with shortcut methods for inspection of Annotations
