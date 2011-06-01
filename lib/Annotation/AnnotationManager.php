@@ -39,33 +39,57 @@ class AnnotationManager
   public $suffix = 'Annotation';
   
   /**
-   * @var array List of annotation types to be ignored at run-time.
+   * @var string The default namespace for annotations with no namespace qualifier.
    */
-  public $ignored = array(
-    'abstract' => true,
-    'access' => true,
-    'author' => true,
-    'category' => true,
-    'copyright' => true,
-    'deprecated' => true,
-    'example' => true,
-    'filesource' => true,
-    'final' => true,
-    'global' => true,
-    'ignore' => true,
-    'internal' => true,
-    'license' => true,
-    'link' => true,
-    'name' => true,
-    'package' => true,
-    'see' => true,
-    'since' => true,
-    'static' => true,
-    'staticvar' => true,
-    'subpackage' => true,
-    'todo' => true,
-    'tutorial' => true,
-    'uses' => true,
+  public $namespace = '';
+  
+  /**
+   * @var array List of registered annotation aliases.
+   */
+  public $registry = array(
+    'abstract'       => false,
+    'access'         => false,
+    'author'         => false,
+    'category'       => false,
+    'copyright'      => false,
+    'deprecated'     => false,
+    'display'        => '\\Annotation\\Standard\\DisplayAnnotation',
+    'editable'       => '\\Annotation\\Standard\\EditableAnnotation',
+    'editor'         => '\\Annotation\\Standard\\EditorAnnotation',
+    'enum'           => '\\Annotation\\Standard\\EnumAnnotation',
+    'example'        => false,
+    'filesource'     => false,
+    'final'          => false,
+    'format'         => '\\Annotation\\Standard\\FormatAnnotation',
+    'global'         => false,
+    'ignore'         => false,
+    'internal'       => false,
+    'length'         => '\\Annotation\\Standard\\LengthAnnotation',
+    'license'        => false,
+    'link'           => false,
+    'match'          => '\\Annotation\\Standard\\MatchAnnotation',
+    'method'         => '\\Annotation\\Standard\\MethodAnnotation',
+    'name'           => false,
+    'package'        => false,
+    'param'          => '\\Annotation\\Standard\\ParamAnnotation',
+    'property'       => '\\Annotation\\Standard\\PropertyAnnotation',
+    'property-read'  => '\\Annotation\\Standard\\PropertyReadAnnotation',
+    'property-write' => '\\Annotation\\Standard\\PropertyWriteAnnotation',
+    'range'          => '\\Annotation\\Standard\\RangeAnnotation',
+    'required'       => '\\Annotation\\Standard\\RequiredAnnotation',
+    'return'         => '\\Annotation\\Standard\\ReturnAnnotation',
+    'see'            => false,
+    'since'          => false,
+    'static'         => false,
+    'staticvar'      => false,
+    'subpackage'     => false,
+    'text'           => '\\Annotation\\Standard\\TextAnnotation',
+    'todo'           => false,
+    'tutorial'       => false,
+    'uses'           => false,
+    'validate'       => '\\Annotation\\Standard\\ValidateAnnotation',
+    'var'            => '\\Annotation\\Standard\\VarAnnotation',
+    'view'           => '\\Annotation\\Standard\\ViewAnnotation',
   );
   
   /**
@@ -127,9 +151,10 @@ class AnnotationManager
     if (!isset($this->parser))
     {
       $this->parser = new AnnotationParser;
-      $this->parser->suffix = $this->suffix;
-      $this->parser->ignored = $this->ignored;
       $this->parser->debug = $this->debug;
+      $this->parser->namespace = $this->namespace;
+      $this->parser->suffix = $this->suffix;
+      $this->parser->registry = & $this->registry;
     }
     return $this->parser;
   }

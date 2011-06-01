@@ -13,7 +13,7 @@ set_include_path(
 spl_autoload_register(
   function($name)
   {
-    $path = str_replace('\\', DIRECTORY_SEPARATOR, $name).'.php';
+    $path = str_replace('\\', DIRECTORY_SEPARATOR, ltrim($name, '\\')).'.php';
     
     foreach (explode(PATH_SEPARATOR, get_include_path()) as $dir)
     {
@@ -26,7 +26,7 @@ spl_autoload_register(
     foreach (explode(PATH_SEPARATOR, get_include_path()) as $dir)
     {
       $file = $dir.DIRECTORY_SEPARATOR.$path;
-      echo (file_exists($file) ? '+' : '-') . $file . "\n";
+      echo "- {$file}\n";
     }
     
     throw new Exception("Error loading '{$path}'");

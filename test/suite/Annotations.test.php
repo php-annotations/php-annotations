@@ -29,7 +29,9 @@ class AnnotationsTest extends xTest
   protected function testCanParseAnnotations()
   {
     $parser = new AnnotationParser;
-    $parser->suffix = 'Annotation';
+    
+    $parser->namespace = ''; // look for annotations in the global namespace
+    $parser->suffix = 'Annotation'; // use a suffix for annotation class-names
     
     $source = "
       <?php
@@ -46,15 +48,15 @@ class AnnotationsTest extends xTest
     
     $test = eval($code);
     
-    $this->check($test['Sample'][0][0] === 'DocAnnotation', 'first annotation is a DocAnnotation');
+    $this->check($test['Sample'][0][0] === '\\DocAnnotation', 'first annotation is a DocAnnotation');
     $this->check($test['Sample'][0]['value'] === 123, 'first annotation has the value 123');
     
-    $this->check($test['Sample'][1][0] === 'NoteAnnotation', 'second annotation is a NoteAnnotation');
+    $this->check($test['Sample'][1][0] === '\\NoteAnnotation', 'second annotation is a NoteAnnotation');
     $this->check($test['Sample'][1][1] === 'abc', 'value of second annotation is "abc"');
     
-    $this->check($test['Sample'][2][0] === 'RequiredAnnotation', 'third annotation is a RequiredAnnotation');
+    $this->check($test['Sample'][2][0] === '\\RequiredAnnotation', 'third annotation is a RequiredAnnotation');
     
-    $this->check($test['Sample'][3][0] === 'NoteAnnotation', 'last annotation is a NoteAnnotation');
+    $this->check($test['Sample'][3][0] === '\\NoteAnnotation', 'last annotation is a NoteAnnotation');
     $this->check($test['Sample'][3][1] === 'xyz', 'value of last annotation is "xyz"');
   }
   

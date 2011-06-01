@@ -41,9 +41,14 @@ class AnnotationParser
   public $suffix;
   
   /**
-   * @var array List of annotation types to be ignored at run-time.
+   * @var string The default namespace for annotations with no namespace qualifier.
    */
-  public $ignored = array();
+  public $namespace = '';
+  
+  /**
+   * @var array List of registered annotation aliases.
+   */
+  public $registry = array();
   
   /**
    * @param string $source The PHP source code to be parsed
@@ -217,7 +222,7 @@ class AnnotationParser
           break;
         
         case self::NAME:
-          if (preg_match('/[a-zA-Z\-]/', $char))
+          if (preg_match('/[a-zA-Z\-\\\\]/', $char))
             $name .= $char;
           else if ($char == ' ')
             $state = self::COPY_LINE;
@@ -268,30 +273,46 @@ class AnnotationParser
     {
       list($name, $value) = $match;
       
-      if (isset($this->ignored[$name]))
+      if ($this->registry[$name] === false)
         continue;
       
-      $type = ucfirst(strtr($name, '-', '_')).$this->suffix;
+      if (isset($this->registry[$name]))
+      {
+        $type = $this->registry[$name];
+      }
+      else
+      {
+        $type = ucfirst(strtr($name, '-', '_')).$this->suffix;
+        
+        if (strpos($type, '\\') === false)
+          $type = $this->namespace . '\\' . $type;
+      }
+      
+      $quotedType = trim(var_export($type,true));
       
       if ($value === null)
       {
         # value-less annotation:
-        $annotations[] = "array('$type')";
+        $annotations[] = "array({$quotedType})";
       }
       else if (substr($value,0,1) == '(')
       {
         # array-style annotation:
-        $annotations[] = "array('$type', ".substr($value,1);
+        $annotations[] = "array({$quotedType}, ".substr($value,1);
       }
       else
       {
         # PHP-DOC-style annotation:
-        if (!in_array('Annotation\IAnnotationParser', class_implements($type)))
+        
+        if (!array_key_exists('Annotation\\IAnnotationParser', class_implements($type)))
           throw new AnnotationException(__CLASS__."::findAnnotations() : the {$type} Annotation does not support PHP-DOC style syntax (because it does not implement the IAnnotationParser interface)");
         
         $properties = $type::parseAnnotation($value);
         
-        $array = "array('{$type}'";
+        if (!is_array($properties))
+          throw new AnnotationException(__CLASS__."::findAnnotations() : the {$type} Annotation did not parse correctly");
+        
+        $array = "array({$quotedType}";
         foreach ($properties as $name => $value)
           $array .= ", '{$name}' => ".trim(var_export($value,true));
         $array .= ")";
