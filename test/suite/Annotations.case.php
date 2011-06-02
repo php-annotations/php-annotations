@@ -4,10 +4,7 @@
  * TEST CASE: Sample Annotations
  */
 
-use Annotation\IAnnotation;
-use Annotation\AnnotationParser;
 use Annotation\Annotation;
-use Annotation\Annotations;
 use Annotation\IAnnotationParser;
 use Annotation\IAnnotationDelegate;
 

@@ -86,6 +86,7 @@ class AnnotationManager
     'text'           => '\\Annotation\\Standard\\TextAnnotation',
     'todo'           => false,
     'tutorial'       => false,
+    'usage'          => '\\Annotation\\UsageAnnotation',
     'uses'           => false,
     'validate'       => '\\Annotation\\Standard\\ValidateAnnotation',
     'var'            => '\\Annotation\\Standard\\VarAnnotation',
@@ -246,11 +247,11 @@ class AnnotationManager
           $type = array_shift($spec);
           
           if (!class_exists($type, $this->autoload))
-            throw new AnnotationException(__CLASS__."::getAnnotations() : class {$type} not found");
+            throw new AnnotationException(__CLASS__."::getAnnotations() : annotation type {$type} not found");
           
           $annotation = new $type;
           if (!($annotation instanceof IAnnotation))
-            throw new AnnotationException(__CLASS__."::getAnnotations() : {$type} does not implement the mandatory IAnnotation interface");
+            throw new AnnotationException(__CLASS__."::getAnnotations() : annotation type {$type} does not implement the mandatory IAnnotation interface");
           
           $annotation->initAnnotation($spec);
           
@@ -352,7 +353,7 @@ class AnnotationManager
    */
   public function getUsage($class)
   {
-    if ($class=='UsageAnnotation')
+    if ($class=='Annotation\\UsageAnnotation')
       return $this->_usageAnnotation;
     
     if (!isset($this->usage[$class]))

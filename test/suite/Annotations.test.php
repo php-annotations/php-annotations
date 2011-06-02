@@ -2,12 +2,10 @@
 
 require_once 'suite/Annotations.case.php';
 
-use Annotation\IAnnotation;
 use Annotation\AnnotationParser;
-use Annotation\Annotation;
+use Annotation\AnnotationManager;
+use Annotation\AnnotationException;
 use Annotation\Annotations;
-use Annotation\IAnnotationParser;
-use Annotation\IAnnotationDelegate;
 
 /**
  * This class implements tests for core annotations
@@ -71,6 +69,7 @@ class AnnotationsTest extends xTest
   protected function testCanGetAnnotationUsage()
   {
     $usage = Annotations::getUsage('NoteAnnotation');
+    
     $this->check($usage->class===true);
     $this->check($usage->property===true);
     $this->check($usage->method===true);

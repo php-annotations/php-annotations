@@ -197,8 +197,6 @@ class AnnotationParser
     
     $matches = array();
     
-    echo '<pre>';
-    
     for ($i=0; $i<strlen($str); $i++)
     {
       $char = substr($str,$i,1);
@@ -271,7 +269,8 @@ class AnnotationParser
     
     foreach ($matches as $match)
     {
-      list($name, $value) = $match;
+      $name = lcfirst($match[0]);
+      $value = $match[1];
       
       if ($this->registry[$name] === false)
         continue;

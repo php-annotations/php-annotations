@@ -38,7 +38,7 @@ abstract class xTest
       }
       catch (Exception $e)
       {
-        echo '<tr style="color:white; background:red;"><td>init() failed</td><td><pre>Exception thrown: '.$e->getMessage()."\n".$e->getTraceAsString().'</pre></td></tr></table>';
+        echo '<tr style="color:white; background:red;"><td>init() failed</td><td><pre>'.$e.'</pre></td></tr></table>';
         return;
       }
     }
@@ -66,7 +66,7 @@ abstract class xTest
         catch (Exception $e)
         {
           if (!($e instanceof xTestException))
-            $this->result = 'Exception thrown: '.$e->getMessage()."\n".$e->getTraceAsString();
+            $this->result = (string) $e;
         }
         
         if ($this->result!==true)
