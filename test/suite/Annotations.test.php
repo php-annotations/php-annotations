@@ -256,7 +256,17 @@ class AnnotationsTest extends xTest
   
   protected function testCanIgnoreAnnotations()
   {
-    $this->fail('not implemented');
+    $manager = new AnnotationManager();
+    $manager->namespace = 'Sample';
+    $manager->autoload = false;
+    $manager->cachePath = Annotations::getManager()->cachePath;
+    $manager->cacheSeed = 'xyz';
+    
+    $manager->registry['ignored'] = false;
+    
+    $anns = $manager->getClassAnnotations('Sample\\IgnoreMe');
+    
+    $this->check(count($anns)==0, 'the @ignored annotation should be ignored');
   }
   
   protected function testCanUseAnnotationAliases()

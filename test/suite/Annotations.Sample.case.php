@@ -27,3 +27,9 @@ class SampleClass
  */
 class AnnotationInDefaultNamespace
 {}
+
+/**
+ * @ignored
+ */
+class IgnoreMe
+{}
