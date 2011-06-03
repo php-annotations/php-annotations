@@ -38,6 +38,11 @@ class AnnotationManager
   public $cachePath = null;
   
   /**
+   * @var string Cache seed (can be used to disambiguate, if using multiple AnnotationManager instances with the same $cachePath)
+   */
+  public $cacheSeed = '';
+  
+  /**
    * @var string The class-name suffix for Annotation classes.
    */
   public $suffix = 'Annotation';
@@ -170,7 +175,7 @@ class AnnotationManager
    */
   protected function getAnnotationCache($path)
   {
-    return $this->cachePath.DIRECTORY_SEPARATOR.basename($path).'-'.sprintf('%x',crc32($path)).'.annotations.php';
+    return $this->cachePath.DIRECTORY_SEPARATOR.basename($path).'-'.sprintf('%x',crc32($path.$this->cacheSeed)).'.annotations.php';
   }
   
   /**

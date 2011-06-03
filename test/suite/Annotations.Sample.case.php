@@ -12,9 +12,18 @@ class SampleAnnotation extends Annotation
   public $test = 'ok';
 }
 
+class DefaultSampleAnnotation extends SampleAnnotation
+{}
+
 /**
  * @Sample\Sample
  */
 class SampleClass
 {
 }
+
+/**
+ * @DefaultSample
+ */
+class AnnotationInDefaultNamespace
+{}

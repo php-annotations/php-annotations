@@ -222,29 +222,36 @@ class AnnotationsTest extends xTest
   
   protected function testCanHandleEdgeCaseInParser()
   {
-    // an edge-case was found in the parser - this test ensures that a php-doc style
-    // annotation with no trailing characters after it will are parsed correctly.
+    // an edge-case was found in the parser - this test asserts that a php-doc style
+    // annotation with no trailing characters after it will be parsed correctly.
     
     $anns = Annotations::ofClass('TestBase', 'DocAnnotation');
     
     $this->check(count($anns)==1, 'one DocAnnotation was expected - found '.count($anns));
   }
   
-  protected function testCanApplyNamespacedAnnotations()
+  protected function testCanHandleNamespaces()
   {
+    // This test asserts that a namespaced class can be annotated, that annotations can
+    // be namespaced, and that asking for annotations of a namespaced annotation-type
+    // yields the expected result.
+    
     $anns = Annotations::ofClass('Sample\\SampleClass', 'Sample\\SampleAnnotation');
     
     $this->check(count($anns)==1, 'one SampleAnnotation was expected - found '.count($anns));
   }
   
-  protected function testCanInspectNamespacedClasses()
-  {
-    $this->fail('not implemented');
-  }
-  
   protected function testCanUseAnnotationsInDefaultNamespace()
   {
-    $this->fail('not implemented');
+    $manager = new AnnotationManager();
+    $manager->namespace = 'Sample';
+    $manager->autoload = false;
+    $manager->cachePath = Annotations::getManager()->cachePath;
+    $manager->cacheSeed = 'abc123';
+    
+    $anns = $manager->getClassAnnotations('Sample\\AnnotationInDefaultNamespace', 'Sample\\SampleAnnotation');
+    
+    $this->check(count($anns)==1, 'one SampleAnnotation was expected - found '.count($anns));
   }
   
   protected function testCanIgnoreAnnotations()
