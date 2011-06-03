@@ -228,6 +228,31 @@ class AnnotationsTest extends xTest
     
     $this->check(count($anns)==1, 'one DocAnnotation was expected - found '.count($anns));
   }
+  
+  protected function testCanApplyNamespacedAnnotations()
+  {
+    $this->fail('not implemented');
+  }
+  
+  protected function testCanInspectNamespacedClasses()
+  {
+    $this->fail('not implemented');
+  }
+  
+  protected function testCanUseAnnotationsInDefaultNamespace()
+  {
+    $this->fail('not implemented');
+  }
+  
+  protected function testCanIgnoreAnnotations()
+  {
+    $this->fail('not implemented');
+  }
+  
+  protected function testCanUseAnnotationAliases()
+  {
+    $this->fail('not implemented');
+  }
 }
 
 return new AnnotationsTest;
