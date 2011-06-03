@@ -1,18 +1,36 @@
 <?php
 
+use Annotation\Annotations;
+
 ## Configure PHP include paths
 
 set_include_path(
-  dirname(__FILE__)
-  .PATH_SEPARATOR . dirname(dirname(__FILE__)) . '/lib'
-  .PATH_SEPARATOR . dirname(dirname(__FILE__)) . '/annotations'
+  dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'lib'
 );
 
 ## Configure a simple auto-loader
 
 spl_autoload_register(
   function($name)
-    { require $name.'.php'; },
+  {
+    $path = str_replace('\\', DIRECTORY_SEPARATOR, ltrim($name, '\\')).'.php';
+    
+    foreach (explode(PATH_SEPARATOR, get_include_path()) as $dir)
+    {
+      $file = $dir.DIRECTORY_SEPARATOR.$path;
+      if (file_exists($file))
+        return require $file;
+    }
+    
+    echo "File not found:\n";
+    foreach (explode(PATH_SEPARATOR, get_include_path()) as $dir)
+    {
+      $file = $dir.DIRECTORY_SEPARATOR.$path;
+      echo "- {$file}\n";
+    }
+    
+    throw new Exception("Error loading '{$path}'");
+  },
   true, // throw exceptions on error
   true  // prepend autoloader
 );

@@ -162,6 +162,7 @@ class AnnotationManager
     {
       $this->parser = new AnnotationParser;
       $this->parser->debug = $this->debug;
+      $this->parser->autoload = $this->autoload;
       $this->parser->namespace = $this->namespace;
       $this->parser->suffix = $this->suffix;
       $this->parser->registry = & $this->registry;

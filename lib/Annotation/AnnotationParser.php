@@ -37,6 +37,11 @@ class AnnotationParser
   public $debug = false;
   
   /**
+   * @var boolean Enable PHP autoloader when searching for annotation classes (defaults to true)
+   */
+  public $autoload = true;
+  
+  /**
    * @var string $suffix The class-name suffix for Annotation classes.
    */
   public $suffix;
@@ -314,8 +319,7 @@ class AnnotationParser
       else
       {
         # PHP-DOC-style annotation:
-        
-        if (!array_key_exists('Annotation\\IAnnotationParser', class_implements($type)))
+        if (!array_key_exists('Annotation\\IAnnotationParser', class_implements($type, $this->autoload)))
           throw new AnnotationException(__CLASS__."::findAnnotations() : the {$type} Annotation does not support PHP-DOC style syntax (because it does not implement the IAnnotationParser interface)");
         
         $properties = $type::parseAnnotation($value);

@@ -13,12 +13,15 @@
 
 namespace Annotation\Standard;
 
+use Annotation\Annotation;
+
 /**
- * Specifies validation requiring a non-empty value.
- * 
- * @usage('property'=>true, 'inherited'=>true)
+ * Abstact base class for validation annotations.
  */
-class RequiredAnnotation extends ValidationAnnotationBase
+abstract class ValidationAnnotationBase extends Annotation
 {
-  // @todo add flags indicating what "empty" means
+  /**
+   * @var string The error-message to display on validation failure.
+   */
+  public $message;
 }

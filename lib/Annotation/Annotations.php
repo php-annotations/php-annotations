@@ -33,8 +33,6 @@ abstract class Annotations
    */
   public static function getManager()
   {
-    require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'AnnotationManager.php';
-    
     if (!isset(self::$manager))
       self::$manager = new AnnotationManager;
     
