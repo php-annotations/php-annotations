@@ -13,6 +13,10 @@
 
 namespace Annotation;
 
+use \ReflectionClass;
+use \ReflectionMethod;
+use \ReflectionProperty;
+
 /**
  * This class manages the retrieval of Annotations from source code files
  */
@@ -53,44 +57,44 @@ class AnnotationManager
     'category'       => false,
     'copyright'      => false,
     'deprecated'     => false,
-    'display'        => '\\Annotation\\Standard\\DisplayAnnotation',
-    'editable'       => '\\Annotation\\Standard\\EditableAnnotation',
-    'editor'         => '\\Annotation\\Standard\\EditorAnnotation',
-    'enum'           => '\\Annotation\\Standard\\EnumAnnotation',
+    'display'        => 'Annotation\\Standard\\DisplayAnnotation',
+    'editable'       => 'Annotation\\Standard\\EditableAnnotation',
+    'editor'         => 'Annotation\\Standard\\EditorAnnotation',
+    'enum'           => 'Annotation\\Standard\\EnumAnnotation',
     'example'        => false,
     'filesource'     => false,
     'final'          => false,
-    'format'         => '\\Annotation\\Standard\\FormatAnnotation',
+    'format'         => 'Annotation\\Standard\\FormatAnnotation',
     'global'         => false,
     'ignore'         => false,
     'internal'       => false,
-    'length'         => '\\Annotation\\Standard\\LengthAnnotation',
+    'length'         => 'Annotation\\Standard\\LengthAnnotation',
     'license'        => false,
     'link'           => false,
-    'match'          => '\\Annotation\\Standard\\MatchAnnotation',
-    'method'         => '\\Annotation\\Standard\\MethodAnnotation',
+    'match'          => 'Annotation\\Standard\\MatchAnnotation',
+    'method'         => 'Annotation\\Standard\\MethodAnnotation',
     'name'           => false,
     'package'        => false,
-    'param'          => '\\Annotation\\Standard\\ParamAnnotation',
-    'property'       => '\\Annotation\\Standard\\PropertyAnnotation',
-    'property-read'  => '\\Annotation\\Standard\\PropertyReadAnnotation',
-    'property-write' => '\\Annotation\\Standard\\PropertyWriteAnnotation',
-    'range'          => '\\Annotation\\Standard\\RangeAnnotation',
-    'required'       => '\\Annotation\\Standard\\RequiredAnnotation',
-    'return'         => '\\Annotation\\Standard\\ReturnAnnotation',
+    'param'          => 'Annotation\\Standard\\ParamAnnotation',
+    'property'       => 'Annotation\\Standard\\PropertyAnnotation',
+    'property-read'  => 'Annotation\\Standard\\PropertyReadAnnotation',
+    'property-write' => 'Annotation\\Standard\\PropertyWriteAnnotation',
+    'range'          => 'Annotation\\Standard\\RangeAnnotation',
+    'required'       => 'Annotation\\Standard\\RequiredAnnotation',
+    'return'         => 'Annotation\\Standard\\ReturnAnnotation',
     'see'            => false,
     'since'          => false,
     'static'         => false,
     'staticvar'      => false,
     'subpackage'     => false,
-    'text'           => '\\Annotation\\Standard\\TextAnnotation',
+    'text'           => 'Annotation\\Standard\\TextAnnotation',
     'todo'           => false,
     'tutorial'       => false,
-    'usage'          => '\\Annotation\\UsageAnnotation',
+    'usage'          => 'Annotation\\UsageAnnotation',
     'uses'           => false,
-    'validate'       => '\\Annotation\\Standard\\ValidateAnnotation',
-    'var'            => '\\Annotation\\Standard\\VarAnnotation',
-    'view'           => '\\Annotation\\Standard\\ViewAnnotation',
+    'validate'       => 'Annotation\\Standard\\ValidateAnnotation',
+    'var'            => 'Annotation\\Standard\\VarAnnotation',
+    'view'           => 'Annotation\\Standard\\ViewAnnotation',
   );
   
   /**
@@ -227,14 +231,14 @@ class AnnotationManager
       }
       
       if ($parent = get_parent_class($class))
-        if ($parent !== 'Annotation')
+        if ($parent !== 'Annotation\\Annotation')
           foreach ($this->getAnnotations($parent, $member, $name) as $annotation)
             if ($this->getUsage(get_class($annotation))->inherited)
               $this->annotations[$key][] = $annotation;
       
       $this->initialized[$key] = true;
       
-      $reflection = new \ReflectionClass($class);
+      $reflection = new ReflectionClass($class);
       $path = $reflection->getFileName();
       $specs = $this->getFileSpecs($path);
       
@@ -395,7 +399,7 @@ class AnnotationManager
   {
     if (is_object($class))
       $class = get_class($class);
-    else if ($class instanceof \ReflectionClass)
+    else if ($class instanceof ReflectionClass)
       $class = $class->getName();
     
     if (!class_exists($class, $this->autoload))
@@ -419,9 +423,9 @@ class AnnotationManager
   {
     if (is_object($class))
       $class = get_class($class);
-    else if ($class instanceof \ReflectionClass)
+    else if ($class instanceof ReflectionClass)
       $class = $class->getName();
-    else if ($class instanceof \ReflectionMethod)
+    else if ($class instanceof ReflectionMethod)
     {
       $method = $class->name;
       $class = $class->class;
@@ -451,9 +455,9 @@ class AnnotationManager
   {
     if (is_object($class))
       $class = get_class($class);
-    else if ($class instanceof \ReflectionClass)
+    else if ($class instanceof ReflectionClass)
       $class = $class->getName();
-    else if ($class instanceof \ReflectionProperty)
+    else if ($class instanceof ReflectionProperty)
     {
       $property = $class->name;
       $class = $class->class;

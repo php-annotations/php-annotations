@@ -24,11 +24,12 @@ class AnnotationParser
   const SCAN_CLASS = 3;
   const MEMBER = 4;
   const METHOD_NAME = 5;
+  const NAMESPACE_NAME = 6;
   
-  const SKIP = 6;
-  const NAME = 7;
-  const COPY_LINE = 8;
-  const COPY_ARRAY = 9;
+  const SKIP = 7;
+  const NAME = 8;
+  const COPY_LINE = 9;
+  const COPY_ARRAY = 10;
   
   /**
    * @var boolean $debug Set to TRUE to enable HTML output for debugging
@@ -63,6 +64,7 @@ class AnnotationParser
     $state = self::SCAN;
     $nesting = 0;
     $class = null;
+    $namespace = '';
     
     $VISIBILITY = array(T_PUBLIC, T_PRIVATE, T_PROTECTED, T_VAR);
     
@@ -80,12 +82,22 @@ class AnnotationParser
         case self::SCAN:
           if ($type==T_CLASS)
             $state = self::CLASS_NAME;
+          if ($type==T_NAMESPACE)
+            $state = self::NAMESPACE_NAME;
+        break;
+        
+        case self::NAMESPACE_NAME:
+          if ($type==T_STRING)
+          {
+            $namespace = $str.'\\';
+            $state = self::SCAN;
+          }
         break;
         
         case self::CLASS_NAME:
           if ($type==T_STRING)
           {
-            $class = $str;
+            $class = $namespace.$str;
             $index[$class] = $annotations;
             $annotations = array();
             $state = self::SCAN_CLASS;
@@ -163,7 +175,7 @@ class AnnotationParser
     foreach ($index as $key=>$array)
     {
       if (count($array))
-        $code .= "  '{$key}' => array(\n    ".implode(",\n    ",$array)."\n  ),\n";
+        $code .= "  ".trim(var_export($key,true))." => array(\n    ".implode(",\n    ",$array)."\n  ),\n";
     }
     $code .= ");\n";
     
@@ -282,10 +294,10 @@ class AnnotationParser
       else
       {
         $type = ucfirst(strtr($name, '-', '_')).$this->suffix;
-        
-        if (strpos($type, '\\') === false)
-          $type = $this->namespace . '\\' . $type;
       }
+      
+      if (strpos($type, '\\') === false && strlen($this->namespace))
+        $type = $this->namespace . '\\' . $type;
       
       $quotedType = trim(var_export($type,true));
       

@@ -1,6 +1,7 @@
 <?php
 
 require_once 'suite/Annotations.case.php';
+require_once 'suite/Annotations.Sample.case.php';
 
 use Annotation\AnnotationParser;
 use Annotation\AnnotationManager;
@@ -46,15 +47,15 @@ class AnnotationsTest extends xTest
     
     $test = eval($code);
     
-    $this->check($test['Sample'][0][0] === '\\DocAnnotation', 'first annotation is a DocAnnotation');
+    $this->check($test['Sample'][0][0] === 'DocAnnotation', 'first annotation is a DocAnnotation');
     $this->check($test['Sample'][0]['value'] === 123, 'first annotation has the value 123');
     
-    $this->check($test['Sample'][1][0] === '\\NoteAnnotation', 'second annotation is a NoteAnnotation');
+    $this->check($test['Sample'][1][0] === 'NoteAnnotation', 'second annotation is a NoteAnnotation');
     $this->check($test['Sample'][1][1] === 'abc', 'value of second annotation is "abc"');
     
-    $this->check($test['Sample'][2][0] === '\\RequiredAnnotation', 'third annotation is a RequiredAnnotation');
+    $this->check($test['Sample'][2][0] === 'RequiredAnnotation', 'third annotation is a RequiredAnnotation');
     
-    $this->check($test['Sample'][3][0] === '\\NoteAnnotation', 'last annotation is a NoteAnnotation');
+    $this->check($test['Sample'][3][0] === 'NoteAnnotation', 'last annotation is a NoteAnnotation');
     $this->check($test['Sample'][3][1] === 'xyz', 'value of last annotation is "xyz"');
   }
   
@@ -231,7 +232,9 @@ class AnnotationsTest extends xTest
   
   protected function testCanApplyNamespacedAnnotations()
   {
-    $this->fail('not implemented');
+    $anns = Annotations::ofClass('Sample\\SampleClass', 'Sample\\SampleAnnotation');
+    
+    $this->check(count($anns)==1, 'one SampleAnnotation was expected - found '.count($anns));
   }
   
   protected function testCanInspectNamespacedClasses()
