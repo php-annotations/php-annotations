@@ -269,9 +269,19 @@ class AnnotationsTest extends xTest
     $this->check(count($anns)==0, 'the @ignored annotation should be ignored');
   }
   
-  protected function testCanUseAnnotationAliases()
+  protected function testCanUseAnnotationAlias()
   {
-    $this->fail('not implemented');
+    $manager = new AnnotationManager();
+    $manager->namespace = 'Sample';
+    $manager->autoload = false;
+    $manager->cachePath = Annotations::getManager()->cachePath;
+    $manager->cacheSeed = '12345678';
+    
+    $manager->registry['aliased'] = 'Sample\\SampleAnnotation';
+    
+    $anns = $manager->getClassAnnotations('Sample\\AliasMe');
+    
+    $this->check(count($anns)==1, 'the @aliased annotation should be aliased');
   }
 }
 

@@ -33,3 +33,9 @@ class AnnotationInDefaultNamespace
  */
 class IgnoreMe
 {}
+
+/**
+ * @aliased
+ */
+class AliasMe
+{}
