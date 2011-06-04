@@ -2,34 +2,19 @@
 
 use Annotation\Annotations;
 
-## Configure PHP include paths
-
-set_include_path(
-  dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'lib'
-);
-
 ## Configure a simple auto-loader
+
+define('LIB_PATH', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'lib');
 
 spl_autoload_register(
   function($name)
   {
-    $path = str_replace('\\', DIRECTORY_SEPARATOR, ltrim($name, '\\')).'.php';
+    $path = LIB_PATH . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, ltrim($name, '\\')).'.php';
     
-    foreach (explode(PATH_SEPARATOR, get_include_path()) as $dir)
-    {
-      $file = $dir.DIRECTORY_SEPARATOR.$path;
-      if (file_exists($file))
-        return require $file;
-    }
+    if (!file_exists($path))
+      throw new Exception("unable to load {$name} from {$path}");
     
-    echo "File not found:\n";
-    foreach (explode(PATH_SEPARATOR, get_include_path()) as $dir)
-    {
-      $file = $dir.DIRECTORY_SEPARATOR.$path;
-      echo "- {$file}\n";
-    }
-    
-    throw new Exception("Error loading '{$path}'");
+    require $path;
   },
   true, // throw exceptions on error
   true  // prepend autoloader
@@ -113,7 +98,7 @@ abstract class Widget
   
   protected function getMetadata($type, $name, $default=null)
   {
-    $a = Annotations::ofProperty($this->object, $this->property, $type);
+    $a = Annotations::ofProperty($this->object, $this->property, 'Annotation\\Standard\\'.$type);
     
     if (!count($a))
       return $default;
@@ -183,7 +168,7 @@ abstract class Widget
   
   public function isRequired()
   {
-    return count(Annotations::ofProperty($this->object, $this->property, 'RequiredAnnotation')) > 0;
+    return count(Annotations::ofProperty($this->object, $this->property, 'Annotation\\Standard\\RequiredAnnotation')) > 0;
   }
 }
 
@@ -259,7 +244,7 @@ class Form
     
     foreach ($class->getProperties() as $property)
     {
-      $type = $this->getMetadata($property->name, 'VarAnnotation', 'type', 'text');
+      $type = $this->getMetadata($property->name, 'VarAnnotation', 'type', 'string');
       
       $wtype = ucfirst($type).'Widget';
       
@@ -272,7 +257,7 @@ class Form
   
   private function getMetadata($property, $type, $name, $default=null)
   {
-    $a = Annotations::ofProperty(get_class($this->object), $property, $type);
+    $a = Annotations::ofProperty(get_class($this->object), $property, 'Annotation\\Standard\\'.$type);
     
     if (!count($a))
       return $default;
