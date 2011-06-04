@@ -1,6 +1,3 @@
-Parser bug:
-  @required is not parsed correctly without the parentheses - add unit test and debug.
-
 Decide whether type-conversion and property-validation should be a separate framework, or
 features built into the annotation classes directly - if not:
 
