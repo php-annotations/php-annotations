@@ -88,14 +88,21 @@ class AnnotationParser
           if ($type==T_CLASS)
             $state = self::CLASS_NAME;
           if ($type==T_NAMESPACE)
+          {
             $state = self::NAMESPACE_NAME;
+            $namespace = '';
+          }
         break;
         
         case self::NAMESPACE_NAME:
-          if ($type==T_STRING)
+          if ($type==T_STRING || $type==T_NS_SEPARATOR)
           {
-            $namespace = $str.'\\';
+            $namespace .= $str;
+          }
+          else if ($str == ';')
+          {
             $state = self::SCAN;
+            $namespace .= '\\';
           }
         break;
         

@@ -376,9 +376,13 @@ class AnnotationManager
       if (count($usage)==0)
       {
         if ($parent = get_parent_class($class))
+        {
           $usage = $this->getUsage($parent);
+        }
         else
+        {
           throw new AnnotationException(__CLASS__."::getUsage() : the class '{$class}' must have exactly one UsageAnnotation");
+        }
       }
       else
       {
