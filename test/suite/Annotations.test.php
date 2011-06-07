@@ -304,6 +304,12 @@ class AnnotationsTest extends xTest
     
     $this->check(count($anns)==1, 'the @aliased annotation should be aliased');
   }
+  
+  protected function testCanFindAnnotationsByAlias()
+  {
+    $ann = Annotations::ofProperty('TestBase', 'sample', '@note');
+    $this->check(count($ann) === 1, 'TestBase::$sample has one @note annotation');
+  }
 }
 
 return new AnnotationsTest;

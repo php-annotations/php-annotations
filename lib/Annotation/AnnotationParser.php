@@ -209,7 +209,7 @@ class AnnotationParser
    * @param string $str PHP comment containing annotations
    * @return array PHP source code snippets with annotation initialization arrays
    */
-  private function findAnnotations($str)
+  protected function findAnnotations($str)
   {
     $str = trim(preg_replace('/^[\/\*\# \t]+/m', '', $str))."\n";
     $str = str_replace("\r\n", "\n", $str);

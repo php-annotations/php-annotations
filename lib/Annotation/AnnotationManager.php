@@ -140,7 +140,7 @@ class AnnotationManager
   /**
    * @var $_usageAnnotation UsageAnnotation The standard UsageAnnotation
    */
-  private $_usageAnnotation;
+  protected $_usageAnnotation;
   
   /**
    * Initialize the Annotation Manager
@@ -182,7 +182,7 @@ class AnnotationManager
    * @param string $path The full path to the source code file from which to retrieve Annotations
    * @return array Specifications for Annotations (arrays keyed by Class, Class::method or Class::$member)
    */
-  private function getFileSpecs($path)
+  protected function getFileSpecs($path)
   {
     if (!isset($this->specs[$path]))
     {
@@ -253,7 +253,7 @@ class AnnotationManager
    * @param string $member The type of member, e.g. "class", "property" or "method"
    * @param string $name Optional member name, e.g. "method" or "$property"
    */
-  private function getAnnotations($class, $member='class', $name=null)
+  protected function getAnnotations($class, $member='class', $name=null)
   {
     $key = $class . ($name ? '::'.$name : '');
     
@@ -339,7 +339,7 @@ class AnnotationManager
    * @param array An array of IAnnotation objects to be validated.
    * @param string The type of member to validate against (e.g. "class", "property" or "method")
    */
-  private function applyConstraints(&$annotations, $member)
+  protected function applyConstraints(&$annotations, $member)
   {
     foreach ($annotations as $outer=>$annotation)
     {
@@ -376,8 +376,11 @@ class AnnotationManager
    * @param string $type The class name by which to filter annotation objects
    * @return array The filtered array of annotation objects - may return an empty array
    */
-  private function filterAnnotations($annotations, $type)
+  protected function filterAnnotations($annotations, $type)
   {
+    if (substr($type,0,1) === '@')
+      $type = $this->resolveName(substr($type,1));
+    
     $result = array();
     
     foreach ($annotations as $annotation)
@@ -433,7 +436,8 @@ class AnnotationManager
    * Inspects Annotations applied to a given class
    *
    * @param mixed $class A class name, an object, or a ReflectionClass instance
-   * @param string $type An optional annotation class name - if specified, only annotations of the given class are returned
+   * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
+   *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
    * @return array Annotation instances
    */
   public function getClassAnnotations($class, $type=null)
@@ -457,7 +461,8 @@ class AnnotationManager
    *
    * @param mixed $class A class name, an object, a ReflectionClass, or a ReflectionMethod instance
    * @param string $method The name of a method of the given class (or null, if the first parameter is a ReflectionMethod)
-   * @param string $type An optional annotation class name - if specified, only annotations of the given class are returned
+   * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
+   *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
    * @return array Annotation instances
    */
   public function getMethodAnnotations($class, $method=null, $type=null)
@@ -489,7 +494,8 @@ class AnnotationManager
    *
    * @param mixed $class A class name, an object, a ReflectionClass, or a ReflectionProperty instance
    * @param string $method The name of a defined property of the given class (or null, if the first parameter is a ReflectionProperty)
-   * @param string $type An optional annotation class name - if specified, only annotations of the given class are returned
+   * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
+   *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
    * @return array Annotation instances
    */
   public function getPropertyAnnotations($class, $property=null, $type=null)
