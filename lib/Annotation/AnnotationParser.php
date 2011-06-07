@@ -42,19 +42,19 @@ class AnnotationParser
   public $autoload = true;
   
   /**
-   * @var string $suffix The class-name suffix for Annotation classes.
+   * @var AnnotationManager Internal reference to the AnnotationManager associated with this parser.
    */
-  public $suffix;
+  protected $manager;
   
   /**
-   * @var string The default namespace for annotations with no namespace qualifier.
+   * Creates a new instance of the annotation parser.
+   *
+   * @param AnnotationManager The annotation manager associated with this parser.
    */
-  public $namespace = '';
-  
-  /**
-   * @var array List of registered annotation aliases.
-   */
-  public $registry = array();
+  public function __construct(AnnotationManager $manager)
+  {
+    $this->manager = $manager;
+  }
   
   /**
    * @param string $source The PHP source code to be parsed
@@ -293,23 +293,12 @@ class AnnotationParser
     
     foreach ($matches as $match)
     {
-      $name = lcfirst($match[0]);
-      $value = $match[1];
+      $type = $this->manager->resolveName($match[0]);
       
-      if (@$this->registry[$name] === false)
+      if ($type === false)
         continue;
       
-      if (isset($this->registry[$name]))
-      {
-        $type = $this->registry[$name];
-      }
-      else
-      {
-        $type = ucfirst(strtr($name, '-', '_')).$this->suffix;
-      }
-      
-      if (strpos($type, '\\') === false && strlen($this->namespace))
-        $type = $this->namespace . '\\' . $type;
+      $value = $match[1];
       
       $quotedType = trim(var_export($type,true));
       
@@ -326,8 +315,8 @@ class AnnotationParser
       else
       {
         # PHP-DOC-style annotation:
-        if (!array_key_exists('Annotation\\IAnnotationParser', class_implements($type, $this->autoload)))
-          throw new AnnotationException(__CLASS__."::findAnnotations() : the {$type} Annotation does not support PHP-DOC style syntax (because it does not implement the IAnnotationParser interface)");
+        if (!array_key_exists('Annotation\IAnnotationParser', class_implements($type, $this->autoload)))
+          throw new AnnotationException(__CLASS__."::findAnnotations() : the {$type} Annotation does not support PHP-DOC style syntax (because it does not implement the Annotation\\IAnnotationParser interface)");
         
         $properties = $type::parseAnnotation($value);
         

@@ -98,7 +98,7 @@ abstract class Widget
   
   protected function getMetadata($type, $name, $default=null)
   {
-    $a = Annotations::ofProperty($this->object, $this->property, 'Annotation\\Standard\\'.$type);
+    $a = Annotations::ofProperty($this->object, $this->property, 'Annotation\Standard\\'.$type);
     
     if (!count($a))
       return $default;
@@ -130,9 +130,9 @@ abstract class Widget
       $min = $this->getMetadata('LengthAnnotation', 'min');
       $max = $this->getMetadata('LengthAnnotation', 'max');
       
-      if ($min!==null && strlen($input) < $min)
+      if ($min!==null && strlen($this->value) < $min)
         $this->addError("Minimum length is {$min} characters");
-      else if ($max!==null && strlen($input) > $max)
+      else if ($max!==null && strlen($this->value) > $max)
         $this->addError("Maximum length is {$max} characters");
     }
     
@@ -168,7 +168,7 @@ abstract class Widget
   
   public function isRequired()
   {
-    return count(Annotations::ofProperty($this->object, $this->property, 'Annotation\\Standard\\RequiredAnnotation')) > 0;
+    return count(Annotations::ofProperty($this->object, $this->property, 'Annotation\Standard\RequiredAnnotation')) > 0;
   }
 }
 
@@ -257,7 +257,7 @@ class Form
   
   private function getMetadata($property, $type, $name, $default=null)
   {
-    $a = Annotations::ofProperty(get_class($this->object), $property, 'Annotation\\Standard\\'.$type);
+    $a = Annotations::ofProperty(get_class($this->object), $property, 'Annotation\Standard\\'.$type);
     
     if (!count($a))
       return $default;

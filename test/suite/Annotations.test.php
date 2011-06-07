@@ -25,12 +25,33 @@ class AnnotationsTest extends xTest
       unlink($path);
   }
   
+  protected function testCanResolveAnnotationNames()
+  {
+    $manager = new AnnotationManager;
+    $manager->namespace = ''; // look for annotations in the global namespace
+    $manager->suffix = 'Annotation'; // use a suffix for annotation class-names
+    
+    $this->check($manager->resolveName('test') === 'TestAnnotation', 'should capitalize and suffix annotation names');
+    $this->check($manager->resolveName('X\Y\Foo') === 'X\Y\FooAnnotation', 'should suffix fully qualified annotation names');
+    
+    $manager->registry['test'] = 'X\Y\Z\TestAnnotation';
+    $this->check($manager->resolveName('test') === 'X\Y\Z\TestAnnotation', 'should respect registered annotation types');
+    $this->check($manager->resolveName('Test') === 'X\Y\Z\TestAnnotation', 'should ignore case of first letter in annotation names');
+    
+    $manager->registry['test'] = false;
+    $this->check($manager->resolveName('test') === false, 'should respect disabled annotation types');
+    
+    $manager->namespace = 'ABC';
+    $this->check($manager->resolveName('hello') === 'ABC\HelloAnnotation', 'should default to standard namespace');
+  }
+  
   protected function testCanParseAnnotations()
   {
-    $parser = new AnnotationParser;
+    $manager = new AnnotationManager;
+    $manager->namespace = ''; // look for annotations in the global namespace
+    $manager->suffix = 'Annotation'; // use a suffix for annotation class-names
     
-    $parser->namespace = ''; // look for annotations in the global namespace
-    $parser->suffix = 'Annotation'; // use a suffix for annotation class-names
+    $parser = $manager->getParser();
     
     $source = "
       <?php
@@ -53,7 +74,7 @@ class AnnotationsTest extends xTest
     $this->check($test['Sample'][1][0] === 'NoteAnnotation', 'second annotation is a NoteAnnotation');
     $this->check($test['Sample'][1][1] === 'abc', 'value of second annotation is "abc"');
     
-    $this->check($test['Sample'][2][0] === 'RequiredAnnotation', 'third annotation is a RequiredAnnotation');
+    $this->check($test['Sample'][2][0] === 'Annotation\Standard\RequiredAnnotation', 'third annotation is a RequiredAnnotation');
     
     $this->check($test['Sample'][3][0] === 'NoteAnnotation', 'last annotation is a NoteAnnotation');
     $this->check($test['Sample'][3][1] === 'xyz', 'value of last annotation is "xyz"');
@@ -236,7 +257,7 @@ class AnnotationsTest extends xTest
     // be namespaced, and that asking for annotations of a namespaced annotation-type
     // yields the expected result.
     
-    $anns = Annotations::ofClass('Sample\\SampleClass', 'Sample\\SampleAnnotation');
+    $anns = Annotations::ofClass('Sample\SampleClass', 'Sample\SampleAnnotation');
     
     $this->check(count($anns)==1, 'one SampleAnnotation was expected - found '.count($anns));
   }
@@ -249,7 +270,7 @@ class AnnotationsTest extends xTest
     $manager->cachePath = Annotations::getManager()->cachePath;
     $manager->cacheSeed = 'abc123';
     
-    $anns = $manager->getClassAnnotations('Sample\\AnnotationInDefaultNamespace', 'Sample\\SampleAnnotation');
+    $anns = $manager->getClassAnnotations('Sample\AnnotationInDefaultNamespace', 'Sample\SampleAnnotation');
     
     $this->check(count($anns)==1, 'one SampleAnnotation was expected - found '.count($anns));
   }
@@ -264,7 +285,7 @@ class AnnotationsTest extends xTest
     
     $manager->registry['ignored'] = false;
     
-    $anns = $manager->getClassAnnotations('Sample\\IgnoreMe');
+    $anns = $manager->getClassAnnotations('Sample\IgnoreMe');
     
     $this->check(count($anns)==0, 'the @ignored annotation should be ignored');
   }
@@ -277,9 +298,9 @@ class AnnotationsTest extends xTest
     $manager->cachePath = Annotations::getManager()->cachePath;
     $manager->cacheSeed = '12345678';
     
-    $manager->registry['aliased'] = 'Sample\\SampleAnnotation';
+    $manager->registry['aliased'] = 'Sample\SampleAnnotation';
     
-    $anns = $manager->getClassAnnotations('Sample\\AliasMe');
+    $anns = $manager->getClassAnnotations('Sample\AliasMe');
     
     $this->check(count($anns)==1, 'the @aliased annotation should be aliased');
   }

@@ -62,44 +62,44 @@ class AnnotationManager
     'category'       => false,
     'copyright'      => false,
     'deprecated'     => false,
-    'display'        => 'Annotation\\Standard\\DisplayAnnotation',
-    'editable'       => 'Annotation\\Standard\\EditableAnnotation',
-    'editor'         => 'Annotation\\Standard\\EditorAnnotation',
-    'enum'           => 'Annotation\\Standard\\EnumAnnotation',
+    'display'        => 'Annotation\Standard\DisplayAnnotation',
+    'editable'       => 'Annotation\Standard\EditableAnnotation',
+    'editor'         => 'Annotation\Standard\EditorAnnotation',
+    'enum'           => 'Annotation\Standard\EnumAnnotation',
     'example'        => false,
     'filesource'     => false,
     'final'          => false,
-    'format'         => 'Annotation\\Standard\\FormatAnnotation',
+    'format'         => 'Annotation\Standard\FormatAnnotation',
     'global'         => false,
     'ignore'         => false,
     'internal'       => false,
-    'length'         => 'Annotation\\Standard\\LengthAnnotation',
+    'length'         => 'Annotation\Standard\LengthAnnotation',
     'license'        => false,
     'link'           => false,
-    'match'          => 'Annotation\\Standard\\MatchAnnotation',
-    'method'         => 'Annotation\\Standard\\MethodAnnotation',
+    'match'          => 'Annotation\Standard\MatchAnnotation',
+    'method'         => 'Annotation\Standard\MethodAnnotation',
     'name'           => false,
     'package'        => false,
-    'param'          => 'Annotation\\Standard\\ParamAnnotation',
-    'property'       => 'Annotation\\Standard\\PropertyAnnotation',
-    'property-read'  => 'Annotation\\Standard\\PropertyReadAnnotation',
-    'property-write' => 'Annotation\\Standard\\PropertyWriteAnnotation',
-    'range'          => 'Annotation\\Standard\\RangeAnnotation',
-    'required'       => 'Annotation\\Standard\\RequiredAnnotation',
-    'return'         => 'Annotation\\Standard\\ReturnAnnotation',
+    'param'          => 'Annotation\Standard\ParamAnnotation',
+    'property'       => 'Annotation\Standard\PropertyAnnotation',
+    'property-read'  => 'Annotation\Standard\PropertyReadAnnotation',
+    'property-write' => 'Annotation\Standard\PropertyWriteAnnotation',
+    'range'          => 'Annotation\Standard\RangeAnnotation',
+    'required'       => 'Annotation\Standard\RequiredAnnotation',
+    'return'         => 'Annotation\Standard\ReturnAnnotation',
     'see'            => false,
     'since'          => false,
     'static'         => false,
     'staticvar'      => false,
     'subpackage'     => false,
-    'text'           => 'Annotation\\Standard\\TextAnnotation',
+    'text'           => 'Annotation\Standard\TextAnnotation',
     'todo'           => false,
     'tutorial'       => false,
-    'usage'          => 'Annotation\\UsageAnnotation',
+    'usage'          => 'Annotation\UsageAnnotation',
     'uses'           => false,
-    'validate'       => 'Annotation\\Standard\\ValidateAnnotation',
-    'var'            => 'Annotation\\Standard\\VarAnnotation',
-    'view'           => 'Annotation\\Standard\\ViewAnnotation',
+    'validate'       => 'Annotation\Standard\ValidateAnnotation',
+    'var'            => 'Annotation\Standard\VarAnnotation',
+    'view'           => 'Annotation\Standard\ViewAnnotation',
   );
   
   /**
@@ -160,12 +160,9 @@ class AnnotationManager
   {
     if (!isset($this->parser))
     {
-      $this->parser = new AnnotationParser;
+      $this->parser = new AnnotationParser($this);
       $this->parser->debug = $this->debug;
       $this->parser->autoload = $this->autoload;
-      $this->parser->namespace = $this->namespace;
-      $this->parser->suffix = $this->suffix;
-      $this->parser->registry = & $this->registry;
     }
     return $this->parser;
   }
@@ -216,6 +213,40 @@ class AnnotationManager
   }
   
   /**
+   * Resolves a name, using built-in annotation name resolution rules, and the registry.
+   *
+   * @return string|bool The fully qualified annotation class-name, or false if the
+   * requested annotation has been disabled (set to false) in the registry.
+   */
+  public function resolveName($name)
+  {
+    if (strpos($name, '\\') !== false)
+    {
+      return $name.$this->suffix; // annotation class-name is fully qualified
+    }
+    
+    $type = lcfirst($name);
+    
+    if (@$this->registry[$type] === false)
+    {
+      return false; // annotation is disabled
+    }
+    
+    if (isset($this->registry[$type]))
+    {
+      return $this->registry[$type]; // type-name is registered
+    }
+    else
+    {
+      $type = ucfirst(strtr($name, '-', '_')).$this->suffix;
+      
+      return strlen($this->namespace) ? $this->namespace . '\\' . $type : $type;
+    }
+    
+    return $type;
+  }
+  
+  /**
    * Constructs, initializes and returns Annotation objects
    *
    * @param string $class The name of the class from which to obtain Annotations
@@ -237,7 +268,7 @@ class AnnotationManager
       }
       
       if ($parent = get_parent_class($class))
-        if ($parent !== 'Annotation\\Annotation')
+        if ($parent !== 'Annotation\Annotation')
           foreach ($this->getAnnotations($parent, $member, $name) as $annotation)
             if ($this->getUsage(get_class($annotation))->inherited)
               $this->annotations[$key][] = $annotation;
