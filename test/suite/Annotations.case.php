@@ -8,7 +8,9 @@ use Annotation\Annotation;
 use Annotation\IAnnotationParser;
 use Annotation\IAnnotationDelegate;
 
-#@Usage('class'=>true, 'property'=>true, 'method'=>true, 'inherited'=>true, 'multiple'=>true)
+/**
+ * @usage('class'=>true, 'property'=>true, 'method'=>true, 'inherited'=>true, 'multiple'=>true)
+ */
 class NoteAnnotation extends Annotation
 {
   public $note;
@@ -22,7 +24,9 @@ class NoteAnnotation extends Annotation
   }
 }
 
-#@Usage('class'=>true)
+/**
+ * @usage('class'=>true)
+ */
 class DocAnnotation extends Annotation implements IAnnotationParser
 {
   public $value;
@@ -33,7 +37,9 @@ class DocAnnotation extends Annotation implements IAnnotationParser
   }
 }
 
-#@Usage('class'=>true, 'multiple'=>true)
+/**
+ * @usage('class'=>true, 'multiple'=>true)
+ */
 class TestDelegateAnnotation extends Annotation implements IAnnotationDelegate
 {
   public $name;
@@ -49,25 +55,33 @@ class TestDelegateAnnotation extends Annotation implements IAnnotationDelegate
   }
 }
 
-#@Usage('property'=>true, 'multiple'=>false)
+/**
+ * @usage('property'=>true, 'multiple'=>false)
+ */
 class SingleAnnotation extends Annotation
 {
   public $test;
 }
 
-#@Usage('property'=>true, 'multiple'=>false, 'inherited'=>true)
+/**
+ * @usage('property'=>true, 'multiple'=>false, 'inherited'=>true)
+ */
 class OverrideAnnotation extends Annotation
 {
   public $test;
 }
 
-#@Usage('method'=>true)
+/**
+ * @usage('method'=>true)
+ */
 class SampleAnnotation extends Annotation
 {
   public $test;
 }
 
-#@Usage('class'=>true, 'inherited'=>false)
+/**
+ * @usage('class'=>true, 'inherited'=>false)
+ */
 class UninheritableAnnotation extends Annotation
 {
   public $test;
@@ -79,26 +93,38 @@ class UninheritableAnnotation extends Annotation
  * @doc 1234 (this is a sample PHP-DOC style annotation)
  */
 
-/* @Note("Applied to the TestBase class") */
-#@Uninheritable('test'=>'Test cannot inherit this annotation')
+/**
+ * @note("Applied to the TestBase class")
+ * @uninheritable('test'=>'Test cannot inherit this annotation')
+ */
 class TestBase
 {
-  #@Note("Applied to a TestBase member")
+  /**
+   * @note("Applied to a TestBase member")
+   */
   private $sample='test';
   
-  #@Single('test'=>'one is okay')
-  #@Single('test'=>'two is one too many')
+  /**
+   * @single('test'=>'one is okay')
+   * @single('test'=>'two is one too many')
+   */
   private $only_one;
   
-  #@Override('test'=>'This will be overridden')
+  /**
+   * override('test'=>'This will be overridden')
+   */
   private $override_me;
   
-  #@Note("First note annotation")
-  #@Override('test'=>'This annotation should get filtered')
+  /**
+   * @note("First note annotation")
+   * @override('test'=>'This annotation should get filtered')
+   */
   private $mixed;
   
-  #@Note("Applied to a hidden TestBase method")
-  #@Sample('test'=>'This should get filtered')
+  /**
+   * @note("Applied to a hidden TestBase method")
+   * @sample('test'=>'This should get filtered')
+   */
   public function run()
   {
   }
@@ -121,17 +147,25 @@ class TestBase
  */
 class Test extends TestBase
 {
-  #@Note("Applied to a property")
+  /**
+   * @Note("Applied to a property")
+   */
   public $hello='World';
   
-  #@Override('test'=>'This annotation overrides the one in TestBase')
+  /**
+   * @Override('test'=>'This annotation overrides the one in TestBase')
+   */
   private $override_me;
   
-  #@Note("Second note annotation")
+  /**
+   * @Note("Second note annotation")
+   */
   private $mixed;
   
-  // @Note("First Note Applied to the run() method")
-  // @Note("And a second Note")
+  /**
+   * @Note("First Note Applied to the run() method")
+   * @Note("And a second Note")
+   */
   public function run()
   {
   }
@@ -139,27 +173,41 @@ class Test extends TestBase
 
 class ValidationTest
 {
-  #@Validate('ValidationTest', 'validate')
+  /**
+   * @Validate('ValidationTest', 'validate')
+   */
   public $custom;
   
-  #@Type('url')
+  /**
+   * @Type('url')
+   */
   public $url;
   
-  #@Enum(array('M'=>'Male', 'F'=>'Female'))
+  /**
+   * @Enum(array('M'=>'Male', 'F'=>'Female'))
+   */
   public $sex;
   
-  #@Required()
-  #@Range(1,100)
+  /**
+   * @Required()
+   * @Range(1,100)
+   */
   public $age;
   
-  #@Length(100,255)
+  /**
+   * @Length(100,255)
+   */
   public $long;
   
-  #@Length(255)
+  /**
+   * @Length(255)
+   */
   public $lengthy;
   
-  #@Length(6,10)
-  #@Pattern('/[a-z0-9_]+/')
+  /**
+   * @Length(6,10)
+   * @Pattern('/[a-z0-9_]+/')
+   */
   public $password;
   
   public function validate()
@@ -167,3 +215,4 @@ class ValidationTest
     return true;
   }
 }
+ 

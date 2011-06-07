@@ -296,7 +296,7 @@ class AnnotationParser
       $name = lcfirst($match[0]);
       $value = $match[1];
       
-      if ($this->registry[$name] === false)
+      if (@$this->registry[$name] === false)
         continue;
       
       if (isset($this->registry[$name]))
