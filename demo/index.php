@@ -98,7 +98,7 @@ abstract class Widget
   
   protected function getMetadata($type, $name, $default=null)
   {
-    $a = Annotations::ofProperty($this->object, $this->property, '@'.$type);
+    $a = Annotations::ofProperty($this->object, $this->property, $type);
     
     if (!count($a))
       return $default;
@@ -127,8 +127,8 @@ abstract class Widget
     
     if (is_string($this->value))
     {
-      $min = $this->getMetadata('length', 'min');
-      $max = $this->getMetadata('length', 'max');
+      $min = $this->getMetadata('@length', 'min');
+      $max = $this->getMetadata('@length', 'max');
       
       if ($min!==null && strlen($this->value) < $min)
         $this->addError("Minimum length is {$min} characters");
@@ -138,8 +138,8 @@ abstract class Widget
     
     if (is_int($this->value))
     {
-      $min = $this->getMetadata('range', 'min');
-      $max = $this->getMetadata('range', 'max');
+      $min = $this->getMetadata('@range', 'min');
+      $max = $this->getMetadata('@range', 'max');
       
       if (
         ($min!==null && $this->value < $min)
@@ -160,7 +160,7 @@ abstract class Widget
   
   public function getLabel()
   {
-    return $this->getMetadata('text', 'label', ucfirst($this->property));
+    return $this->getMetadata('@text', 'label', ucfirst($this->property));
   }
   
   ## Finally, this little helper function will tell us if the field is required -
@@ -168,7 +168,7 @@ abstract class Widget
   
   public function isRequired()
   {
-    return count(Annotations::ofProperty($this->object, $this->property, 'Annotation\Standard\RequiredAnnotation')) > 0;
+    return count(Annotations::ofProperty($this->object, $this->property, '@required')) > 0;
   }
 }
 
@@ -191,7 +191,7 @@ class StringWidget extends Widget
   
   public function display()
   {
-    $length = $this->getMetadata('length', 'max', 255);
+    $length = $this->getMetadata('@length', 'max', 255);
     
     echo '<input type="text" name="' . get_class($this->object) . '[' . $this->property . ']"'
       . ' maxlength="' . $length . '" value="' . htmlspecialchars($this->value) . '"/>';
@@ -244,7 +244,7 @@ class Form
     
     foreach ($class->getProperties() as $property)
     {
-      $type = $this->getMetadata($property->name, 'var', 'type', 'string');
+      $type = $this->getMetadata($property->name, '@var', 'type', 'string');
       
       $wtype = ucfirst($type).'Widget';
       
@@ -257,7 +257,7 @@ class Form
   
   private function getMetadata($property, $type, $name, $default=null)
   {
-    $a = Annotations::ofProperty(get_class($this->object), $property, '@'.$type);
+    $a = Annotations::ofProperty(get_class($this->object), $property, $type);
     
     if (!count($a))
       return $default;
