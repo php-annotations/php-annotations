@@ -28,6 +28,9 @@ class ValidateAnnotation extends ValidationAnnotationBase
    */
   public $method=null;
   
+  /**
+   * Initialize the annotation.
+   */
   public function initAnnotation($properties)
   {
     $this->_map($properties, array('type', 'method'));
@@ -35,7 +38,9 @@ class ValidateAnnotation extends ValidationAnnotationBase
     parent::initAnnotation($properties);
     
     if (!isset($this->type))
+    {
       throw new AnnotationException('type property not set');
+    }
   }
   
   /**
@@ -44,8 +49,12 @@ class ValidateAnnotation extends ValidationAnnotationBase
   public function getCallback()
   {
     if ($this->method!==null)
+    {
       return array($this->type, $this->method);
+    }
     else
+    {
       return $this->type;
+    }
   }
 }

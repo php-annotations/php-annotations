@@ -15,16 +15,29 @@ namespace Annotation\Lib;
 
 /**
  * Indicates whether a property should be user-editable or not.
+ *
+ * @usage('property'=>true, 'inherited'=>true)
  */
 class EditableAnnotation extends Annotation implements IDataAnnotation
 {
   /**
-   * @var $allow boolean Indicates whether or not a property is editable.
+   * @var bool Indicates whether or not a property is editable.
    */
   public $allow=false;
   
   /**
-   * @var $first boolean Inidates whether or not a property is editable on a new entity.
+   * @var bool Indicates whether or not a property is editable on a new instance.
+   *           (this value only has meaning when $allow is false.)
    */
   public $first=false;
+  
+  /**
+   * Initialize the annotation.
+   */
+  public function initAnnotation($properties)
+  {
+    $this->_map($properties, array('allow', 'first'));
+    
+    parent::initAnnotation($properties);
+  }
 }

@@ -56,9 +56,13 @@ class VarAnnotation extends Annotation implements IAnnotationParser
   public static function parseAnnotation($value)
   {
     $parts = explode(' ', trim($value), 2);
+    
     return array('type' => array_shift($parts));
   }
   
+  /**
+   * Initialize the annotation.
+   */
   public function initAnnotation($properties)
   {
     $this->_map($properties, array('type'));
@@ -66,7 +70,9 @@ class VarAnnotation extends Annotation implements IAnnotationParser
     parent::initAnnotation($properties);
     
     if (!isset($this->type))
+    {
       throw new AnnotationException('VarAnnotation requires a type property');
+    }
     
     $this->type = strtolower($this->type);
   }

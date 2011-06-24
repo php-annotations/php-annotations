@@ -16,5 +16,5 @@ namespace Annotation\Lib;
 /**
  * Defines a magic/virtual property, it's type and visibility
  */
-class Property_writeAnnotation extends PropertyAnnotation
+class PropertyWriteAnnotation extends PropertyAnnotation
 {}

@@ -16,17 +16,29 @@ namespace Annotation\Lib;
 use Annotation\Annotation;
 
 /**
- * Defines various display-related metadata.
+ * Defines display-related metadata.
+ *
+ * @usage('class'=>true, 'property'=>true, 'inherited'=>true)
  */
 class DisplayAnnotation extends Annotation
 {
   /**
-   * @var $group string A group name - for use with helpers that render multiple fields as a group.
+   * @var string A group name - for use with helpers that render multiple fields as a group.
    */
   public $group;
   
   /**
-   * @var $order integer Order index - for use with helpers that render multiple fields. Fields are sorted in ascending order.
+   * @var integer Order index - for use with helpers that render multiple fields. Fields are sorted in ascending order.
    */
   public $order;
+  
+  /**
+   * Initialize the annotation.
+   */
+  public function initAnnotation($properties)
+  {
+    $this->_map($properties, array('order'));
+    
+    parent::initAnnotation($properties);
+  }
 }

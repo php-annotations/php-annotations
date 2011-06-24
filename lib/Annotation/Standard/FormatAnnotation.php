@@ -34,4 +34,19 @@ class FormatAnnotation extends Annotation
    * This callback will be invoked with $format as the first argument, and the property value as the second argument.
    */
   public $callback = 'sprintf';
+  
+  /**
+   * Initialize the annotation.
+   */
+  public function initAnnotation($properties)
+  {
+    $this->_map($properties, array('format'));
+    
+    parent::initAnnotation($properties);
+    
+    if (!isset($this->format))
+    {
+      throw new AnnotationException('FormatAnnotation requires a format property');
+    }
+  }
 }

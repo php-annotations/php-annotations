@@ -14,12 +14,15 @@
 namespace Annotation\Lib;
 
 /**
- * Specifies validation against a fixed enumeration of allowed values.
+ * Specifies validation of a property value against a fixed
+ * enumeration of allowed values.
+ *
+ * @usage('property'=>true, 'inherited'=>true)
  */
 class EnumAnnotation extends ValidationAnnotationBase
 {
   /**
-   * @var array A list of acceptable values, typically in key=>value format.
+   * @var array A list of acceptable values in key => value format.
    */
   public $values;
   
@@ -28,6 +31,9 @@ class EnumAnnotation extends ValidationAnnotationBase
    */
   public $strict=false;
   
+  /**
+   * Initialize the annotation.
+   */
   public function initAnnotation($properties)
   {
     $this->_map($properties, array('values'));
@@ -35,6 +41,8 @@ class EnumAnnotation extends ValidationAnnotationBase
     parent::initAnnotation($properties);
     
     if (!isset($this->values))
+    {
       throw new AnnotationException('EnumAnnotation requires a list of possible values');
+    }
   }
 }

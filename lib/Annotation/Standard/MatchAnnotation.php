@@ -23,6 +23,9 @@ class MatchAnnotation extends ValidationAnnotationBase
    */
   public $pattern;
   
+  /**
+   * Initialize the annotation.
+   */
   public function initAnnotation($properties)
   {
     $this->_map($properties, array('pattern'));
@@ -30,6 +33,8 @@ class MatchAnnotation extends ValidationAnnotationBase
     parent::initAnnotation($properties);
     
     if (!isset($this->pattern))
+    {
       throw new AnnotationException('PatternAnnotation requires a pattern property');
+    }
   }
 }

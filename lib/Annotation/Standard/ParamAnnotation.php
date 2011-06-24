@@ -29,6 +29,9 @@ class ParamAnnotation extends Annotation implements IAnnotationParser
     return array();
   }
   
+  /**
+   * Initialize the annotation.
+   */
   public function initAnnotation($properties)
   {}
 }

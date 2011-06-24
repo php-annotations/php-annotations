@@ -14,9 +14,29 @@
 namespace Annotation\Lib;
 
 /**
- * Specifies the name of a view to use for rendering an input on a form.
+ * Specifies the name of a view to use for rendering an input (form element)
+ * for a class or property.
+ *
+ * When rendering forms/widgets/inputs, if an EditorAnnotation is present, it
+ * takes precence over a ViewAnnotation - otherwise, the ViewAnnotation may be
+ * used to establish the name of a view to use for rendering an input, too.
+ *
+ * @usage('class'=>true, 'property'=>true, 'inherited'=>true)
  */
 class EditorAnnotation extends Annotation
 {
+  /**
+   * @var string The name of the view to use when editing a class or property.
+   */
   public $name;
+  
+  /**
+   * Initialize the annotation.
+   */
+  public function initAnnotation($properties)
+  {
+    $this->_map($properties, array('name'));
+    
+    parent::initAnnotation($properties);
+  }
 }
