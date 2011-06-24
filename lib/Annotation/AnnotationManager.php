@@ -299,6 +299,10 @@ class AnnotationManager
           $annotations[] = $annotation;
         }
         
+        /*
+        
+        // This feature has been disabled in the 1.x branch of this library
+        
         if ($member === 'class')
         {
           $offset = 0;
@@ -319,6 +323,8 @@ class AnnotationManager
             }
           }
         }
+        
+        */
         
         $this->annotations[$key] = array_merge(
           $this->annotations[$key],

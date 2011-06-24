@@ -11,16 +11,18 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation;
+// The delegation feature has been disabled in the 1.x branch of this library.
 
-/**
- * This interface enables an Annotation to delegate preceding Annotations to
- * another (virtual or "magic") member, e.g. another method or property.
- */
-interface IAnnotationDelegate
-{
-  /**
-   * @return string The member name to delegate to, e.g. "$property" or "methodName".
-   */
-  public function delegateAnnotation();
-}
+// namespace Annotation;
+// 
+// /**
+//  * This interface enables an Annotation to delegate preceding Annotations to
+//  * another (virtual or "magic") member, e.g. another method or property.
+//  */
+// interface IAnnotationDelegate
+// {
+//   /**
+//    * @return string The member name to delegate to, e.g. "$property" or "methodName".
+//    */
+//   public function delegateAnnotation();
+// }

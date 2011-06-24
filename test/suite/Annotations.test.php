@@ -216,6 +216,10 @@ class AnnotationsTest extends xTest
       $this->pass();
   }
   
+  /*
+  
+  // The delegation feature has been disabled in the 1.x branch of this library.
+  
   protected function testCanDelegateAnnotations()
   {
     $anns = Annotations::ofProperty('Test', 'foo');
@@ -240,6 +244,8 @@ class AnnotationsTest extends xTest
     
     $this->pass('delegation tests passed');
   }
+  
+  */
   
   protected function testCanHandleEdgeCaseInParser()
   {

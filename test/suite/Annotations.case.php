@@ -6,7 +6,6 @@
 
 use Annotation\Annotation;
 use Annotation\IAnnotationParser;
-use Annotation\IAnnotationDelegate;
 
 /**
  * @usage('class'=>true, 'property'=>true, 'method'=>true, 'inherited'=>true, 'multiple'=>true)
@@ -34,24 +33,6 @@ class DocAnnotation extends Annotation implements IAnnotationParser
   public static function parseAnnotation($value)
   {
     return array('value' => intval($value));
-  }
-}
-
-/**
- * @usage('class'=>true, 'multiple'=>true)
- */
-class TestDelegateAnnotation extends Annotation implements IAnnotationDelegate
-{
-  public $name;
-  
-  public function initAnnotation($params)
-  {
-    $this->_map($params, array('name'));
-  }
-  
-  public function delegateAnnotation()
-  {
-    return '$'.$this->name;
   }
 }
 
@@ -132,12 +113,6 @@ class TestBase
 
 /**
  * A sample class with NoteAttributes applied to the source code:
- *
- * @Note('abc')
- * @TestDelegate('foo')
- *
- * @Note('123')
- * @TestDelegate('bar')
  *
  * @Note(
  *   "Applied to the Test class (a)"
