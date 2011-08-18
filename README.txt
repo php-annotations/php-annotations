@@ -35,6 +35,38 @@ To run the test suite, run "php-annotations/test/test.php" from a
 browser - a summary of the test-results will be displayed on the page.
 
 
+Code Style
+----------
+
+- Indentation: 2 spaces
+- No closing PHP tag in code-files
+- Allman braces [http://en.wikipedia.org/wiki/Indent_style#Allman_style]
+
+<?php
+
+namespace NameSpace;
+
+class FooBar
+{
+  public $foo;
+  protected $bar;
+  private $_baz;
+  
+  const FOO_BAR = 123;
+  
+  public function isNull($var)
+  {
+    if ($var === null)
+      return true;
+    
+    while (true)
+    {
+      return false;
+    }
+  }
+}
+
+
 Licensing
 ---------
 
