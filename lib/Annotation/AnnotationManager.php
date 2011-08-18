@@ -451,10 +451,10 @@ class AnnotationManager
    */
   public function getClassAnnotations($class, $type=null)
   {
-    if (is_object($class))
-      $class = get_class($class);
-    else if ($class instanceof ReflectionClass)
+    if ($class instanceof ReflectionClass)
       $class = $class->getName();
+    else if (is_object($class))
+      $class = get_class($class);
     
     if (!class_exists($class, $this->autoload))
       throw new AnnotationException(__CLASS__."::getClassAnnotations() : undefined class {$class}");
@@ -476,15 +476,15 @@ class AnnotationManager
    */
   public function getMethodAnnotations($class, $method=null, $type=null)
   {
-    if (is_object($class))
-      $class = get_class($class);
-    else if ($class instanceof ReflectionClass)
+    if ($class instanceof ReflectionClass)
       $class = $class->getName();
     else if ($class instanceof ReflectionMethod)
     {
       $method = $class->name;
       $class = $class->class;
     }
+    else if (is_object($class))
+      $class = get_class($class);
     
     if (!class_exists($class, $this->autoload))
       throw new AnnotationException(__CLASS__."::getMethodAnnotations() : undefined class {$class}");
@@ -509,15 +509,15 @@ class AnnotationManager
    */
   public function getPropertyAnnotations($class, $property=null, $type=null)
   {
-    if (is_object($class))
-      $class = get_class($class);
-    else if ($class instanceof ReflectionClass)
+    if ($class instanceof ReflectionClass)
       $class = $class->getName();
     else if ($class instanceof ReflectionProperty)
     {
       $property = $class->name;
       $class = $class->class;
     }
+    else if (is_object($class))
+      $class = get_class($class);
     
     if (!class_exists($class, $this->autoload))
       throw new AnnotationException(__CLASS__."::getPropertyAnnotations() : undefined class {$class}");
