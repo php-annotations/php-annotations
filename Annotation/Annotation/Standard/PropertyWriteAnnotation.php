@@ -11,11 +11,10 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation;
+namespace Mindplay\Annotation\Standard;
 
 /**
- * This interface is mandatory for all Annotations.
+ * Defines a magic/virtual property, it's type and visibility
  */
-interface IAnnotation {
-  public function initAnnotation($properties);
-}
+class PropertyWriteAnnotation extends PropertyAnnotation
+{}

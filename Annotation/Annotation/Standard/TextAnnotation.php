@@ -11,9 +11,9 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Standard;
+namespace Mindplay\Annotation\Standard;
 
-use Annotation\Annotation;
+use Mindplay\Annotation\Annotation;
 
 /**
  * Defines various text (labels, hints, etc.) to be displayed with the annotated property

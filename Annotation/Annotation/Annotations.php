@@ -11,7 +11,7 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation;
+namespace Mindplay\Annotation;
 
 /**
  * Thin, static class with shortcut methods for inspection of Annotations

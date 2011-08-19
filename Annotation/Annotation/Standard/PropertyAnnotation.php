@@ -11,10 +11,12 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Lib;
+namespace Mindplay\Annotation\Standard;
+
+use Mindplay\Annotation\Annotation;
 
 /**
- * Defines a magic/virtual property, it's type and visibility
+ * Defines a magic/virtual property and it's type
  */
-class PropertyWriteAnnotation extends PropertyAnnotation
+class PropertyAnnotation extends Annotation
 {}

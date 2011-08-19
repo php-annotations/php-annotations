@@ -11,9 +11,9 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Lib;
+namespace Mindplay\Annotation\Lib;
 
-use Annotation\Annotation;
+use Mindplay\Annotation\Annotation;
 
 /**
  * Specifies the name of a view to use to format a class or property for display.

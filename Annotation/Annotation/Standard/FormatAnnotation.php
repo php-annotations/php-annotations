@@ -11,10 +11,10 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Lib;
+namespace Mindplay\Annotation\Standard;
 
-use Annotation\Annotation;
-use Annotation\AnnotationException;
+use Mindplay\Annotation\Annotation;
+use Mindplay\Annotation\AnnotationException;
 
 /**
  * Specifies how to display or format a property value (for display-purposes).

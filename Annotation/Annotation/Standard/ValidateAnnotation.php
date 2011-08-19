@@ -11,10 +11,9 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Lib;
+namespace Mindplay\Annotation\Lib;
 
-use Annotation\Standard\ValidationAnnotationBase;
-use Annotation\AnnotationException;
+use Mindplay\Annotation\AnnotationException;
 
 /**
  * Specifies a custom validation callback method.

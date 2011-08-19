@@ -2,7 +2,7 @@
 
 namespace Sample;
 
-use Annotation\Annotation;
+use Mindplay\Annotation\Annotation;
 
 /**
  * @usage('class'=>true)

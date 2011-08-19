@@ -11,11 +11,11 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Standard;
+namespace Mindplay\Annotation\Standard;
 
-use Annotation\AnnotationException;
-use Annotation\IAnnotationParser;
-use Annotation\Annotation;
+use Mindplay\Annotation\AnnotationException;
+use Mindplay\Annotation\IAnnotationParser;
+use Mindplay\Annotation\Annotation;
 
 /**
  * Defines a method-parameter's type

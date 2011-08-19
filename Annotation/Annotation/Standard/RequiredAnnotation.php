@@ -11,12 +11,14 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Lib;
-
-use Annotation\Annotation;
+namespace Mindplay\Annotation\Standard;
 
 /**
- * Defines a magic/virtual method
+ * Specifies validation requiring a non-empty value.
+ * 
+ * @usage('property'=>true, 'inherited'=>true)
  */
-class MethodAnnotation extends Annotation
-{}
+class RequiredAnnotation extends ValidationAnnotationBase
+{
+  // @todo add flags indicating what "empty" means
+}

@@ -3,10 +3,10 @@
 require_once 'suite/Annotations.case.php';
 require_once 'suite/Annotations.Sample.case.php';
 
-use Annotation\AnnotationParser;
-use Annotation\AnnotationManager;
-use Annotation\AnnotationException;
-use Annotation\Annotations;
+use Mindplay\Annotation\AnnotationParser;
+use Mindplay\Annotation\AnnotationManager;
+use Mindplay\Annotation\AnnotationException;
+use Mindplay\Annotation\Annotations;
 
 /**
  * This class implements tests for core annotations

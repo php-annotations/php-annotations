@@ -11,9 +11,9 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Lib;
+namespace Mindplay\Annotation\Standard;
 
-use Annotation\Annotation;
+use Mindplay\Annotation\Annotation;
 
 /**
  * Specifies the name of a view to use for rendering an input (form element)

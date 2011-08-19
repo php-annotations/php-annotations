@@ -11,10 +11,9 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Lib;
+namespace Mindplay\Annotation\Standard;
 
-use Annotation\Standard\ValidationAnnotationBase;
-use Annotation\AnnotationException;
+use Mindplay\Annotation\AnnotationException;
 
 /**
  * Specifies validation of a property value against a fixed

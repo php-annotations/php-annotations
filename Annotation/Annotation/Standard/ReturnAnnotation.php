@@ -11,11 +11,11 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Lib;
+namespace Mindplay\Annotation\Lib;
 
-use Annotation\AnnotationException;
-use Annotation\IAnnotationParser;
-use Annotation\Annotation;
+use Mindplay\Annotation\AnnotationException;
+use Mindplay\Annotation\IAnnotationParser;
+use Mindplay\Annotation\Annotation;
 
 /**
  * Defines the return-type of a function or method

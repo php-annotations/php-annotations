@@ -11,24 +11,25 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Standard;
+namespace Mindplay\Annotation\Standard;
 
-use Annotation\AnnotationException;
+use Mindplay\Annotation\AnnotationException;
+use Mindplay\Annotation\ValidationAnnotationBase;
 
 /**
- * Specifies validation of a string, requiring a minimum and/or maximum length.
+ * Specifies validation against a minimum and/or maximum numeric value.
  *
  * @usage('property'=>true, 'inherited'=>true)
  */
-class LengthAnnotation extends ValidationAnnotationBase
+class RangeAnnotation extends ValidationAnnotationBase
 {
   /**
-   * @var mixed Minimum string length (or null, if no minimum)
+   * @var mixed $min Minimum numeric value (integer or floating point)
    */
   public $min=null;
   
   /**
-   * @var mixed Maximum string length (or null, if no maximum)
+   * @var mixed $max Maximum numeric value (integer or floating point)
    */
   public $max=null;
   
@@ -55,19 +56,19 @@ class LengthAnnotation extends ValidationAnnotationBase
     
     parent::initAnnotation($properties);
     
-    if ($this->min!==null && !is_int($this->min))
+    if ($this->min!==null && !is_int($this->min) && !is_float($this->min))
     {
-      throw new AnnotationException('LengthAnnotation requires an (integer) min property');
+      throw new AnnotationException('RangeAnnotation requires a numeric (float or int) min property');
     }
     
-    if ($this->max!==null && !is_int($this->max))
+    if ($this->max!==null && !is_int($this->max) && !is_float($this->max))
     {
-      throw new AnnotationException('LengthAnnotation requires an (integer) max property');
+      throw new AnnotationException('RangeAnnotation requires a numeric (float or int) max property');
     }
     
     if ($this->min===null && $this->max===null)
     {
-      throw new AnnotationException('LengthAnnotation requires a min and/or max property');
+      throw new AnnotationException('RangeAnnotation requires a min and/or max property');
     }
   }
 }

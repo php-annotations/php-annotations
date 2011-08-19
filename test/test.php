@@ -3,38 +3,45 @@
 ## Configure PHP include paths
 
 set_include_path(
-  dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'lib'
-  .PATH_SEPARATOR . dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'test' . DIRECTORY_SEPARATOR . 'lib'
-  .PATH_SEPARATOR . dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'annotations'
+  dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'test' . DIRECTORY_SEPARATOR . 'lib'
 );
 
 ## Configure a simple auto-loader
 
-spl_autoload_register(
-  function($name)
+class Loader
+{
+  public $paths = array();
+  
+  public function load($name)
   {
-    $path = str_replace('\\', DIRECTORY_SEPARATOR, ltrim($name, '\\')).'.php';
+    $names = explode('\\', $name, 2);
     
-    foreach (explode(PATH_SEPARATOR, get_include_path()) as $dir)
+    if (count($names) === 2)
     {
-      $file = $dir.DIRECTORY_SEPARATOR.$path;
-      if (file_exists($file))
-        return require $file;
+      if (!isset($this->paths[$names[0]]))
+        throw new Exception('undefined namespace: ' . $names[0]);
+      
+      $path = $this->paths[$names[0]]
+        . DIRECTORY_SEPARATOR
+        . str_replace('\\', DIRECTORY_SEPARATOR, $names[1]);
+    }
+    else
+    {
+      $path = $name;
     }
     
-    echo "File not found:\n";
-    foreach (explode(PATH_SEPARATOR, get_include_path()) as $dir)
-    {
-      $file = $dir.DIRECTORY_SEPARATOR.$path;
-      echo "- {$file}\n";
-    }
+    $path .= '.php';
     
-    throw new Exception("Error loading '{$path}'");
-  },
-  true, // throw exceptions on error
-  true  // prepend autoloader
-);
+    if (!include($path))
+      throw new Exception('class ' . $name . ' not found: ' . $path);
+  }
+}
 
-$runner = new xTestRunner(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'lib');
+$loader = new Loader;
+$loader->paths['Mindplay'] = dirname(dirname(__FILE__));
+
+spl_autoload_register(array($loader, 'load'), true, true);
+
+$runner = new xTestRunner(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Annotation');
 
 $runner->run(dirname(__FILE__).DIRECTORY_SEPARATOR.'suite'.DIRECTORY_SEPARATOR.'*.test.php');

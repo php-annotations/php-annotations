@@ -11,11 +11,11 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Standard;
+namespace Mindplay\Annotation\Standard;
 
-use Annotation\Annotation;
-use Annotation\AnnotationException;
-use Annotation\IAnnotationParser;
+use Mindplay\Annotation\Annotation;
+use Mindplay\Annotation\AnnotationException;
+use Mindplay\Annotation\IAnnotationParser;
 
 /**
  * Specifies the required data-type of a property.

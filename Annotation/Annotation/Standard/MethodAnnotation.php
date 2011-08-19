@@ -11,17 +11,12 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Standard;
+namespace Mindplay\Annotation\Standard;
 
-use Annotation\Annotation;
+use Mindplay\Annotation\Annotation;
 
 /**
- * Abstact base class for validation annotations.
+ * Defines a magic/virtual method
  */
-abstract class ValidationAnnotationBase extends Annotation
-{
-  /**
-   * @var string The error-message to display on validation failure.
-   */
-  public $message;
-}
+class MethodAnnotation extends Annotation
+{}

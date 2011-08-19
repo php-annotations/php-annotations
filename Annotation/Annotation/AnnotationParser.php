@@ -11,7 +11,7 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation;
+namespace Mindplay\Annotation;
 
 /**
  * This class implements a parser for source code annotations

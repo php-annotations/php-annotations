@@ -11,14 +11,14 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation\Standard;
+namespace Mindplay\Annotation;
+
+use \Exception;
 
 /**
- * Specifies validation requiring a non-empty value.
- * 
- * @usage('property'=>true, 'inherited'=>true)
+ * This exception is thrown by various classes in the annotations package,
+ * making it possible to catch annotation-specific exceptions in user code.
  */
-class RequiredAnnotation extends ValidationAnnotationBase
+class AnnotationException extends Exception
 {
-  // @todo add flags indicating what "empty" means
 }

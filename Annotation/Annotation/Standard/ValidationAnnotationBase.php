@@ -11,14 +11,17 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Annotation;
+namespace Mindplay\Annotation\Standard;
 
-use \Exception;
+use Mindplay\Annotation\Annotation;
 
 /**
- * This exception is thrown by various classes in the annotations package,
- * making it possible to catch annotation-specific exceptions in user code.
+ * Abstact base class for validation annotations.
  */
-class AnnotationException extends Exception
+abstract class ValidationAnnotationBase extends Annotation
 {
+  /**
+   * @var string The error-message to display on validation failure.
+   */
+  public $message;
 }
