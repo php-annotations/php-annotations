@@ -15,10 +15,15 @@ class AnnotationsTest extends xTest
 {
   public function __construct()
   {
+    $cachePath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'runtime';
+    
     Annotations::$config = array(
       'autoload' => false, // not using an autoloader during unit tests
-      'cachePath' => dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'runtime', // turn caching on (or else AnnotationManager will generate E_NOTICE)
+      'cachePath' => $cachePath, // turn caching on (or else AnnotationManager will generate E_NOTICE)
     );
+    
+    if (!is_writable($cachePath))
+      die('cache path is not writable: ' . $cachePath);
     
     // manually wipe out the cache:
     foreach (glob(Annotations::getManager()->cachePath.DIRECTORY_SEPARATOR.'*.annotations.php') as $path)
