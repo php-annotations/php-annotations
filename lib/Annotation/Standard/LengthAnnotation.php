@@ -13,6 +13,8 @@
 
 namespace Annotation\Standard;
 
+use Annotation\AnnotationException;
+
 /**
  * Specifies validation of a string, requiring a minimum and/or maximum length.
  *

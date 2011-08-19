@@ -13,6 +13,10 @@
 
 namespace Annotation\Lib;
 
+use Annotation\AnnotationException;
+use Annotation\IAnnotationParser;
+use Annotation\Annotation;
+
 /**
  * Defines the return-type of a function or method
  *

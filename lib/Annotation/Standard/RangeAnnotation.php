@@ -13,6 +13,8 @@
 
 namespace Annotation\Standard;
 
+use Annotation\AnnotationException;
+
 /**
  * Specifies validation against a minimum and/or maximum numeric value.
  *

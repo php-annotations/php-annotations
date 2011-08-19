@@ -13,6 +13,9 @@
 
 namespace Annotation\Lib;
 
+use Annotation\Annotation;
+use Annotation\AnnotationException;
+
 /**
  * Specifies how to display or format a property value (for display-purposes).
  */

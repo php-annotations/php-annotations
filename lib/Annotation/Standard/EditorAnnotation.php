@@ -13,6 +13,8 @@
 
 namespace Annotation\Lib;
 
+use Annotation\Annotation;
+
 /**
  * Specifies the name of a view to use for rendering an input (form element)
  * for a class or property.

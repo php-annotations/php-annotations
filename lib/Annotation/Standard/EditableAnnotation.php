@@ -13,6 +13,8 @@
 
 namespace Annotation\Lib;
 
+use Annotation\Annotation;
+
 /**
  * Indicates whether a property should be user-editable or not.
  *
@@ -37,7 +39,7 @@ class EditableAnnotation extends Annotation
   public function initAnnotation($properties)
   {
     $this->_map($properties, array('allow', 'first'));
-
+    
     parent::initAnnotation($properties);
   }
 }

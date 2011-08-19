@@ -13,9 +13,9 @@
 
 namespace Annotation\Standard;
 
-use Mindplay\Annotation\Core\AnnotationException;
-use Mindplay\Annotation\Core\IAnnotationParser;
-use Mindplay\Annotation\Core\Annotation;
+use Annotation\AnnotationException;
+use Annotation\IAnnotationParser;
+use Annotation\Annotation;
 
 /**
  * Defines a method-parameter's type
