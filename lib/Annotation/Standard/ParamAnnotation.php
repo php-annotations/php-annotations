@@ -13,25 +13,52 @@
 
 namespace Annotation\Standard;
 
-use Annotation\Annotation;
+use Annotation\AnnotationException;
 use Annotation\IAnnotationParser;
+use Annotation\Annotation;
 
 /**
  * Defines a method-parameter's type
+ *
+ * @usage('method'=>true, 'inherited'=>true, 'multiple'=>true)
  */
 class ParamAnnotation extends Annotation implements IAnnotationParser
 {
   /**
-   * Parse the standard PHP-DOC @var annotation
+   * @var string
+   */
+  public $type;
+
+  /**
+   * @var string
+   */
+  public $name;
+
+  /**
+   * Parse the standard PHP-DOC @param annotation
    */
   public static function parseAnnotation($value)
   {
-    return array();
+    $parts = explode(' ', trim($value), 3);
+
+    return array('type' => $parts[0], 'name' => substr($parts[1], 1));
   }
   
   /**
    * Initialize the annotation.
    */
   public function initAnnotation($properties)
-  {}
+  {
+    $this->_map($properties, array('type', 'name'));
+    
+    parent::initAnnotation($properties);
+    
+    if (!isset($this->type)) {
+      throw new AnnotationException('ParamAnnotation requires a type property');
+    }
+    
+    if (!isset($this->name)) {
+      throw new AnnotationException('ParamAnnotation requires a name property');
+    }
+  }
 }

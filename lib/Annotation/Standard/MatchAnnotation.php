@@ -13,6 +13,9 @@
 
 namespace Annotation\Lib;
 
+use Annotation\Standard\ValidationAnnotationBase;
+use Annotation\AnnotationException;
+
 /**
  * Specifies validation of a string against a regular expression pattern.
  */

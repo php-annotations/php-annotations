@@ -24,5 +24,5 @@ interface IAnnotationParser
    * @param string $value The raw string value of the Annotation.
    * @return array An array of Annotation properties.
    */
-  static function parseAnnotation($value);
+  public static function parseAnnotation($value);
 }

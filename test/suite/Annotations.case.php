@@ -6,6 +6,7 @@
 
 use Annotation\Annotation;
 use Annotation\IAnnotationParser;
+use Annotation\AnnotationException;
 
 /**
  * @usage('class'=>true, 'property'=>true, 'method'=>true, 'inherited'=>true, 'multiple'=>true)

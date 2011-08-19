@@ -13,6 +13,9 @@
 
 namespace Annotation\Lib;
 
+use Annotation\Standard\ValidationAnnotationBase;
+use Annotation\AnnotationException;
+
 /**
  * Specifies validation of a property value against a fixed
  * enumeration of allowed values.

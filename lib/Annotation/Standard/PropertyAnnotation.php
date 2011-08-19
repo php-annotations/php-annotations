@@ -13,6 +13,8 @@
 
 namespace Annotation\Lib;
 
+use Annotation\Annotation;
+
 /**
  * Defines a magic/virtual property and it's type
  */

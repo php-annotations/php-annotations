@@ -13,6 +13,8 @@
 
 namespace Annotation\Lib;
 
+use Annotation\Annotation;
+
 /**
  * Specifies the name of a view to use to format a class or property for display.
  *
