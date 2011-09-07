@@ -14,8 +14,6 @@ $loader = new Loader;
 $loader->paths['Mindplay'] = dirname(dirname(__FILE__));;
 $loader->paths['Sample'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'suite';
 
-spl_autoload_register(array($loader, 'load'), true, true);
-
 $runner = new xTestRunner(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Annotation');
 
 $runner->run(dirname(__FILE__).DIRECTORY_SEPARATOR.'suite'.DIRECTORY_SEPARATOR.'*.test.php');

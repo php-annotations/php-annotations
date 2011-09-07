@@ -5,6 +5,11 @@
  */
 class Loader
 {
+  public function __construct()
+  {
+    spl_autoload_register(array($this, 'load'), true, true);
+  }
+  
   public $paths = array();
   
   public function load($name)
