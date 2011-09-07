@@ -11,7 +11,7 @@ set_include_path(
 require 'lib/Loader.php';
 
 $loader = new Loader;
-$loader->paths['Mindplay'] = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Annotation';
+$loader->paths['Mindplay'] = dirname(dirname(__FILE__));;
 $loader->paths['Sample'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'suite';
 
 spl_autoload_register(array($loader, 'load'), true, true);
