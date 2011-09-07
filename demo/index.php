@@ -4,21 +4,10 @@ use Annotation\Annotations;
 
 ## Configure a simple auto-loader
 
-define('LIB_PATH', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'lib');
+require 'lib/Loader.php';
 
-spl_autoload_register(
-  function($name)
-  {
-    $path = LIB_PATH . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, ltrim($name, '\\')).'.php';
-    
-    if (!file_exists($path))
-      throw new Exception("unable to load {$name} from {$path}");
-    
-    require $path;
-  },
-  true, // throw exceptions on error
-  true  // prepend autoloader
-);
+$loader = new Loader;
+$loader->paths['Mindplay'] = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'lib';
 
 ## Configure the cache-path. The static `Annotations` class will configure any public
 ## properties of `AnnotationManager` when it creates it. The `AnnotationManager::$cachePath`

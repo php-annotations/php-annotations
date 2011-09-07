@@ -298,6 +298,9 @@ class AnnotationParser
       if ($type === false)
         continue;
       
+      if (!class_exists($type, $this->autoload))
+        throw new AnnotationException(__CLASS__."::findAnnotations('$str') : the annotation type {$type} does not exist");
+      
       $value = $match[1];
       
       $quotedType = trim(var_export($type,true));
@@ -315,8 +318,8 @@ class AnnotationParser
       else
       {
         # PHP-DOC-style annotation:
-        if (!array_key_exists('Annotation\IAnnotationParser', class_implements($type, $this->autoload)))
-          throw new AnnotationException(__CLASS__."::findAnnotations() : the {$type} Annotation does not support PHP-DOC style syntax (because it does not implement the Annotation\\IAnnotationParser interface)");
+        if (!array_key_exists(__NAMESPACE__ . '\IAnnotationParser', class_implements($type, $this->autoload)))
+          throw new AnnotationException(__CLASS__."::findAnnotations() : the {$type} Annotation does not support PHP-DOC style syntax (because it does not implement the ".__NAMESPACE__."\\IAnnotationParser interface)");
         
         $properties = $type::parseAnnotation($value);
         

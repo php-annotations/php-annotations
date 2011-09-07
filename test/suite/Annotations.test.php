@@ -18,7 +18,6 @@ class AnnotationsTest extends xTest
     $cachePath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'runtime';
     
     Annotations::$config = array(
-      'autoload' => false, // not using an autoloader during unit tests
       'cachePath' => $cachePath, // turn caching on (or else AnnotationManager will generate E_NOTICE)
     );
     
@@ -28,6 +27,10 @@ class AnnotationsTest extends xTest
     // manually wipe out the cache:
     foreach (glob(Annotations::getManager()->cachePath.DIRECTORY_SEPARATOR.'*.annotations.php') as $path)
       unlink($path);
+    
+    // disable some annotations not used during testing:
+    Annotations::getManager()->registry['var'] = false;
+    Annotations::getManager()->registry['param'] = false;
   }
   
   protected function testCanResolveAnnotationNames()
@@ -79,7 +82,7 @@ class AnnotationsTest extends xTest
     $this->check($test['Sample'][1][0] === 'NoteAnnotation', 'second annotation is a NoteAnnotation');
     $this->check($test['Sample'][1][1] === 'abc', 'value of second annotation is "abc"');
     
-    $this->check($test['Sample'][2][0] === 'Annotation\Standard\RequiredAnnotation', 'third annotation is a RequiredAnnotation');
+    $this->check($test['Sample'][2][0] === 'Mindplay\Annotation\Standard\RequiredAnnotation', 'third annotation is a RequiredAnnotation');
     
     $this->check($test['Sample'][3][0] === 'NoteAnnotation', 'last annotation is a NoteAnnotation');
     $this->check($test['Sample'][3][1] === 'xyz', 'value of last annotation is "xyz"');
@@ -277,7 +280,6 @@ class AnnotationsTest extends xTest
   {
     $manager = new AnnotationManager();
     $manager->namespace = 'Sample';
-    $manager->autoload = false;
     $manager->cachePath = Annotations::getManager()->cachePath;
     $manager->cacheSeed = 'abc123';
     
@@ -290,7 +292,6 @@ class AnnotationsTest extends xTest
   {
     $manager = new AnnotationManager();
     $manager->namespace = 'Sample';
-    $manager->autoload = false;
     $manager->cachePath = Annotations::getManager()->cachePath;
     $manager->cacheSeed = 'xyz';
     
@@ -305,7 +306,6 @@ class AnnotationsTest extends xTest
   {
     $manager = new AnnotationManager();
     $manager->namespace = 'Sample';
-    $manager->autoload = false;
     $manager->cachePath = Annotations::getManager()->cachePath;
     $manager->cacheSeed = '12345678';
     

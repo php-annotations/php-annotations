@@ -14,28 +14,3 @@ class SampleAnnotation extends Annotation
 
 class DefaultSampleAnnotation extends SampleAnnotation
 {}
-
-/**
- * @Sample\Sample
- */
-class SampleClass
-{
-}
-
-/**
- * @DefaultSample
- */
-class AnnotationInDefaultNamespace
-{}
-
-/**
- * @ignored
- */
-class IgnoreMe
-{}
-
-/**
- * @aliased
- */
-class AliasMe
-{}

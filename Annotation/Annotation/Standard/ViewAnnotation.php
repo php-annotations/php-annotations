@@ -11,7 +11,7 @@
  * <http://code.google.com/p/php-annotations>
  */
 
-namespace Mindplay\Annotation\Lib;
+namespace Mindplay\Annotation\Standard;
 
 use Mindplay\Annotation\Annotation;
 
