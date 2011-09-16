@@ -13,7 +13,7 @@
 
 namespace Mindplay\Annotation\Standard;
 
-use Annotation\AnnotationException;
+use Mindplay\Annotation\AnnotationException;
 
 /**
  * Specifies validation of a string, requiring a minimum and/or maximum length.
