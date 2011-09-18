@@ -14,7 +14,6 @@
 namespace Mindplay\Annotation\Standard;
 
 use Mindplay\Annotation\AnnotationException;
-use Mindplay\Annotation\ValidationAnnotationBase;
 
 /**
  * Specifies validation against a minimum and/or maximum numeric value.
