@@ -1,5 +1,5 @@
 <?php
-
+use Mindplay\Annotation\Cache\ApcCache;
 use Mindplay\Annotation\Annotations;
 
 ## Configure a simple auto-loader
@@ -14,7 +14,7 @@ $loader->paths['Mindplay'] = dirname(__DIR__);
 ## property is a path to a writable folder, where the `AnnotationManager` caches parsed
 ## annotations from individual source code files.
 
-Annotations::$config['cachePath'] = __DIR__ . '/runtime';
+Annotations::$config['cache'] = new ApcCache();
 
 ## For this example, we're going to generate a simple form that allows us to edit a `Person`
 ## object. We'll define a few public properties and annotate them with some useful metadata,

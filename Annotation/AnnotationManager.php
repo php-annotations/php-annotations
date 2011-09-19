@@ -13,6 +13,8 @@
 
 namespace Mindplay\Annotation;
 
+use \Mindplay\Annotation\Cache\CacheStorageNotConfiguredException;
+use \Mindplay\Annotation\Cache\FileCache;
 use \ReflectionClass;
 use \ReflectionMethod;
 use \ReflectionProperty;
@@ -23,25 +25,10 @@ use \ReflectionProperty;
 class AnnotationManager
 {
   /**
-   * @var int The file mode used when creating cache files
-   */
-  public $fileMode = 0777;
-  
-  /**
    * @var boolean Enable PHP autoloader when searching for annotation classes (defaults to true)
    */
   public $autoload = true;
-  
-  /**
-   * @var string Absolute path to a folder where cache files may be saved
-   */
-  public $cachePath = null;
-  
-  /**
-   * @var string Cache seed (can be used to disambiguate, if using multiple AnnotationManager instances with the same $cachePath)
-   */
-  public $cacheSeed = '';
-  
+   
   /**
    * @var string The class-name suffix for Annotation classes.
    */
@@ -51,6 +38,11 @@ class AnnotationManager
    * @var string The default namespace for annotations with no namespace qualifier.
    */
   public $namespace = '';
+
+  /**
+   * @var \Mindplay\Annotation\Cache\CacheStorage
+   */
+  public $cache;
   
   /**
    * @var array List of registered annotation aliases.
@@ -134,11 +126,6 @@ class AnnotationManager
   protected $usage = array();
   
   /**
-   * @var string The PHP opening tag (used when writing cache files)
-   */
-  const PHP_TAG = "<?php\n\n";
-  
-  /**
    * @var $_usageAnnotation UsageAnnotation The standard UsageAnnotation
    */
   protected $_usageAnnotation;
@@ -167,52 +154,49 @@ class AnnotationManager
     }
     return $this->parser;
   }
-  
-  /**
-   * @param string $path The full path to the source code file for which to calculate a cache path
-   * @return string The path to the annotation cache file for the given path
-   */
-  protected function getAnnotationCache($path)
-  {
-    return $this->cachePath.DIRECTORY_SEPARATOR.basename($path).'-'.sprintf('%x',crc32($path.$this->cacheSeed)).'.annotations.php';
-  }
-  
+
   /**
    * Retrieves all Annotation specifications for a given source code file.
    *
-   * @param string $path The full path to the source code file from which to retrieve Annotations
+   * @param string $class The class to retrieve the annotations
    * @return array Specifications for Annotations (arrays keyed by Class, Class::method or Class::$member)
    */
-  protected function getFileSpecs($path)
+  protected function getClassMetadata($class)
   {
+  	$reflection = new ReflectionClass($class);
+  	$path = $reflection->getFileName();
+  	
     if (!isset($this->specs[$path]))
     {
-      if (isset($this->specs[$path]))
-        return $this->specs[$path];
-      
-      if ($this->cachePath!==null)
-      {
-        $file = $this->getAnnotationCache($path);
-        
-        if (!file_exists($file) || filemtime($path)>filemtime($file))
-        {
-          $code = self::PHP_TAG.$this->getParser()->parseFile($path);
-          if (@file_put_contents($file, $code, LOCK_EX)==false || @chmod($file, $this->fileMode)==false)
-            throw new AnnotationException(__CLASS__.'::getFileSpecs() : error writing cache file '.$file);
-            
-          @chmod($file, $this->fileMode);
-        }
-        
-        $this->specs[$path] = include($file);
-      }
-      else
-      {
-        trigger_error(__CLASS__."::getFileSpecs() : AnnotationManager::\$cachePath is not configured", E_USER_NOTICE);
+      try {
+        $this->specs[$path] = $this->getFromCache($reflection, $path);
+      } catch (CacheStorageNotConfiguredException $e) {
+        trigger_error($e->getMessage(), E_USER_NOTICE);
         $this->specs[$path] = eval($this->getParser()->parseFile($path));
       }
     }
     
     return $this->specs[$path];
+  }
+
+  /**
+   * @param ReflectionClass $reflection
+   * @param string $filePath
+   * @return mixed
+   */
+  protected function getFromCache(ReflectionClass $reflection, $filePath)
+  {
+  	if (is_null($this->cache))
+  	  throw new CacheStorageNotConfiguredException(
+  	    __METHOD__ . " : AnnotationManager::\$cache is not configured"
+  	  );
+  	  
+  	  $cacheId = $this->cache->createId($reflection);
+  	  
+  	  if (!$this->cache->exists($cacheId) || filemtime($filePath) > $this->cache->getLastChangeTime($cacheId))
+  	    $this->cache->store($cacheId, $this->getParser()->parseFile($filePath));
+  	    
+  	  return $this->cache->get($cacheId);
   }
   
   /**
@@ -278,9 +262,7 @@ class AnnotationManager
       
       $this->initialized[$key] = true;
       
-      $reflection = new ReflectionClass($class);
-      $path = $reflection->getFileName();
-      $specs = $this->getFileSpecs($path);
+      $specs = $this->getClassMetadata($class);
       
       if (isset($specs[$key]))
       {
@@ -348,7 +330,7 @@ class AnnotationManager
    * @param array An array of IAnnotation objects to be validated.
    * @param string The type of member to validate against (e.g. "class", "property" or "method")
    */
-  protected function applyConstraints(&$annotations, $member)
+  protected function applyConstraints(array &$annotations, $member)
   {
     foreach ($annotations as $outer=>$annotation)
     {
