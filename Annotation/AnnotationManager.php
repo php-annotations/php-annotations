@@ -14,7 +14,6 @@
 namespace Mindplay\Annotation;
 
 use \Mindplay\Annotation\Cache\CacheStorageNotConfiguredException;
-use \Mindplay\Annotation\Cache\FileCache;
 use \ReflectionClass;
 use \ReflectionMethod;
 use \ReflectionProperty;
@@ -38,9 +37,9 @@ class AnnotationManager
    * @var string The default namespace for annotations with no namespace qualifier.
    */
   public $namespace = '';
-
+  
   /**
-   * @var \Mindplay\Annotation\Cache\CacheStorage
+   * @var \Mindplay\Annotation\Cache\IAnnotationCache
    */
   public $cache;
   
@@ -154,7 +153,7 @@ class AnnotationManager
     }
     return $this->parser;
   }
-
+  
   /**
    * Retrieves all Annotation specifications for a given source code file.
    *
@@ -163,9 +162,9 @@ class AnnotationManager
    */
   protected function getClassMetadata($class)
   {
-  	$reflection = new ReflectionClass($class);
-  	$path = $reflection->getFileName();
-  	
+    $reflection = new ReflectionClass($class);
+    $path = $reflection->getFileName();
+    
     if (!isset($this->specs[$path]))
     {
       try {
@@ -186,17 +185,17 @@ class AnnotationManager
    */
   protected function getFromCache(ReflectionClass $reflection, $filePath)
   {
-  	if (is_null($this->cache))
-  	  throw new CacheStorageNotConfiguredException(
-  	    __METHOD__ . " : AnnotationManager::\$cache is not configured"
-  	  );
-  	  
-  	  $cacheId = $this->cache->createId($reflection);
-  	  
-  	  if (!$this->cache->exists($cacheId) || filemtime($filePath) > $this->cache->getLastChangeTime($cacheId))
-  	    $this->cache->store($cacheId, $this->getParser()->parseFile($filePath));
-  	    
-  	  return $this->cache->get($cacheId);
+    if (is_null($this->cache))
+      throw new CacheStorageNotConfiguredException(
+        __METHOD__ . " : AnnotationManager::\$cache is not configured"
+      );
+    
+    $cacheId = $this->cache->createId($reflection);
+    
+    if (!$this->cache->exists($cacheId) || filemtime($filePath) > $this->cache->getLastChangeTime($cacheId))
+      $this->cache->store($cacheId, $this->getParser()->parseFile($filePath));
+    
+    return $this->cache->get($cacheId);
   }
   
   /**
