@@ -13,7 +13,7 @@
 
 namespace Mindplay\Annotation;
 
-use \Mindplay\Annotation\Cache\CacheStorageNotConfiguredException;
+use \Mindplay\Annotation\Cache\AnnotationCacheNotConfiguredException;
 use \ReflectionClass;
 use \ReflectionMethod;
 use \ReflectionProperty;
@@ -169,7 +169,7 @@ class AnnotationManager
     {
       try {
         $this->specs[$path] = $this->getFromCache($reflection, $path);
-      } catch (CacheStorageNotConfiguredException $e) {
+      } catch (AnnotationCacheNotConfiguredException $e) {
         trigger_error($e->getMessage(), E_USER_NOTICE);
         $this->specs[$path] = eval($this->getParser()->parseFile($path));
       }
@@ -186,7 +186,7 @@ class AnnotationManager
   protected function getFromCache(ReflectionClass $reflection, $filePath)
   {
     if (is_null($this->cache))
-      throw new CacheStorageNotConfiguredException(
+      throw new AnnotationCacheNotConfiguredException(
         __METHOD__ . " : AnnotationManager::\$cache is not configured"
       );
     

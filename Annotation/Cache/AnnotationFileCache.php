@@ -22,28 +22,28 @@ use \ReflectionClass;
  *
  * @author Luís Otávio Cobucci Oblonczyk
  */
-class FileCache implements CacheStorage
+class AnnotationFileCache implements IAnnotationCache
 {
   /**
    * @var string The PHP opening tag (used when writing cache files)
    */
   const PHP_TAG = "<?php\n\n";
-
+  
   /**
    * @var int The file mode used when creating cache files
    */
   public $fileMode;
-
+  
   /**
    * @var string Absolute path to a folder where cache files may be saved
    */
   public $path;
-
+  
   /**
    * @var string Cache seed (can be used to disambiguate, if using multiple AnnotationManager instances with the same $cachePath)
    */
   public $seed;
-
+  
   /**
    * Initializes the file cache
    *
@@ -57,7 +57,7 @@ class FileCache implements CacheStorage
     $this->seed = $seed;
     $this->fileMode = $fileMode;
   }
-
+  
   /**
    * Returns if the identifier exists on the storage
    *
@@ -68,7 +68,7 @@ class FileCache implements CacheStorage
   {
     return file_exists($this->resolveCacheFile($id));
   }
-
+  
   /**
    * Stores the content
    *
@@ -78,11 +78,11 @@ class FileCache implements CacheStorage
   public function store($id, $content)
   {
     $file = $this->resolveCacheFile($id);
-
+    
     if (@file_put_contents($file, self::PHP_TAG . $content, LOCK_EX) == false || @chmod($file, $this->fileMode) == false)
       throw new AnnotationException(__METHOD__ . ' : error writing cache file ' . $file);
   }
-
+  
   /**
    * Retrieves the content
    *
@@ -93,7 +93,7 @@ class FileCache implements CacheStorage
   {
     return include $this->resolveCacheFile($id);
   }
-
+  
   /**
    * Returns the last change time
    *
@@ -104,7 +104,7 @@ class FileCache implements CacheStorage
   {
     return filemtime($this->resolveCacheFile($id));
   }
-
+  
   /**
    * Creates an ID for the storage from class name
    *
@@ -114,10 +114,10 @@ class FileCache implements CacheStorage
   public function createId(ReflectionClass $class)
   {
     $path = $class->getFileName();
-
+    
     return basename($path) . '-' . sprintf('%x', crc32($path . $this->seed)) . '.annotations.php';
   }
-
+  
   /**
    * @param string $id
    * @return string

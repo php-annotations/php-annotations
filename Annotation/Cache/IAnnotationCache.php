@@ -21,7 +21,7 @@ use \ReflectionClass;
  *
  * @author Luís Otávio Cobucci Oblonczyk
  */
-interface CacheStorage
+interface IAnnotationCache
 {
   /**
    * Returns if the identifier exists on the storage

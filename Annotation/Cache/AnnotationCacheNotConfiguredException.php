@@ -19,6 +19,6 @@ use \Mindplay\Annotation\AnnotationException;
  *
  * @author Luís Otávio Cobucci Oblonczyk
  */
-class CacheStorageNotConfiguredException extends AnnotationException
+class AnnotationCacheNotConfiguredException extends AnnotationException
 {
 }

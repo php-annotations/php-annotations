@@ -2,7 +2,7 @@
 require_once 'suite/Annotations.case.php';
 require_once 'suite/Annotations.Sample.case.php';
 
-use Mindplay\Annotation\Cache\FileCache;
+use Mindplay\Annotation\Cache\AnnotationFileCache;
 use Mindplay\Annotation\AnnotationParser;
 use Mindplay\Annotation\AnnotationManager;
 use Mindplay\Annotation\AnnotationException;
@@ -18,7 +18,7 @@ class AnnotationsTest extends xTest
     $cachePath = dirname(__DIR__).DIRECTORY_SEPARATOR.'runtime';
 
     Annotations::$config = array(
-      'cache' => new FileCache($cachePath), // turn caching on (or else AnnotationManager will generate E_NOTICE)
+      'cache' => new AnnotationFileCache($cachePath), // turn caching on (or else AnnotationManager will generate E_NOTICE)
     );
 
     if (!is_writable($cachePath))
@@ -280,7 +280,7 @@ class AnnotationsTest extends xTest
   {
     $manager = new AnnotationManager();
     $manager->namespace = 'Sample';
-    $manager->cache = new FileCache(Annotations::getManager()->cache->path, 'abc123');
+    $manager->cache = new AnnotationFileCache(Annotations::getManager()->cache->path, 'abc123');
 
     $anns = $manager->getClassAnnotations('Sample\AnnotationInDefaultNamespace', 'Sample\SampleAnnotation');
 
@@ -291,7 +291,7 @@ class AnnotationsTest extends xTest
   {
     $manager = new AnnotationManager();
     $manager->namespace = 'Sample';
-    $manager->cache = new FileCache(Annotations::getManager()->cache->path, 'xyz');
+    $manager->cache = new AnnotationFileCache(Annotations::getManager()->cache->path, 'xyz');
 
     $manager->registry['ignored'] = false;
 
@@ -304,7 +304,7 @@ class AnnotationsTest extends xTest
   {
     $manager = new AnnotationManager();
     $manager->namespace = 'Sample';
-    $manager->cache = new FileCache(Annotations::getManager()->cache->path, '12345678');
+    $manager->cache = new AnnotationFileCache(Annotations::getManager()->cache->path, '12345678');
 
     $manager->registry['aliased'] = 'Sample\SampleAnnotation';
 
