@@ -20,16 +20,15 @@ Project Structure
 The files in this project are organized as follows:
 
   php-annotations        This README and the LGPL license
-   /lib                  The core of the library itself
-   /annotations          Standard library of annotation classes
+   /Annotation           Standard library of annotation classes
+     /Cache
+     /Standard
+   /demo
    /test                 Unit tests for the core of the library
      /test.php           Browser-based test suite runner
      /lib                Unit test library
      /runtime            Run-time cache folder used for tests
      /suite              The test suite for the unit test framework
-
-The "php-annotations/lib" folder is the only folder required for the
-annotation support framework itself.
 
 To run the test suite, run "php-annotations/test/test.php" from a
 browser - a summary of the test-results will be displayed on the page.
