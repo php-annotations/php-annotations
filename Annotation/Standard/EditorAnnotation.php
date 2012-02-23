@@ -4,10 +4,10 @@
  * This file is part of the php-annotation framework.
  *
  * (c) Rasmus Schultz <rasmus@mindplay.dk>
- * 
+ *
  * This software is licensed under the GNU LGPL license
- * for more information, please see: 
- * 
+ * for more information, please see:
+ *
  * <http://code.google.com/p/php-annotations>
  */
 
@@ -31,14 +31,14 @@ class EditorAnnotation extends Annotation
    * @var string The name of the view to use when editing a class or property.
    */
   public $name;
-  
+
   /**
    * Initialize the annotation.
    */
   public function initAnnotation($properties)
   {
     $this->_map($properties, array('name'));
-    
+
     parent::initAnnotation($properties);
   }
 }

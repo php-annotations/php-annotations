@@ -8,7 +8,7 @@ class xTestRunner
 {
   private $rootpath;
   private $xdebug;
-  
+
   /**
    * @param $rootpath string The absolute path to the root folder of the test suite.
    */
@@ -16,12 +16,12 @@ class xTestRunner
   {
     if (!is_dir($rootpath))
       throw new Exception("{$rootpath} is not a directory");
-    
+
     $this->rootpath = $rootpath;
-    
+
     $this->xdebug = function_exists('xdebug_start_code_coverage');
   }
-  
+
   /**
    * Prints the header before the test output
    */
@@ -38,7 +38,7 @@ class xTestRunner
     <body>
     <h2>Unit Tests</h2>';
   }
-  
+
   /**
    * Prints the footer after the test output
    */
@@ -46,7 +46,7 @@ class xTestRunner
   {
     echo '</body></html>';
   }
-  
+
   /**
    * Runs a suite of unit tests
    *
@@ -61,34 +61,34 @@ class xTestRunner
     }
 
     $this->header();
-    
+
     echo '<h4>Codebase: '.$this->rootpath.'</h4>';
     echo '<h4>Test Suite: '.$pattern.'</h4>';
-    
+
     foreach (glob($pattern) as $path)
     {
       $test = require($path);
-      
+
       if (!$test instanceof xTest)
         throw new Exception("'{$path}' is not a valid unit test");
-      
+
       $test->run();
     }
 
     if ($this->xdebug)
     {
       xdebug_stop_code_coverage(false);
-      
+
       $uncovered = array('','}','else'); // we can safely ignore uncovered empty lines, closing braces and else-clauses that don't have a statement
-      
+
       foreach (xdebug_get_code_coverage() as $path => $lines)
       {
         if (substr($path,0,strlen($this->rootpath)) == $this->rootpath)
         {
           $relpath = substr($path,strlen($this->rootpath)+1);
-          
+
           $file = explode("\n", file_get_contents($path));
-          
+
           ob_start();
           foreach ($lines as $line => $coverage)
           {
@@ -96,7 +96,7 @@ class xTestRunner
               echo '<span style="color:#'.($coverage==-1?'f00':'888').'">'.sprintf('%5d',$line+1).' : '.$file[$line] . "</span>";
           }
           $report = ob_get_clean();
-          
+
           if ($report)
           {
             echo '<h3>Uncovered code in: '.$relpath.'</h3>';
@@ -107,7 +107,7 @@ class xTestRunner
     }
     else
       echo '<h3>Code coverage analysis unavailable</h3><p>To enable code coverage, the xdebug php module must be installed and enabled.</p>';
-    
+
     $this->footer();
   }
 }

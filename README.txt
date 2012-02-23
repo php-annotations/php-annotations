@@ -51,14 +51,14 @@ class FooBar
   public $foo;
   protected $bar;
   private $_baz;
-  
+
   const FOO_BAR = 123;
-  
+
   public function isNull($var)
   {
     if ($var === null)
       return true;
-    
+
     while (true)
     {
       return false;

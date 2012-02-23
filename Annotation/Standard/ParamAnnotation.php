@@ -4,10 +4,10 @@
  * This file is part of the php-annotation framework.
  *
  * (c) Rasmus Schultz <rasmus@mindplay.dk>
- * 
+ *
  * This software is licensed under the GNU LGPL license
- * for more information, please see: 
- * 
+ * for more information, please see:
+ *
  * <http://code.google.com/p/php-annotations>
  */
 
@@ -43,20 +43,20 @@ class ParamAnnotation extends Annotation implements IAnnotationParser
 
     return array('type' => $parts[0], 'name' => substr($parts[1], 1));
   }
-  
+
   /**
    * Initialize the annotation.
    */
   public function initAnnotation($properties)
   {
     $this->_map($properties, array('type', 'name'));
-    
+
     parent::initAnnotation($properties);
-    
+
     if (!isset($this->type)) {
       throw new AnnotationException('ParamAnnotation requires a type property');
     }
-    
+
     if (!isset($this->name)) {
       throw new AnnotationException('ParamAnnotation requires a name property');
     }

@@ -1,5 +1,5 @@
 property levels:
-- page 
+- page
 - class
 - method
 - property
