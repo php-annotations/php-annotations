@@ -13,23 +13,23 @@
 abstract class xTest
 {
   private $result;
-  
+
   /**
    * Runs this test
    */
   public function run()
   {
     $class = get_class($this);
-    
+
     echo '<h3>'.htmlspecialchars($class).'</h3>';
     echo '<table id="'.$class.'-results"><tr><th>Test</th><th>Result</th></tr>';
-    
+
     $reflection = new ReflectionClass(get_class($this));
     $methods = $reflection->getMethods();
-    
+
     $passed = 0;
     $count = 0;
-    
+
     if (method_exists($this,'init'))
     {
       try
@@ -42,23 +42,23 @@ abstract class xTest
         return;
       }
     }
-    
+
     foreach ($methods as $num => $method)
     {
       if (substr($method->name,0,4)=='test')
       {
         $this->result=null;
-        
+
         $test = $method->name;
-        
+
         $name = substr($test,4);
-        
+
         if (count($_GET) && @$_GET[$name]!=='')
           continue;
-        
+
         if (method_exists($this,'setup'))
           $this->setup();
-        
+
         try
         {
           $this->$test();
@@ -68,47 +68,47 @@ abstract class xTest
           if (!($e instanceof xTestException))
             $this->result = (string) $e;
         }
-        
+
         if ($this->result!==true)
           $color='red';
         else if ($this->result===null)
           $color='blue';
         else
           $color='green';
-        
+
         if ($this->result===true)
           $result = 'PASS';
         else if ($this->result===null)
           $result = 'FAIL: Incomplete Test';
         else
           $result = 'FAIL'.(is_string($this->result) ? ': '.$this->result : '');
-        
+
         $count++;
-        
+
         if ($this->result===true)
           $passed++;
-        
+
         if (method_exists($this,'teardown'))
           $this->teardown();
-        
+
         echo '<tr style="color:white; background:'.$color.'"><td>('.$method->getStartLine().') <a style="color:white" href="?'.$name.'">'.preg_replace('/([A-Z])/', ' \1', $name).'</a></td><td><pre>'.htmlspecialchars($result).'</pre></td></tr>';
       }
     }
-    
+
     echo '<tr style="background-color:gray; color:white"><tr><th>'.$count.' Tests</th><th>';
-    
+
     if ($passed==$count)
       echo 'All Tests Passed';
     else
       echo ($count-$passed).' Tests Failed';
     echo '</th></tr>';
-    
+
     echo '</table>';
-    
+
     if ($passed==$count)
       echo '<h4 id="'.$class.'-toggle" style="cursor:pointer" onclick="'."document.getElementById('{$class}-results').style.display='table'; document.getElementById('{$class}-toggle').style.display='none'; return false;".'">&raquo; All Tests Passed</h4><script type="text/javascript">document.getElementById("'.$class.'-results").style.display="none";</script>';
   }
-  
+
   /**
    * Calling this method during a test manually flags a test as passed
    */
@@ -117,7 +117,7 @@ abstract class xTest
     if ($this->result===null)
       $this->result = true;
   }
-  
+
   /**
    * Calling this method during a test manually flags a test as failed
    *
@@ -128,7 +128,7 @@ abstract class xTest
     $this->result = $result;
     throw new xTestException();
   }
-  
+
   /**
    * Calling this method during a test flags a test as passed or failed.
    *
@@ -142,7 +142,7 @@ abstract class xTest
     else
       $this->fail($result);
   }
-  
+
   /**
    * Calling this method during a test flags a test as passed if two values are exactly (===) the same.
    *

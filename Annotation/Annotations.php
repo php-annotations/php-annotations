@@ -4,10 +4,10 @@
  * This file is part of the php-annotation framework.
  *
  * (c) Rasmus Schultz <rasmus@mindplay.dk>
- * 
+ *
  * This software is licensed under the GNU LGPL license
- * for more information, please see: 
- * 
+ * for more information, please see:
+ *
  * <http://code.google.com/p/php-annotations>
  */
 
@@ -22,12 +22,12 @@ abstract class Annotations
    * @var array Configuration for any public property of AnnotationManager.
    */
   public static $config;
-  
+
   /**
    * @var AnnotationManager Singleton AnnotationManager instance
    */
   private static $manager;
-  
+
   /**
    * @return AnnotationManager a singleton instance
    */
@@ -35,14 +35,14 @@ abstract class Annotations
   {
     if (!isset(self::$manager))
       self::$manager = new AnnotationManager;
-    
+
     if (is_array(self::$config))
       foreach (self::$config as $key => $value)
         self::$manager->$key = $value;
-    
+
     return self::$manager;
   }
-  
+
   /**
    * Returns the UsageAnnotation for the annotation with the given class-name.
    * @see AnnotationManager::getUsage()
@@ -51,7 +51,7 @@ abstract class Annotations
   {
     return self::getManager()->getUsage($class);
   }
-  
+
   /**
    * Inspects class Annotations
    * @see AnnotationManager::getClassAnnotations()
@@ -60,7 +60,7 @@ abstract class Annotations
   {
     return self::getManager()->getClassAnnotations($class, $type);
   }
-  
+
   /**
    * Inspects method Annotations
    * @see AnnotationManager::getMethodAnnotations()
@@ -69,7 +69,7 @@ abstract class Annotations
   {
     return self::getManager()->getMethodAnnotations($class, $method, $type);
   }
-  
+
   /**
    * Inspects property Annotations
    * @see AnnotationManager::getPropertyAnnotations()
