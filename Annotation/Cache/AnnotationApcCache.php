@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the php-annotation framework.
  *
@@ -14,6 +15,7 @@ namespace Mindplay\Annotation\Cache;
 
 use \Mindplay\Annotation\Core\AnnotationException;
 use \ReflectionClass;
+use \APCIterator;
 
 /**
  * APC cache provider
@@ -68,12 +70,17 @@ class AnnotationApcCache implements IAnnotationCache
    */
   public function getLastChangeTime($id)
   {
-    $info = apc_cache_info('user');
-    
-    foreach ($info['cache_list'] as $cache) {
-      if ($cache['info'] == $id)
-        return $cache['mtime'];
-	}
+    $info = new APCIterator(
+        'user',
+        sprintf('`^%s$`', preg_quote($id)),
+        APC_ITER_MTIME,
+        100,
+        APC_LIST_ACTIVE
+    );
+
+    foreach ($info as $cache) {
+      return $cache['mtime'];
+    }
   }
   
   /**
