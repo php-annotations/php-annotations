@@ -483,7 +483,7 @@ class AnnotationManager
    * Inspects Annotations applied to a given property
    *
    * @param mixed $class A class name, an object, a ReflectionClass, or a ReflectionProperty instance
-   * @param string $method The name of a defined property of the given class (or null, if the first parameter is a ReflectionProperty)
+   * @param string $property The name of a defined property of the given class (or null, if the first parameter is a ReflectionProperty)
    * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
    *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
    * @return array Annotation instances
