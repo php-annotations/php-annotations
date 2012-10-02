@@ -1,20 +1,21 @@
 <?php
-use Mindplay\Annotation\Cache\AnnotationApcCache;
+
 use Mindplay\Annotation\Annotations;
+use Mindplay\Annotation\Cache\AnnotationFileCache;
 
 ## Configure a simple auto-loader
 
 require '../test/lib/Loader.php';
 
 $loader = new Loader;
-$loader->paths['Mindplay'] = dirname(__DIR__);
+$loader->paths['Mindplay'] = dirname(dirname(__FILE__));
 
 ## Configure the cache-path. The static `Annotations` class will configure any public
 ## properties of `AnnotationManager` when it creates it. The `AnnotationManager::$cachePath`
 ## property is a path to a writable folder, where the `AnnotationManager` caches parsed
 ## annotations from individual source code files.
 
-Annotations::$config['cache'] = new AnnotationApcCache();
+Annotations::$config['cache'] = new \Mindplay\Annotation\Cache\AnnotationFileCache(dirname(__FILE__).'/runtime');
 
 ## For this example, we're going to generate a simple form that allows us to edit a `Person`
 ## object. We'll define a few public properties and annotate them with some useful metadata,

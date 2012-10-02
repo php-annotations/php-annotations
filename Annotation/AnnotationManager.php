@@ -145,8 +145,7 @@ class AnnotationManager
    */
   public function getParser()
   {
-    if (!isset($this->parser))
-    {
+    if (!isset($this->parser)) {
       $this->parser = new AnnotationParser($this);
       $this->parser->debug = $this->debug;
       $this->parser->autoload = $this->autoload;
@@ -165,8 +164,7 @@ class AnnotationManager
     $reflection = new ReflectionClass($class);
     $path = $reflection->getFileName();
     
-    if (!isset($this->specs[$path]))
-    {
+    if (!isset($this->specs[$path])) {
       try {
         $this->specs[$path] = $this->getFromCache($reflection, $path);
       } catch (AnnotationCacheNotConfiguredException $e) {
@@ -220,8 +218,7 @@ class AnnotationManager
     
     if (isset($this->registry[$type])) {
       return $this->registry[$type]; // type-name is registered
-    }
-    else {
+    } else {
       $type = ucfirst(strtr($name, '-', '_')).$this->suffix;
       
       return strlen($this->namespace) ? $this->namespace . '\\' . $type : $type;
