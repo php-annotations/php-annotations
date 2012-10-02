@@ -1,13 +1,11 @@
 php-annotations
 ===============
 
-Source code annotations for PHP.
+Source-code annotations for PHP.
 
 Copyright (C) 2011-2012 Rasmus Schultz <rasmus@mindplay.dk>
 
-
-Home page
----------
+https://github.com/mindplay-dk/php-annotations
 
 For documentation and updates, please visit the project home page:
 
@@ -29,8 +27,8 @@ The files in this project are organized as follows:
       /runtime            Run-time cache folder used for tests
       /suite              The test suite for the unit test framework
 
-The "php-annotations/lib" folder is the only folder required for the
-annotation support framework itself.
+The "Annotation" folder is the only folder required for the annotation
+framework itself - other folders contain demonstration code, tests, etc.
 
 To run the test suite, run "php-annotations/test/test.php" from a
 browser - a summary of the test-results will be displayed on the page.
@@ -39,37 +37,15 @@ browser - a summary of the test-results will be displayed on the page.
 Code Style
 ----------
 
-- Indentation: 2 spaces
-- No closing PHP tag in code-files
-- Allman braces [http://en.wikipedia.org/wiki/Indent_style#Allman_style]
+Largely PSR-2 compliant:
 
-<?php
-
-namespace NameSpace;
-
-class FooBar
-{
-  public $foo;
-  protected $bar;
-  private $_baz;
-  
-  const FOO_BAR = 123;
-  
-  public function isNull($var)
-  {
-    if ($var === null)
-      return true;
-    
-    while (true)
-    {
-      return false;
-    }
-  }
-}
+https://raw.github.com/php-fig/fig-standards/master/accepted/PSR-2-coding-style-guide.md
 
 
-Licensing
----------
+License
+-------
+
+http://www.gnu.org/licenses/lgpl-3.0.txt
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
