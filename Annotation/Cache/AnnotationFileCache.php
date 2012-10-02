@@ -78,8 +78,12 @@ class AnnotationFileCache implements IAnnotationCache
   public function store($id, $content)
   {
     $file = $this->resolveCacheFile($id);
-    
-    if (@file_put_contents($file, self::PHP_TAG . $content, LOCK_EX) == false || @chmod($file, $this->fileMode) == false) {
+
+    $file_saved = @file_put_contents($file, self::PHP_TAG . $content, LOCK_EX) !== false;
+
+    $mode_set = $file_saved && (@chmod($file, $this->fileMode) !== false);
+
+    if ($file_saved===false || $mode_set===false) {
       throw new AnnotationException(__METHOD__ . ' : error writing cache file ' . $file);
     }
   }
