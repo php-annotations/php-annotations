@@ -19,7 +19,7 @@ Project Structure
 
 The files in this project are organized as follows:
 
-  php-annotations        This README and the LGPL license
+  php-annotations         This README and the LGPL license
     /Annotation           The core of the library itself
       /Standard           Standard library of annotation classes
     /demo                 Browser-based example/demonstration
