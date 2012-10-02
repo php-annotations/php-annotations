@@ -89,8 +89,9 @@ abstract class Widget
   {
     $a = Annotations::ofProperty($this->object, $this->property, $type);
 
-    if (!count($a))
+    if (!count($a)) {
       return $default;
+    }
 
     return $a[0]->$name;
   }
@@ -106,23 +107,23 @@ abstract class Widget
 
   public function validate()
   {
-    if (empty($this->value))
-    {
-      if ($this->isRequired())
+    if (empty($this->value)) {
+      if ($this->isRequired()) {
         $this->addError("Please complete this field");
-      else
+      } else {
         return;
+      }
     }
 
-    if (is_string($this->value))
-    {
+    if (is_string($this->value)) {
       $min = $this->getMetadata('@length', 'min');
       $max = $this->getMetadata('@length', 'max');
 
-      if ($min!==null && strlen($this->value) < $min)
+      if ($min!==null && strlen($this->value) < $min) {
         $this->addError("Minimum length is {$min} characters");
-      else if ($max!==null && strlen($this->value) > $max)
+      } else if ($max!==null && strlen($this->value) > $max) {
         $this->addError("Maximum length is {$max} characters");
+      }
     }
 
     if (is_int($this->value))
@@ -130,11 +131,7 @@ abstract class Widget
       $min = $this->getMetadata('@range', 'min');
       $max = $this->getMetadata('@range', 'max');
 
-      if (
-        ($min!==null && $this->value < $min)
-        ||
-        ($max!==null && $this->value > $max)
-      ) {
+      if (($min!==null && $this->value < $min) || ($max!==null && $this->value > $max)) {
         $this->addError("Please enter a value in the range {$min} to {$max}");
       }
     }
@@ -196,17 +193,15 @@ class IntWidget extends StringWidget
 
   public function update($input)
   {
-    if (strval(intval($input)) === $input)
-    {
+    if (strval(intval($input)) === $input) {
       $this->value = intval($input);
       $this->validate();
-    }
-    else
-    {
+    } else {
       $this->value = $input;
 
-      if (!empty($input))
+      if (!empty($input)) {
         $this->addError("Please enter a whole number value");
+      }
     }
   }
 }
@@ -231,8 +226,7 @@ class Form
 
     $class = new ReflectionClass($this->object);
 
-    foreach ($class->getProperties() as $property)
-    {
+    foreach ($class->getProperties() as $property) {
       $type = $this->getMetadata($property->name, '@var', 'type', 'string');
 
       $wtype = ucfirst($type).'Widget';
@@ -248,8 +242,9 @@ class Form
   {
     $a = Annotations::ofProperty(get_class($this->object), $property, $type);
 
-    if (!count($a))
+    if (!count($a)) {
       return $default;
+    }
 
     return $a[0]->$name;
   }
@@ -262,18 +257,23 @@ class Form
   {
     $data = $post[get_class($this->object)];
 
-    foreach ($this->widgets as $property => $widget)
-      if (array_key_exists($property, $data))
+    foreach ($this->widgets as $property => $widget) {
+      if (array_key_exists($property, $data)) {
         $this->widgets[$property]->update($data[$property]);
+      }
+    }
 
     $valid = true;
 
-    foreach ($this->widgets as $widget)
+    foreach ($this->widgets as $widget) {
       $valid = $valid && (count($widget->errors)===0);
+    }
 
-    if ($valid)
-      foreach ($this->widgets as $property => $widget)
+    if ($valid) {
+      foreach ($this->widgets as $property => $widget) {
         $this->object->$property = $widget->value;
+      }
+    }
 
     return $valid;
   }
@@ -283,18 +283,17 @@ class Form
 
   public function display()
   {
-    foreach ($this->widgets as $widget)
-    {
+    foreach ($this->widgets as $widget) {
       $star = $widget->isRequired() ? ' <span style="color:red">*</span>' : '';
       echo '<label>' . htmlspecialchars($widget->getLabel()) . $star . '<br/>';
       $widget->display();
       echo '</label><br/>';
 
-      if (count($widget->errors))
-      {
+      if (count($widget->errors)) {
         echo '<ul>';
-        foreach ($widget->errors as $error)
+        foreach ($widget->errors as $error) {
           echo '<li>'.htmlspecialchars($error).'</li>';
+        }
         echo '</ul>';
       }
     }
@@ -329,10 +328,11 @@ $form = new Form($person);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST')
 {
-  if ($form->update($_POST))
+  if ($form->update($_POST)) {
     echo '<h2 style="color:green">Person Accepted!</h2>';
-  else
+  } else {
     echo '<h2 style="color:red">Oops! Try again.</h2>';
+  }
 }
 
 $form->display();

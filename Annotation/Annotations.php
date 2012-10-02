@@ -33,12 +33,15 @@ abstract class Annotations
    */
   public static function getManager()
   {
-    if (!isset(self::$manager))
+    if (!isset(self::$manager)) {
       self::$manager = new AnnotationManager;
+    }
     
-    if (is_array(self::$config))
-      foreach (self::$config as $key => $value)
+    if (is_array(self::$config)) {
+      foreach (self::$config as $key => $value) {
         self::$manager->$key = $value;
+      }
+    }
     
     return self::$manager;
   }

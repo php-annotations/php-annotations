@@ -39,15 +39,13 @@ abstract class Annotation implements IAnnotation
   
   /**
    * Helper method - initializes unnamed properties.
-   * @param array $properties Array of annotation properties, as passed into IAnnotation::initAnnotation()
+   * @param array &$properties Array of annotation properties, as passed into IAnnotation::initAnnotation()
    * @param array $indexes Array of unnamed properties
    */
   protected function _map(&$properties, $indexes)
   {
-    foreach ($indexes as $index=>$name)
-    {
-      if (isset($properties[$index]))
-      {
+    foreach ($indexes as $index => $name) {
+      if (isset($properties[$index])) {
         $this->$name = $properties[$index];
         unset($properties[$index]);
       }
@@ -60,7 +58,8 @@ abstract class Annotation implements IAnnotation
    */
   public function initAnnotation($properties)
   {
-    foreach ($properties as $name => $value)
+    foreach ($properties as $name => $value) {
       $this->$name = $value;
+    }
   }
 }

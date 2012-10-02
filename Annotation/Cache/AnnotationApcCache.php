@@ -45,8 +45,9 @@ class AnnotationApcCache implements IAnnotationCache
    */
   public function store($id, $content)
   {
-    if (apc_store($id, $content) === false)
+    if (apc_store($id, $content) === false) {
       throw new AnnotationException(__METHOD__ . ' : error writing cache ' . $id);
+    }
   }
   
   /**
