@@ -20,9 +20,10 @@ namespace Mindplay\Annotation;
  */
 interface IAnnotationParser
 {
-  /**
-   * @param string $value The raw string value of the Annotation.
-   * @return array An array of Annotation properties.
-   */
-  public static function parseAnnotation($value);
+    /**
+     * @param string $value The raw string value of the Annotation.
+     *
+     * @return array An array of Annotation properties.
+     */
+    public static function parseAnnotation($value);
 }

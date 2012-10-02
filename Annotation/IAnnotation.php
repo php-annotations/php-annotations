@@ -16,6 +16,7 @@ namespace Mindplay\Annotation;
 /**
  * This interface is mandatory for all Annotations.
  */
-interface IAnnotation {
-  public function initAnnotation($properties);
+interface IAnnotation
+{
+    public function initAnnotation($properties);
 }
