@@ -7,9 +7,9 @@ Copyright (C) 2011-2012 Rasmus Schultz <rasmus@mindplay.dk>
 
 https://github.com/mindplay-dk/php-annotations
 
-For documentation and updates, please visit the project home page:
+For documentation and updates, please visit the project Wiki:
 
-http://code.google.com/p/php-annotations/
+https://github.com/mindplay-dk/php-annotations/wiki
 
 
 Project Structure
