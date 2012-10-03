@@ -15,7 +15,7 @@ $loader->paths['Mindplay'] = dirname(dirname(__FILE__));
 ## property is a path to a writable folder, where the `AnnotationManager` caches parsed
 ## annotations from individual source code files.
 
-Annotations::$config['cache'] = new \Mindplay\Annotation\Cache\AnnotationFileCache(dirname(__FILE__).'/runtime');
+Annotations::$config['cache'] = new AnnotationFileCache(dirname(__FILE__) . '/runtime');
 
 ## For this example, we're going to generate a simple form that allows us to edit a `Person`
 ## object. We'll define a few public properties and annotate them with some useful metadata,
@@ -30,26 +30,26 @@ Annotations::$config['cache'] = new \Mindplay\Annotation\Cache\AnnotationFileCac
 
 class Person
 {
-  /**
-   * @var string
-   * @required
-   * @length(50)
-   * @text('label' => 'Full Name')
-   */
-  public $name;
+    /**
+     * @var string
+     * @required
+     * @length(50)
+     * @text('label' => 'Full Name')
+     */
+    public $name;
 
-  /**
-   * @var string
-   * @length(50)
-   * @text('label' => 'Street Address')
-   */
-  public $address;
+    /**
+     * @var string
+     * @length(50)
+     * @text('label' => 'Street Address')
+     */
+    public $address;
 
-  /**
-   * @var int
-   * @range(0, 100)
-   */
-  public $age;
+    /**
+     * @var int
+     * @range(0, 100)
+     */
+    public $age;
 }
 
 ## To build a simple form abstraction that can manage the state of an object being edited,
@@ -57,154 +57,155 @@ class Person
 
 abstract class Widget
 {
-  protected $object;
-  protected $property;
+    protected $object;
+    protected $property;
 
-  public $value;
+    public $value;
 
-  ## Each widget will maintain a list of error messages.
+    ## Each widget will maintain a list of error messages.
 
-  public $errors = array();
+    public $errors = array();
 
-  ## A widget needs to know which property of what object is being edited.
+    ## A widget needs to know which property of what object is being edited.
 
-  public function __construct($object, $property)
-  {
-    $this->object = $object;
-    $this->property = $property;
-    $this->value = $object->$property;
-  }
-
-  ## Widget classes will use this method to add an error-message.
-
-  public function addError($message)
-  {
-    $this->errors[] = $message;
-  }
-
-  ## This helper function provides a shortcut to get a named property from a
-  ## particular type of annotation - if no annotation is found, the `$default`
-  ## value is returned instead.
-
-  protected function getMetadata($type, $name, $default=null)
-  {
-    $a = Annotations::ofProperty($this->object, $this->property, $type);
-
-    if (!count($a)) {
-      return $default;
-    }
-
-    return $a[0]->$name;
-  }
-
-  ## Each type of widget will need to implement this interface, which takes a raw
-  ## POST value from the form, and attempts to bind it to the object's property.
-
-  abstract public function update($input);
-
-  ## After a widget successfully updates a property, we may need to perform additional
-  ## validation - this method will perform some basic validations, and if errors are
-  ## found, it will add them to the `$errors` collection.
-
-  public function validate()
-  {
-    if (empty($this->value)) {
-      if ($this->isRequired()) {
-        $this->addError("Please complete this field");
-      } else {
-        return;
-      }
-    }
-
-    if (is_string($this->value)) {
-      $min = $this->getMetadata('@length', 'min');
-      $max = $this->getMetadata('@length', 'max');
-
-      if ($min!==null && strlen($this->value) < $min) {
-        $this->addError("Minimum length is {$min} characters");
-      } else if ($max!==null && strlen($this->value) > $max) {
-        $this->addError("Maximum length is {$max} characters");
-      }
-    }
-
-    if (is_int($this->value))
+    public function __construct($object, $property)
     {
-      $min = $this->getMetadata('@range', 'min');
-      $max = $this->getMetadata('@range', 'max');
-
-      if (($min!==null && $this->value < $min) || ($max!==null && $this->value > $max)) {
-        $this->addError("Please enter a value in the range {$min} to {$max}");
-      }
+        $this->object = $object;
+        $this->property = $property;
+        $this->value = $object->$property;
     }
-  }
 
-  ## Each type of widget will need to implement this interface, which renders an
-  ## HTML input representing the widget's current value.
+    ## Widget classes will use this method to add an error-message.
 
-  abstract public function display();
+    public function addError($message)
+    {
+        $this->errors[] = $message;
+    }
 
-  ## This helper function returns a descriptive label for the input.
+    ## This helper function provides a shortcut to get a named property from a
+    ## particular type of annotation - if no annotation is found, the `$default`
+    ## value is returned instead.
 
-  public function getLabel()
-  {
-    return $this->getMetadata('@text', 'label', ucfirst($this->property));
-  }
+    protected function getMetadata($type, $name, $default = null)
+    {
+        $a = Annotations::ofProperty($this->object, $this->property, $type);
 
-  ## Finally, this little helper function will tell us if the field is required -
-  ## if a property is annotated with `@required`, the field must be filled in.
+        if (!count($a)) {
+            return $default;
+        }
 
-  public function isRequired()
-  {
-    return count(Annotations::ofProperty($this->object, $this->property, '@required')) > 0;
-  }
+        return $a[0]->$name;
+    }
+
+    ## Each type of widget will need to implement this interface, which takes a raw
+    ## POST value from the form, and attempts to bind it to the object's property.
+
+    abstract public function update($input);
+
+    ## After a widget successfully updates a property, we may need to perform additional
+    ## validation - this method will perform some basic validations, and if errors are
+    ## found, it will add them to the `$errors` collection.
+
+    public function validate()
+    {
+        if (empty($this->value)) {
+            if ($this->isRequired()) {
+                $this->addError("Please complete this field");
+            } else {
+                return;
+            }
+        }
+
+        if (is_string($this->value)) {
+            $min = $this->getMetadata('@length', 'min');
+            $max = $this->getMetadata('@length', 'max');
+
+            if ($min !== null && strlen($this->value) < $min) {
+                $this->addError("Minimum length is {$min} characters");
+            } else {
+                if ($max !== null && strlen($this->value) > $max) {
+                    $this->addError("Maximum length is {$max} characters");
+                }
+            }
+        }
+
+        if (is_int($this->value)) {
+            $min = $this->getMetadata('@range', 'min');
+            $max = $this->getMetadata('@range', 'max');
+
+            if (($min !== null && $this->value < $min) || ($max !== null && $this->value > $max)) {
+                $this->addError("Please enter a value in the range {$min} to {$max}");
+            }
+        }
+    }
+
+    ## Each type of widget will need to implement this interface, which renders an
+    ## HTML input representing the widget's current value.
+
+    abstract public function display();
+
+    ## This helper function returns a descriptive label for the input.
+
+    public function getLabel()
+    {
+        return $this->getMetadata('@text', 'label', ucfirst($this->property));
+    }
+
+    ## Finally, this little helper function will tell us if the field is required -
+    ## if a property is annotated with `@required`, the field must be filled in.
+
+    public function isRequired()
+    {
+        return count(Annotations::ofProperty($this->object, $this->property, '@required')) > 0;
+    }
 }
 
 ## The first and most basic kind of widget, is this simple string widget.
 
 class StringWidget extends Widget
 {
-  ## On update, take into account the min/max string length, and provide error
-  ## messages if the constraints are violated.
+    ## On update, take into account the min/max string length, and provide error
+    ## messages if the constraints are violated.
 
-  public function update($input)
-  {
-    $this->value = $input;
+    public function update($input)
+    {
+        $this->value = $input;
 
-    $this->validate();
-  }
+        $this->validate();
+    }
 
-  ## On display, render out a simple `<input type="text"/>` field, taking into account
-  ## the maximum string-length.
+    ## On display, render out a simple `<input type="text"/>` field, taking into account
+    ## the maximum string-length.
 
-  public function display()
-  {
-    $length = $this->getMetadata('@length', 'max', 255);
+    public function display()
+    {
+        $length = $this->getMetadata('@length', 'max', 255);
 
-    echo '<input type="text" name="' . get_class($this->object) . '[' . $this->property . ']"'
-      . ' maxlength="' . $length . '" value="' . htmlspecialchars($this->value) . '"/>';
-  }
+        echo '<input type="text" name="' . get_class($this->object) . '[' . $this->property . ']"'
+            . ' maxlength="' . $length . '" value="' . htmlspecialchars($this->value) . '"/>';
+    }
 }
 
 ## For the age input, we'll need a specialized `StringWidget` that also checks the input type.
 
 class IntWidget extends StringWidget
 {
-  ## On update, take into account the min/max numerical range, and provide error
-  ## messages if the constraints are violated.
+    ## On update, take into account the min/max numerical range, and provide error
+    ## messages if the constraints are violated.
 
-  public function update($input)
-  {
-    if (strval(intval($input)) === $input) {
-      $this->value = intval($input);
-      $this->validate();
-    } else {
-      $this->value = $input;
+    public function update($input)
+    {
+        if (strval(intval($input)) === $input) {
+            $this->value = intval($input);
+            $this->validate();
+        } else {
+            $this->value = $input;
 
-      if (!empty($input)) {
-        $this->addError("Please enter a whole number value");
-      }
+            if (!empty($input)) {
+                $this->addError("Please enter a whole number value");
+            }
+        }
     }
-  }
 }
 
 ## Next, we can build a simple form abstraction - this will hold and object and manage
@@ -212,93 +213,93 @@ class IntWidget extends StringWidget
 
 class Form
 {
-  private $object;
+    private $object;
 
-  private $widgets = array();
+    private $widgets = array();
 
-  ## The constructor just needs to know which object we're editing.
-  ##
-  ## Using reflection, we enumerate the properties of the object's type, and using the
-  ## `@var` annotation, we decide which type of widget we're going to use.
+    ## The constructor just needs to know which object we're editing.
+    ##
+    ## Using reflection, we enumerate the properties of the object's type, and using the
+    ## `@var` annotation, we decide which type of widget we're going to use.
 
-  public function __construct($object)
-  {
-    $this->object = $object;
+    public function __construct($object)
+    {
+        $this->object = $object;
 
-    $class = new ReflectionClass($this->object);
+        $class = new ReflectionClass($this->object);
 
-    foreach ($class->getProperties() as $property) {
-      $type = $this->getMetadata($property->name, '@var', 'type', 'string');
+        foreach ($class->getProperties() as $property) {
+            $type = $this->getMetadata($property->name, '@var', 'type', 'string');
 
-      $wtype = ucfirst($type).'Widget';
+            $wtype = ucfirst($type) . 'Widget';
 
-      $this->widgets[$property->name] = new $wtype($this->object, $property->name);
-    }
-  }
-
-  ## This helper-method is similar to the one we defined for the widget base
-  ## class, but fetches annotations for the specified property.
-
-  private function getMetadata($property, $type, $name, $default=null)
-  {
-    $a = Annotations::ofProperty(get_class($this->object), $property, $type);
-
-    if (!count($a)) {
-      return $default;
-    }
-
-    return $a[0]->$name;
-  }
-
-  ## When you post information back to the form, we'll need to update it's state,
-  ## validate each of the fields, and return a value indicating whether the form
-  ## update was successful.
-
-  public function update($post)
-  {
-    $data = $post[get_class($this->object)];
-
-    foreach ($this->widgets as $property => $widget) {
-      if (array_key_exists($property, $data)) {
-        $this->widgets[$property]->update($data[$property]);
-      }
-    }
-
-    $valid = true;
-
-    foreach ($this->widgets as $widget) {
-      $valid = $valid && (count($widget->errors)===0);
-    }
-
-    if ($valid) {
-      foreach ($this->widgets as $property => $widget) {
-        $this->object->$property = $widget->value;
-      }
-    }
-
-    return $valid;
-  }
-
-  ## Finally, this method renders out the form, and each of the widgets inside, with
-  ## a `<label>` tag surrounding each input.
-
-  public function display()
-  {
-    foreach ($this->widgets as $widget) {
-      $star = $widget->isRequired() ? ' <span style="color:red">*</span>' : '';
-      echo '<label>' . htmlspecialchars($widget->getLabel()) . $star . '<br/>';
-      $widget->display();
-      echo '</label><br/>';
-
-      if (count($widget->errors)) {
-        echo '<ul>';
-        foreach ($widget->errors as $error) {
-          echo '<li>'.htmlspecialchars($error).'</li>';
+            $this->widgets[$property->name] = new $wtype($this->object, $property->name);
         }
-        echo '</ul>';
-      }
     }
-  }
+
+    ## This helper-method is similar to the one we defined for the widget base
+    ## class, but fetches annotations for the specified property.
+
+    private function getMetadata($property, $type, $name, $default = null)
+    {
+        $a = Annotations::ofProperty(get_class($this->object), $property, $type);
+
+        if (!count($a)) {
+            return $default;
+        }
+
+        return $a[0]->$name;
+    }
+
+    ## When you post information back to the form, we'll need to update it's state,
+    ## validate each of the fields, and return a value indicating whether the form
+    ## update was successful.
+
+    public function update($post)
+    {
+        $data = $post[get_class($this->object)];
+
+        foreach ($this->widgets as $property => $widget) {
+            if (array_key_exists($property, $data)) {
+                $this->widgets[$property]->update($data[$property]);
+            }
+        }
+
+        $valid = true;
+
+        foreach ($this->widgets as $widget) {
+            $valid = $valid && (count($widget->errors) === 0);
+        }
+
+        if ($valid) {
+            foreach ($this->widgets as $property => $widget) {
+                $this->object->$property = $widget->value;
+            }
+        }
+
+        return $valid;
+    }
+
+    ## Finally, this method renders out the form, and each of the widgets inside, with
+    ## a `<label>` tag surrounding each input.
+
+    public function display()
+    {
+        foreach ($this->widgets as $widget) {
+            $star = $widget->isRequired() ? ' <span style="color:red">*</span>' : '';
+            echo '<label>' . htmlspecialchars($widget->getLabel()) . $star . '<br/>';
+            $widget->display();
+            echo '</label><br/>';
+
+            if (count($widget->errors)) {
+                echo '<ul>';
+                foreach ($widget->errors as $error) {
+                    echo '<li>' . htmlspecialchars($error) . '</li>';
+                }
+                echo '</ul>';
+            }
+        }
+    }
 }
 
 ## Now let's put the whole thing to work...
@@ -327,13 +328,12 @@ $person = new Person;
 
 $form = new Form($person);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST')
-{
-  if ($form->update($_POST)) {
-    echo '<h2 style="color:green">Person Accepted!</h2>';
-  } else {
-    echo '<h2 style="color:red">Oops! Try again.</h2>';
-  }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($form->update($_POST)) {
+        echo '<h2 style="color:green">Person Accepted!</h2>';
+    } else {
+        echo '<h2 style="color:red">Oops! Try again.</h2>';
+    }
 }
 
 $form->display();

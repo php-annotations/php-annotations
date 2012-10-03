@@ -8,7 +8,7 @@ $file = file_get_contents('index.php');
 
 echo '<table border="0" cellpadding="0" cellspacing="0">' . "\n";
 echo '<tr><td valign="top" width="300">' . "\n";
-echo "=== demo/index.php ===\n";
+echo "<h3>demo/index.php</h3>\n";
 
 $code = false;
 
@@ -18,22 +18,22 @@ foreach (explode("\n", $file) as $line)
   {
     if ($code)
     {
-      echo "}}}\n";
+      echo "</pre>\n";
       echo "</td></tr>";
-      echo '<tr><td valign="top"><br/>'."\n";
+      echo '<tr><td valign="top"><br/>' . "\n";
       $code = false;
     }
-    echo rtrim(substr(ltrim($line),3))."\n";
+    echo htmlspecialchars(rtrim(substr(ltrim($line),3))) . "\n";
   }
   else // it's code
   {
     if (!$code)
     {
-      echo '</td><td width="20"></td><td valign="top">'."\n";
-      echo "{{{\n";
+      echo '</td><td valign="top">'."\n";
+      echo "<pre>";
       $code = true;
     }
-    echo $line;
+    echo htmlspecialchars($line);
   }
 }
 
