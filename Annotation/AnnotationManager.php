@@ -110,12 +110,14 @@ class AnnotationManager
     protected $specs = array();
 
     /**
-     * @var array An internal cache for Annotation instances
+     * @var array[] An internal cache for Annotation instances
+     * @see getAnnotations()
      */
     protected $annotations = array();
 
     /**
-     * @var array An array of flags indicating which annotation sets have been initialized
+     * @var bool[] An array of flags indicating which annotation sets have been initialized
+     * @see getAnnotations()
      */
     protected $initialized = array();
 
@@ -203,8 +205,12 @@ class AnnotationManager
     /**
      * Resolves a name, using built-in annotation name resolution rules, and the registry.
      *
-     * @return string|bool The fully qualified annotation class-name, or false if the
+     * @param string $name the annotation-name
+     *
+     * @return string|false The fully qualified annotation class-name, or false if the
      * requested annotation has been disabled (set to false) in the registry.
+     *
+     * @see $registry
      */
     public function resolveName($name)
     {
@@ -220,13 +226,13 @@ class AnnotationManager
 
         if (isset($this->registry[$type])) {
             return $this->registry[$type]; // type-name is registered
-        } else {
-            $type = ucfirst(strtr($name, '-', '_')) . $this->suffix;
-
-            return strlen($this->namespace) ? $this->namespace . '\\' . $type : $type;
         }
 
-        return $type;
+        $type = ucfirst(strtr($name, '-', '_')) . $this->suffix;
+
+        return strlen($this->namespace)
+            ? $this->namespace . '\\' . $type
+            : $type;
     }
 
     /**

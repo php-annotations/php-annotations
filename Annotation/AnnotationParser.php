@@ -168,9 +168,8 @@ class AnnotationParser
             }
 
             if ($this->debug) {
-                echo "<tr><td>{$line}</td><td>" . token_name($type) . "</td><td>" . htmlspecialchars(
-                    $str
-                ) . "</td><td>{$state}</td><td>{$nesting}</td></tr>\n";
+                echo "<tr><td>{$line}</td><td>" . token_name($type) . "</td><td>"
+                    . htmlspecialchars($str) . "</td><td>{$state}</td><td>{$nesting}</td></tr>\n";
             }
         }
 
