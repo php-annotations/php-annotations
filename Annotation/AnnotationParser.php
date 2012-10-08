@@ -182,7 +182,7 @@ class AnnotationParser
         }
 
         $code = "return array(\n";
-        foreach ($index as $key=> $array) {
+        foreach ($index as $key => $array) {
             if (count($array)) {
                 $code .= "  " . trim(var_export($key, true)) . " => array(\n    " . implode(
                     ",\n    ",
@@ -303,7 +303,7 @@ class AnnotationParser
 
             $value = $match[1];
 
-            $quotedType = trim(var_export($type, true));
+            $quotedType = "'#type' => " . trim(var_export($type, true));
 
             if ($value === null) {
                 # value-less annotation:

@@ -285,7 +285,8 @@ class AnnotationManager
                 $annotations = array();
 
                 foreach ($specs[$key] as $spec) {
-                    $type = array_shift($spec);
+                    $type = $spec['#type'];
+                    unset($spec['#type']);
 
                     if (!class_exists($type, $this->autoload)) {
                         throw new AnnotationException("annotation type {$type} not found");
