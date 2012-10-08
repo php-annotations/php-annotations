@@ -37,7 +37,7 @@ class EditorAnnotation extends Annotation
    */
   public function initAnnotation($properties)
   {
-    $this->_map($properties, array('name'));
+    $this->map($properties, array('name'));
     
     parent::initAnnotation($properties);
   }

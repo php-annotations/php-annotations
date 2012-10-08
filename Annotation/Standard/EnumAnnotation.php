@@ -38,7 +38,7 @@ class EnumAnnotation extends ValidationAnnotationBase
    */
   public function initAnnotation($properties)
   {
-    $this->_map($properties, array('values'));
+    $this->map($properties, array('values'));
     
     parent::initAnnotation($properties);
     

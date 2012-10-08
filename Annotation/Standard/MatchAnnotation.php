@@ -30,7 +30,7 @@ class MatchAnnotation extends ValidationAnnotationBase
    */
   public function initAnnotation($properties)
   {
-    $this->_map($properties, array('pattern'));
+    $this->map($properties, array('pattern'));
     
     parent::initAnnotation($properties);
     

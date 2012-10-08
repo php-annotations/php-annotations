@@ -35,7 +35,7 @@ class ValidateAnnotation extends ValidationAnnotationBase
    */
   public function initAnnotation($properties)
   {
-    $this->_map($properties, array('type', 'method'));
+    $this->map($properties, array('type', 'method'));
     
     parent::initAnnotation($properties);
     

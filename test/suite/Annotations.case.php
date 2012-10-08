@@ -17,7 +17,7 @@ class NoteAnnotation extends Annotation
   
   public function initAnnotation($params)
   {
-    $this->_map($params, array('note'));
+    $this->map($params, array('note'));
     
     if (!isset($this->note))
       throw new AnnotationException("NoteAnnotation requires a note property");

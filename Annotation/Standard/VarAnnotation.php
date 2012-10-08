@@ -65,7 +65,7 @@ class VarAnnotation extends Annotation implements IAnnotationParser
    */
   public function initAnnotation($properties)
   {
-    $this->_map($properties, array('type'));
+    $this->map($properties, array('type'));
     
     parent::initAnnotation($properties);
     

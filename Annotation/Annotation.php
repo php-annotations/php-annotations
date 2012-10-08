@@ -42,10 +42,8 @@ abstract class Annotation implements IAnnotation
      *
      * @param array &$properties Array of annotation properties, as passed into IAnnotation::initAnnotation()
      * @param array $indexes Array of unnamed properties
-     *
-     * @todo rename to map()
      */
-    protected function _map(&$properties, $indexes)
+    protected function map(&$properties, $indexes)
     {
         foreach ($indexes as $index => $name) {
             if (isset($properties[$index])) {

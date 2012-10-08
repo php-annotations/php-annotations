@@ -37,7 +37,7 @@ class DisplayAnnotation extends Annotation
    */
   public function initAnnotation($properties)
   {
-    $this->_map($properties, array('order'));
+    $this->map($properties, array('order'));
     
     parent::initAnnotation($properties);
   }

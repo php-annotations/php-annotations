@@ -49,7 +49,7 @@ class ParamAnnotation extends Annotation implements IAnnotationParser
    */
   public function initAnnotation($properties)
   {
-    $this->_map($properties, array('type', 'name'));
+    $this->map($properties, array('type', 'name'));
     
     parent::initAnnotation($properties);
     

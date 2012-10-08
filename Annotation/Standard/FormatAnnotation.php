@@ -43,7 +43,7 @@ class FormatAnnotation extends Annotation
    */
   public function initAnnotation($properties)
   {
-    $this->_map($properties, array('format'));
+    $this->map($properties, array('format'));
     
     parent::initAnnotation($properties);
     
