@@ -30,8 +30,8 @@ class APCDataCache implements IDataCache
      */
     public function __construct()
     {
-        if (!class_exists('APCIterator')) {
-            throw new AnnotationException('APC extension (version 3.1.1 or newer) not configured/loaded');
+        if (!extension_loaded('apc')) {
+            throw new AnnotationException('APC extension not configured/loaded');
         }
     }
 
