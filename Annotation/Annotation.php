@@ -8,7 +8,7 @@
  * This software is licensed under the GNU LGPL license
  * for more information, please see: 
  * 
- * <http://code.google.com/p/php-annotations>
+ * <https://github.com/mindplay-dk/php-annotations>
  */
 
 namespace Mindplay\Annotation;
@@ -42,6 +42,8 @@ abstract class Annotation implements IAnnotation
      *
      * @param array &$properties Array of annotation properties, as passed into IAnnotation::initAnnotation()
      * @param array $indexes Array of unnamed properties
+     *
+     * @todo rename to map()
      */
     protected function _map(&$properties, $indexes)
     {

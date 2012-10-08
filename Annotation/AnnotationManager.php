@@ -8,15 +8,18 @@
  * This software is licensed under the GNU LGPL license
  * for more information, please see: 
  * 
- * <http://code.google.com/p/php-annotations>
+ * <https://github.com/mindplay-dk/php-annotations>
  */
 
 namespace Mindplay\Annotation;
 
-use \Mindplay\Annotation\Cache\AnnotationCacheNotConfiguredException;
-use \ReflectionClass;
-use \ReflectionMethod;
-use \ReflectionProperty;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
+
+use Mindplay\Annotation\AnnotationParser;
+use Mindplay\Annotation\UsageAnnotation;
+use Mindplay\Annotation\Cache\IDataCache;
 
 /**
  * This class manages the retrieval of Annotations from source code files
@@ -39,7 +42,8 @@ class AnnotationManager
     public $namespace = '';
 
     /**
-     * @var \Mindplay\Annotation\Cache\IAnnotationCache
+     * @var IDataCache|bool a cache-provider used to store annotation-data after parsing; or false to disable caching
+     * @see getAnnotationData()
      */
     public $cache;
 
@@ -105,9 +109,11 @@ class AnnotationManager
     protected $parser;
 
     /**
-     * @var array An internal cache for specifications for loaded file Annotations
+     * An internal cache for annotation-data loaded from source-code files
+     *
+     * @var array map where $member_name => annotation-data
      */
-    protected $specs = array();
+    protected $data = array();
 
     /**
      * @var array[] An internal cache for Annotation instances
@@ -129,12 +135,20 @@ class AnnotationManager
     /**
      * @var $_usageAnnotation UsageAnnotation The standard UsageAnnotation
      */
-    protected $_usageAnnotation;
+    private $_usageAnnotation;
+
+    /**
+     * @var string a seed for caching - used when generating cache keys, to prevent collisions
+     * when using more than one AnnotationManager in the same application.
+     */
+    private $_cacheSeed = '';
 
     /**
      * Initialize the Annotation Manager
+     *
+     * @param string $cacheSeed only needed if using more than one AnnotationManager in the same application
      */
-    public function __construct()
+    public function __construct($cacheSeed = '')
     {
         $this->_usageAnnotation = new UsageAnnotation();
         $this->_usageAnnotation->class = true;
@@ -152,54 +166,48 @@ class AnnotationManager
             $this->parser->debug = $this->debug;
             $this->parser->autoload = $this->autoload;
         }
+
         return $this->parser;
     }
 
     /**
-     * Retrieves all Annotation specifications for a given source code file.
+     * Retrieves annotation-data from a given source-code file.
      *
-     * @param string $class The class to retrieve the annotations
+     * Member-names in the returned array have the following format: Class, Class::method or Class::$member
      *
-     * @return array Specifications for Annotations (arrays keyed by Class, Class::method or Class::$member)
+     * @param string $path the path of the source-code file from which to obtain annotation-data.
+     * @return array[] map where $member_name => array of annotation-data
+     *
+     * @throws AnnotationException if cache is not configured (or explicitly turned off)
+     *
+     * @see $data
+     * @see $cache
      */
-    protected function getClassMetadata($class)
+    protected function getAnnotationData($path)
     {
-        $reflection = new ReflectionClass($class);
-        $path = $reflection->getFileName();
-
-        if (!isset($this->specs[$path])) {
-            try {
-                $this->specs[$path] = $this->getFromCache($reflection, $path);
-            } catch (AnnotationCacheNotConfiguredException $e) {
-                trigger_error($e->getMessage(), E_USER_NOTICE);
-                $this->specs[$path] = eval($this->getParser()->parseFile($path));
+        if (!isset($this->data[$path])) {
+            if ($this->cache === null) {
+                throw new AnnotationException("AnnotationManager::\$cache is not configured");
             }
+
+            if ($this->cache === false) {
+                # caching is disabled
+                $data = eval($this->getParser()->parseFile($path));
+            } else {
+                $key = basename($path) . '-' . sprintf('%x', crc32($path . $this->_cacheSeed));
+
+                if (($this->cache->exists($key) === false) || (filemtime($path) > $this->cache->getTimestamp($key))) {
+                    $data = eval($this->getParser()->parseFile($path));
+                    $this->cache->store($key, $data);
+                } else {
+                    $data = $this->cache->fetch($key);
+                }
+            }
+
+            $this->data[$path] = $data;
         }
 
-        return $this->specs[$path];
-    }
-
-    /**
-     * @param ReflectionClass $reflection
-     * @param string $filePath
-     *
-     * @return mixed
-     */
-    protected function getFromCache(ReflectionClass $reflection, $filePath)
-    {
-        if (is_null($this->cache)) {
-            throw new AnnotationCacheNotConfiguredException(
-                __METHOD__ . " : AnnotationManager::\$cache is not configured"
-            );
-        }
-
-        $cacheId = $this->cache->createId($reflection);
-
-        if (!$this->cache->exists($cacheId) || filemtime($filePath) > $this->cache->getLastChangeTime($cacheId)) {
-            $this->cache->store($cacheId, $this->getParser()->parseFile($filePath));
-        }
-
-        return $this->cache->get($cacheId);
+        return $this->data[$path];
     }
 
     /**
@@ -236,11 +244,14 @@ class AnnotationManager
     }
 
     /**
-     * Constructs, initializes and returns Annotation objects
+     * Constructs, initializes and returns IAnnotation objects
      *
      * @param string $class The name of the class from which to obtain Annotations
      * @param string $member The type of member, e.g. "class", "property" or "method"
      * @param string $name Optional member name, e.g. "method" or "$property"
+     *
+     * @return IAnnotation[] array of IAnnotation objects for the given class/member/name
+     * @throws AnnotationException for bad annotations
      */
     protected function getAnnotations($class, $member = 'class', $name = null)
     {
@@ -267,7 +278,8 @@ class AnnotationManager
 
             $this->initialized[$key] = true;
 
-            $specs = $this->getClassMetadata($class);
+            $reflection = new ReflectionClass($class);
+            $specs = $this->getAnnotationData($reflection->getFileName());
 
             if (isset($specs[$key])) {
                 $annotations = array();
@@ -276,13 +288,13 @@ class AnnotationManager
                     $type = array_shift($spec);
 
                     if (!class_exists($type, $this->autoload)) {
-                        throw new AnnotationException(__CLASS__ . "::getAnnotations() : annotation type {$type} not found");
+                        throw new AnnotationException("annotation type {$type} not found");
                     }
 
                     $annotation = new $type;
 
                     if (!($annotation instanceof IAnnotation)) {
-                        throw new AnnotationException(__CLASS__ . "::getAnnotations() : annotation type {$type} does not implement the mandatory IAnnotation interface");
+                        throw new AnnotationException("annotation type {$type} does not implement the mandatory IAnnotation interface");
                     }
 
                     $annotation->initAnnotation($spec);
@@ -333,18 +345,19 @@ class AnnotationManager
      * Validates the constraints (as defined by the UsageAnnotation of each annotation) of a
      * list of annotations for a given type of member.
      *
-     * @param array An array of IAnnotation objects to be validated.
-     * @param string The type of member to validate against (e.g. "class", "property" or "method")
+     * @param array &$annotations An array of IAnnotation objects to be validated.
+     * @param string $member The type of member to validate against (e.g. "class", "property" or "method")
+     * @throws AnnotationException if a constraint is violated
      */
     protected function applyConstraints(array &$annotations, $member)
     {
-        foreach ($annotations as $outer=> $annotation) {
+        foreach ($annotations as $outer => $annotation) {
             $type = get_class($annotation);
 
             $usage = $this->getUsage($type);
 
             if (!$usage->$member) {
-                throw new AnnotationException(__CLASS__ . "::getAnnotations() : {$type} cannot be applied to a {$member}");
+                throw new AnnotationException("{$type} cannot be applied to a {$member}");
             }
 
             if (!$usage->multiple) {
@@ -357,7 +370,7 @@ class AnnotationManager
                         if ($usage->inherited) {
                             unset($annotations[$inner]);
                         } else {
-                            throw new AnnotationException(__CLASS__ . "::getAnnotations() : only one {$type} may be applied to the same {$member}");
+                            throw new AnnotationException("only one annotation of type {$type} may be applied to the same {$member}");
                         }
                     }
                 }
@@ -394,6 +407,8 @@ class AnnotationManager
      * Obtain the UsageAnnotation for a given Annotation class
      *
      * @param string $class The Annotation type class-name
+     * @return UsageAnnotation
+     * @throws AnnotationException if the given class-name is invalid; if the annotation-type has no defined usage
      */
     public function getUsage($class)
     {
@@ -403,7 +418,7 @@ class AnnotationManager
 
         if (!isset($this->usage[$class])) {
             if (!class_exists($class, $this->autoload)) {
-                throw new AnnotationException(__CLASS__ . "::getUsage() : undefined Annotation type '{$class}'");
+                throw new AnnotationException("undefined Annotation type '{$class}'");
             }
 
             $usage = $this->getAnnotations($class);
@@ -412,11 +427,11 @@ class AnnotationManager
                 if ($parent = get_parent_class($class)) {
                     $usage = $this->getUsage($parent);
                 } else {
-                    throw new AnnotationException(__CLASS__ . "::getUsage() : the class '{$class}' must have exactly one UsageAnnotation");
+                    throw new AnnotationException("the class '{$class}' must have exactly one UsageAnnotation");
                 }
             } else {
                 if (count($usage) !== 1 || !($usage[0] instanceof UsageAnnotation)) {
-                    throw new AnnotationException(__CLASS__ . "::getUsage() : the class '{$class}' must have exactly one UsageAnnotation (no other Annotations are allowed)");
+                    throw new AnnotationException("the class '{$class}' must have exactly one UsageAnnotation (no other Annotations are allowed)");
                 } else {
                     $usage = $usage[0];
                 }
@@ -431,11 +446,12 @@ class AnnotationManager
     /**
      * Inspects Annotations applied to a given class
      *
-     * @param mixed $class A class name, an object, or a ReflectionClass instance
+     * @param string|ReflectionClass $class A class name, an object, or a ReflectionClass instance
      * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
      *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
      *
      * @return array Annotation instances
+     * @throws AnnotationException if a given class-name is undefined
      */
     public function getClassAnnotations($class, $type = null)
     {
@@ -448,7 +464,7 @@ class AnnotationManager
         }
 
         if (!class_exists($class, $this->autoload)) {
-            throw new AnnotationException(__CLASS__ . "::getClassAnnotations() : undefined class {$class}");
+            throw new AnnotationException("undefined class {$class}");
         }
 
         if ($type === null) {
@@ -480,11 +496,11 @@ class AnnotationManager
         }
 
         if (!class_exists($class, $this->autoload)) {
-            throw new AnnotationException(__CLASS__ . "::getMethodAnnotations() : undefined class {$class}");
+            throw new AnnotationException("undefined class {$class}");
         }
 
         if (!method_exists($class, $method)) {
-            throw new AnnotationException(__CLASS__ . "::getMethodAnnotations() : undefined method {$class}::{$method}()");
+            throw new AnnotationException("undefined method {$class}::{$method}()");
         }
 
         if ($type === null) {
@@ -516,7 +532,7 @@ class AnnotationManager
         }
 
         if (!class_exists($class, $this->autoload)) {
-            throw new AnnotationException(__CLASS__ . "::getPropertyAnnotations() : undefined class {$class}");
+            throw new AnnotationException("undefined class {$class}");
         }
 
         if ($type === null) {

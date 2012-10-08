@@ -2,7 +2,7 @@
 require_once 'suite/Annotations.case.php';
 require_once 'suite/Annotations.Sample.case.php';
 
-use Mindplay\Annotation\Cache\AnnotationFileCache;
+use Mindplay\Annotation\Cache\FileDataCache;
 use Mindplay\Annotation\AnnotationParser;
 use Mindplay\Annotation\AnnotationManager;
 use Mindplay\Annotation\AnnotationException;
@@ -13,311 +13,349 @@ use Mindplay\Annotation\Annotations;
  */
 class AnnotationsTest extends xTest
 {
-  public function __construct()
-  {
-    $cachePath = dirname(__DIR__).DIRECTORY_SEPARATOR.'runtime';
-
-    Annotations::$config = array(
-      'cache' => new AnnotationFileCache($cachePath), // turn caching on (or else AnnotationManager will generate E_NOTICE)
-    );
-
-    if (!is_writable($cachePath))
-      die('cache path is not writable: ' . $cachePath);
-
-    // manually wipe out the cache:
-    foreach (glob(Annotations::getManager()->cache->path.DIRECTORY_SEPARATOR.'*.annotations.php') as $path)
-      unlink($path);
-
-    // disable some annotations not used during testing:
-    Annotations::getManager()->registry['var'] = false;
-    Annotations::getManager()->registry['param'] = false;
-  }
-
-  protected function testCanResolveAnnotationNames()
-  {
-    $manager = new AnnotationManager;
-    $manager->namespace = ''; // look for annotations in the global namespace
-    $manager->suffix = 'Annotation'; // use a suffix for annotation class-names
-
-    $this->check($manager->resolveName('test') === 'TestAnnotation', 'should capitalize and suffix annotation names');
-    $this->check($manager->resolveName('X\Y\Foo') === 'X\Y\FooAnnotation', 'should suffix fully qualified annotation names');
-
-    $manager->registry['test'] = 'X\Y\Z\TestAnnotation';
-    $this->check($manager->resolveName('test') === 'X\Y\Z\TestAnnotation', 'should respect registered annotation types');
-    $this->check($manager->resolveName('Test') === 'X\Y\Z\TestAnnotation', 'should ignore case of first letter in annotation names');
-
-    $manager->registry['test'] = false;
-    $this->check($manager->resolveName('test') === false, 'should respect disabled annotation types');
-
-    $manager->namespace = 'ABC';
-    $this->check($manager->resolveName('hello') === 'ABC\HelloAnnotation', 'should default to standard namespace');
-  }
-
-  protected function testCanParseAnnotations()
-  {
-    $manager = new AnnotationManager;
-    $manager->namespace = ''; // look for annotations in the global namespace
-    $manager->suffix = 'Annotation'; // use a suffix for annotation class-names
-
-    $parser = $manager->getParser();
-
-    $source = "
-      <?php
-      /**
-       * @doc 123
-       * @note('abc')
-       * @required
-       * @note('xyz');
-       */
-      class Sample {}
-    ";
-
-    $code = $parser->parse($source, 'inline-test');
-
-    $test = eval($code);
-
-    $this->check($test['Sample'][0][0] === 'DocAnnotation', 'first annotation is a DocAnnotation');
-    $this->check($test['Sample'][0]['value'] === 123, 'first annotation has the value 123');
-
-    $this->check($test['Sample'][1][0] === 'NoteAnnotation', 'second annotation is a NoteAnnotation');
-    $this->check($test['Sample'][1][1] === 'abc', 'value of second annotation is "abc"');
-
-    $this->check($test['Sample'][2][0] === 'Mindplay\Annotation\Standard\RequiredAnnotation', 'third annotation is a RequiredAnnotation');
-
-    $this->check($test['Sample'][3][0] === 'NoteAnnotation', 'last annotation is a NoteAnnotation');
-    $this->check($test['Sample'][3][1] === 'xyz', 'value of last annotation is "xyz"');
-  }
-
-  protected function testCanGetStaticAnnotationManager()
-  {
-    if (Annotations::getManager() instanceof AnnotationManager)
-      $this->pass();
-    else
-      $this->fail();
-  }
-
-  protected function testCanGetAnnotationUsage()
-  {
-    $usage = Annotations::getUsage('NoteAnnotation');
-
-    $this->check($usage->class===true);
-    $this->check($usage->property===true);
-    $this->check($usage->method===true);
-    $this->check($usage->inherited===true);
-    $this->check($usage->multiple===true);
-  }
-
-  protected function testCanGetClassAnnotations()
-  {
-    $ann = Annotations::ofClass('Test');
-    $this->check(count($ann)>0);
-  }
-
-  protected function testCanGetMethodAnnotations()
-  {
-    $ann = Annotations::ofMethod('Test', 'run');
-    $this->check(count($ann)>0);
-  }
-
-  protected function testCanGetPropertyAnnotations()
-  {
-    $ann = Annotations::ofProperty('Test', 'sample');
-    $this->check(count($ann)>0);
-  }
-
-  protected function testCanGetFilteredPropertyAnnotations()
-  {
-    $anns = Annotations::ofProperty('Test', 'mixed', 'NoteAnnotation');
-    if (!count($anns))
-      return $this->fail('No annotations found');
-    foreach ($anns as $ann)
-      if (!$ann instanceof NoteAnnotation)
-        $this->fail();
-    $this->pass();
-  }
-
-  protected function testCanGetFilteredClassAnnotations()
-  {
-    $anns = Annotations::ofClass('TestBase', 'NoteAnnotation');
-    if (!count($anns))
-      return $this->fail('No annotations found');
-    foreach ($anns as $ann)
-      if (!$ann instanceof NoteAnnotation)
-        $this->fail();
-    $this->pass();
-  }
-
-  protected function testCanGetFilteredMethodAnnotations()
-  {
-    $anns = Annotations::ofMethod('TestBase', 'run', 'NoteAnnotation');
-    if (!count($anns))
-      return $this->fail('No annotations found');
-    foreach ($anns as $ann)
-      if (!$ann instanceof NoteAnnotation)
-        $this->fail();
-    $this->pass();
-  }
-
-  protected function testCanGetInheritedClassAnnotations()
-  {
-    $anns = Annotations::ofClass('Test');
-    foreach ($anns as $ann)
-      if ($ann->note == 'Applied to the TestBase class')
-        return $this->pass();
-    $this->fail();
-  }
-
-  protected function testCanGetInheritedMethodAnnotations()
-  {
-    $anns = Annotations::ofMethod('Test', 'run');
-    foreach ($anns as $ann)
-      if ($ann->note == 'Applied to a hidden TestBase method')
-        return $this->pass();
-    $this->fail();
-  }
-
-  protected function testCanGetInheritedPropertyAnnotations()
-  {
-    $anns = Annotations::ofProperty('Test', 'sample');
-    foreach ($anns as $ann)
-      if ($ann->note == 'Applied to a TestBase member')
-        return $this->pass();
-    $this->fail();
-  }
-
-  protected function testDoesNotInheritUninheritableAnnotations()
-  {
-    $anns = Annotations::ofClass('Test');
-    if (count($anns)==0)
-      $this->fail();
-    foreach ($anns as $ann)
-      if ($ann instanceof UninheritableAnnotation)
-        $this->fail();
-    $this->pass();
-  }
-
-  protected function testThrowsExceptionIfSingleAnnotationAppliedTwice()
-  {
-    try
+    public function __construct()
     {
-      $anns = Annotations::ofProperty('Test', 'only_one');
+        $cachePath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'runtime';
+
+        Annotations::$config = array(
+            'cache' => new FileDataCache($cachePath),
+            // turn caching on (or else AnnotationManager will generate E_NOTICE)
+        );
+
+        if (!is_writable($cachePath)) {
+            die('cache path is not writable: ' . $cachePath);
+        }
+
+        // manually wipe out the cache:
+        $pattern = Annotations::getManager()->cache->getPath() . DIRECTORY_SEPARATOR . '*.annotations.php';
+
+        foreach (glob($pattern) as $path) {
+            unlink($path);
+        }
+
+        // disable some annotations not used during testing:
+        Annotations::getManager()->registry['var'] = false;
+        Annotations::getManager()->registry['param'] = false;
     }
-    catch (AnnotationException $e)
+
+    protected function testCanResolveAnnotationNames()
     {
-      return $this->pass();
+        $manager = new AnnotationManager;
+        $manager->namespace = ''; // look for annotations in the global namespace
+        $manager->suffix = 'Annotation'; // use a suffix for annotation class-names
+
+        $this->check(
+            $manager->resolveName('test') === 'TestAnnotation',
+            'should capitalize and suffix annotation names'
+        );
+        $this->check(
+            $manager->resolveName('X\Y\Foo') === 'X\Y\FooAnnotation',
+            'should suffix fully qualified annotation names'
+        );
+
+        $manager->registry['test'] = 'X\Y\Z\TestAnnotation';
+        $this->check(
+            $manager->resolveName('test') === 'X\Y\Z\TestAnnotation',
+            'should respect registered annotation types'
+        );
+        $this->check(
+            $manager->resolveName('Test') === 'X\Y\Z\TestAnnotation',
+            'should ignore case of first letter in annotation names'
+        );
+
+        $manager->registry['test'] = false;
+        $this->check($manager->resolveName('test') === false, 'should respect disabled annotation types');
+
+        $manager->namespace = 'ABC';
+        $this->check($manager->resolveName('hello') === 'ABC\HelloAnnotation', 'should default to standard namespace');
     }
-    $this->fail('Did not throw expected exception');
-  }
 
-  protected function testCanOverrideSingleAnnotation()
-  {
-    $anns = Annotations::ofProperty('Test', 'override_me');
+    protected function testCanParseAnnotations()
+    {
+        $manager = new AnnotationManager;
+        $manager->namespace = ''; // look for annotations in the global namespace
+        $manager->suffix = 'Annotation'; // use a suffix for annotation class-names
 
-    if (count($anns)!=1)
-      return $this->fail(count($anns).' annotations found - expected 1');
+        $parser = $manager->getParser();
 
-    $ann = reset($anns);
+        $source = "
+            <?php
+            /**
+             * @doc 123
+             * @note('abc')
+             * @required
+             * @note('xyz');
+             */
+            class Sample {}
+        ";
 
-    if ($ann->test!='This annotation overrides the one in TestBase')
-      $this->fail();
-    else
-      $this->pass();
-  }
+        $code = $parser->parse($source, 'inline-test');
 
-  /*
+        $test = eval($code);
 
-  // The delegation feature has been disabled in the 1.x branch of this library.
+        $this->check($test['Sample'][0][0] === 'DocAnnotation', 'first annotation is a DocAnnotation');
+        $this->check($test['Sample'][0]['value'] === 123, 'first annotation has the value 123');
 
-  protected function testCanDelegateAnnotations()
-  {
-    $anns = Annotations::ofProperty('Test', 'foo');
+        $this->check($test['Sample'][1][0] === 'NoteAnnotation', 'second annotation is a NoteAnnotation');
+        $this->check($test['Sample'][1][1] === 'abc', 'value of second annotation is "abc"');
 
-    if (count($anns)!=1)
-      return $this->fail(count($anns).' annotations found - expected 1');
+        $this->check(
+            $test['Sample'][2][0] === 'Mindplay\Annotation\Standard\RequiredAnnotation',
+            'third annotation is a RequiredAnnotation'
+        );
 
-    $ann = reset($anns);
+        $this->check($test['Sample'][3][0] === 'NoteAnnotation', 'last annotation is a NoteAnnotation');
+        $this->check($test['Sample'][3][1] === 'xyz', 'value of last annotation is "xyz"');
+    }
 
-    if ($ann->note != 'abc')
-      return $this->fail('value of delegated annotation does not match the expected value');
+    protected function testCanGetStaticAnnotationManager()
+    {
+        if (Annotations::getManager() instanceof AnnotationManager) {
+            $this->pass();
+        } else {
+            $this->fail();
+        }
+    }
 
-    $anns = Annotations::ofProperty('Test', 'bar');
+    protected function testCanGetAnnotationUsage()
+    {
+        $usage = Annotations::getUsage('NoteAnnotation');
 
-    if (count($anns)!=1)
-      return $this->fail(count($anns).' annotations found - expected 1');
+        $this->check($usage->class === true);
+        $this->check($usage->property === true);
+        $this->check($usage->method === true);
+        $this->check($usage->inherited === true);
+        $this->check($usage->multiple === true);
+    }
 
-    $ann = reset($anns);
+    protected function testCanGetClassAnnotations()
+    {
+        $ann = Annotations::ofClass('Test');
+        $this->check(count($ann) > 0);
+    }
 
-    if ($ann->note != '123')
-      return $this->fail('value of delegated annotation does not match the expected value');
+    protected function testCanGetMethodAnnotations()
+    {
+        $ann = Annotations::ofMethod('Test', 'run');
+        $this->check(count($ann) > 0);
+    }
 
-    $this->pass('delegation tests passed');
-  }
+    protected function testCanGetPropertyAnnotations()
+    {
+        $ann = Annotations::ofProperty('Test', 'sample');
+        $this->check(count($ann) > 0);
+    }
 
-  */
+    protected function testCanGetFilteredPropertyAnnotations()
+    {
+        $anns = Annotations::ofProperty('Test', 'mixed', 'NoteAnnotation');
+        if (!count($anns)) {
+            return $this->fail('No annotations found');
+        }
+        foreach ($anns as $ann) {
+            if (!$ann instanceof NoteAnnotation) {
+                $this->fail();
+            }
+        }
+        $this->pass();
+    }
 
-  protected function testCanHandleEdgeCaseInParser()
-  {
-    // an edge-case was found in the parser - this test asserts that a php-doc style
-    // annotation with no trailing characters after it will be parsed correctly.
+    protected function testCanGetFilteredClassAnnotations()
+    {
+        $anns = Annotations::ofClass('TestBase', 'NoteAnnotation');
+        if (!count($anns)) {
+            return $this->fail('No annotations found');
+        }
+        foreach ($anns as $ann) {
+            if (!$ann instanceof NoteAnnotation) {
+                $this->fail();
+            }
+        }
+        $this->pass();
+    }
 
-    $anns = Annotations::ofClass('TestBase', 'DocAnnotation');
+    protected function testCanGetFilteredMethodAnnotations()
+    {
+        $anns = Annotations::ofMethod('TestBase', 'run', 'NoteAnnotation');
+        if (!count($anns)) {
+            return $this->fail('No annotations found');
+        }
+        foreach ($anns as $ann) {
+            if (!$ann instanceof NoteAnnotation) {
+                $this->fail();
+            }
+        }
+        $this->pass();
+    }
 
-    $this->check(count($anns)==1, 'one DocAnnotation was expected - found '.count($anns));
-  }
+    protected function testCanGetInheritedClassAnnotations()
+    {
+        $anns = Annotations::ofClass('Test');
+        foreach ($anns as $ann) {
+            if ($ann->note == 'Applied to the TestBase class') {
+                return $this->pass();
+            }
+        }
+        $this->fail();
+    }
 
-  protected function testCanHandleNamespaces()
-  {
-    // This test asserts that a namespaced class can be annotated, that annotations can
-    // be namespaced, and that asking for annotations of a namespaced annotation-type
-    // yields the expected result.
+    protected function testCanGetInheritedMethodAnnotations()
+    {
+        $anns = Annotations::ofMethod('Test', 'run');
+        foreach ($anns as $ann) {
+            if ($ann->note == 'Applied to a hidden TestBase method') {
+                return $this->pass();
+            }
+        }
+        $this->fail();
+    }
 
-    $anns = Annotations::ofClass('Sample\SampleClass', 'Sample\SampleAnnotation');
+    protected function testCanGetInheritedPropertyAnnotations()
+    {
+        $anns = Annotations::ofProperty('Test', 'sample');
+        foreach ($anns as $ann) {
+            if ($ann->note == 'Applied to a TestBase member') {
+                return $this->pass();
+            }
+        }
+        $this->fail();
+    }
 
-    $this->check(count($anns)==1, 'one SampleAnnotation was expected - found '.count($anns));
-  }
+    protected function testDoesNotInheritUninheritableAnnotations()
+    {
+        $anns = Annotations::ofClass('Test');
+        if (count($anns) == 0) {
+            $this->fail();
+        }
+        foreach ($anns as $ann) {
+            if ($ann instanceof UninheritableAnnotation) {
+                $this->fail();
+            }
+        }
+        $this->pass();
+    }
 
-  protected function testCanUseAnnotationsInDefaultNamespace()
-  {
-    $manager = new AnnotationManager();
-    $manager->namespace = 'Sample';
-    $manager->cache = new AnnotationFileCache(Annotations::getManager()->cache->path, 'abc123');
+    protected function testThrowsExceptionIfSingleAnnotationAppliedTwice()
+    {
+        try {
+            $anns = Annotations::ofProperty('Test', 'only_one');
+        } catch (AnnotationException $e) {
+            return $this->pass();
+        }
+        $this->fail('Did not throw expected exception');
+    }
 
-    $anns = $manager->getClassAnnotations('Sample\AnnotationInDefaultNamespace', 'Sample\SampleAnnotation');
+    protected function testCanOverrideSingleAnnotation()
+    {
+        $anns = Annotations::ofProperty('Test', 'override_me');
 
-    $this->check(count($anns)==1, 'one SampleAnnotation was expected - found '.count($anns));
-  }
+        if (count($anns) != 1) {
+            return $this->fail(count($anns) . ' annotations found - expected 1');
+        }
 
-  protected function testCanIgnoreAnnotations()
-  {
-    $manager = new AnnotationManager();
-    $manager->namespace = 'Sample';
-    $manager->cache = new AnnotationFileCache(Annotations::getManager()->cache->path, 'xyz');
+        $ann = reset($anns);
 
-    $manager->registry['ignored'] = false;
+        if ($ann->test != 'This annotation overrides the one in TestBase') {
+            $this->fail();
+        } else {
+            $this->pass();
+        }
+    }
 
-    $anns = $manager->getClassAnnotations('Sample\IgnoreMe');
+    /*
 
-    $this->check(count($anns)==0, 'the @ignored annotation should be ignored');
-  }
+    // The delegation feature has been disabled in the 1.x branch of this library.
 
-  protected function testCanUseAnnotationAlias()
-  {
-    $manager = new AnnotationManager();
-    $manager->namespace = 'Sample';
-    $manager->cache = new AnnotationFileCache(Annotations::getManager()->cache->path, '12345678');
+    protected function testCanDelegateAnnotations()
+    {
+      $anns = Annotations::ofProperty('Test', 'foo');
 
-    $manager->registry['aliased'] = 'Sample\SampleAnnotation';
+      if (count($anns)!=1)
+        return $this->fail(count($anns).' annotations found - expected 1');
 
-    $anns = $manager->getClassAnnotations('Sample\AliasMe');
+      $ann = reset($anns);
 
-    $this->check(count($anns)==1, 'the @aliased annotation should be aliased');
-  }
+      if ($ann->note != 'abc')
+        return $this->fail('value of delegated annotation does not match the expected value');
 
-  protected function testCanFindAnnotationsByAlias()
-  {
-    $ann = Annotations::ofProperty('TestBase', 'sample', '@note');
-    $this->check(count($ann) === 1, 'TestBase::$sample has one @note annotation');
-  }
+      $anns = Annotations::ofProperty('Test', 'bar');
+
+      if (count($anns)!=1)
+        return $this->fail(count($anns).' annotations found - expected 1');
+
+      $ann = reset($anns);
+
+      if ($ann->note != '123')
+        return $this->fail('value of delegated annotation does not match the expected value');
+
+      $this->pass('delegation tests passed');
+    }
+
+    */
+
+    protected function testCanHandleEdgeCaseInParser()
+    {
+        // an edge-case was found in the parser - this test asserts that a php-doc style
+        // annotation with no trailing characters after it will be parsed correctly.
+
+        $anns = Annotations::ofClass('TestBase', 'DocAnnotation');
+
+        $this->check(count($anns) == 1, 'one DocAnnotation was expected - found ' . count($anns));
+    }
+
+    protected function testCanHandleNamespaces()
+    {
+        // This test asserts that a namespaced class can be annotated, that annotations can
+        // be namespaced, and that asking for annotations of a namespaced annotation-type
+        // yields the expected result.
+
+        $anns = Annotations::ofClass('Sample\SampleClass', 'Sample\SampleAnnotation');
+
+        $this->check(count($anns) == 1, 'one SampleAnnotation was expected - found ' . count($anns));
+    }
+
+    protected function testCanUseAnnotationsInDefaultNamespace()
+    {
+        $manager = new AnnotationManager();
+        $manager->namespace = 'Sample';
+        $manager->cache = new FileDataCache(Annotations::getManager()->cache->getPath(), 'abc123');
+
+        $anns = $manager->getClassAnnotations('Sample\AnnotationInDefaultNamespace', 'Sample\SampleAnnotation');
+
+        $this->check(count($anns) == 1, 'one SampleAnnotation was expected - found ' . count($anns));
+    }
+
+    protected function testCanIgnoreAnnotations()
+    {
+        $manager = new AnnotationManager();
+        $manager->namespace = 'Sample';
+        $manager->cache = new FileDataCache(Annotations::getManager()->cache->getPath(), 'xyz');
+
+        $manager->registry['ignored'] = false;
+
+        $anns = $manager->getClassAnnotations('Sample\IgnoreMe');
+
+        $this->check(count($anns) == 0, 'the @ignored annotation should be ignored');
+    }
+
+    protected function testCanUseAnnotationAlias()
+    {
+        $manager = new AnnotationManager();
+        $manager->namespace = 'Sample';
+        $manager->cache = new FileDataCache(Annotations::getManager()->cache->getPath(), '12345678');
+
+        $manager->registry['aliased'] = 'Sample\SampleAnnotation';
+
+        $anns = $manager->getClassAnnotations('Sample\AliasMe');
+
+        $this->check(count($anns) == 1, 'the @aliased annotation should be aliased');
+    }
+
+    protected function testCanFindAnnotationsByAlias()
+    {
+        $ann = Annotations::ofProperty('TestBase', 'sample', '@note');
+        $this->check(count($ann) === 1, 'TestBase::$sample has one @note annotation');
+    }
 }
 
 return new AnnotationsTest;

@@ -30,8 +30,6 @@ class Loader
     
     $path .= '.php';
     
-    if (false === include($path)) {
-      throw new Exception('class ' . $name . ' not found: ' . $path);
-    }
+    @include $path;
   }
 }

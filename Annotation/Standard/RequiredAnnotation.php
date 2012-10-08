@@ -8,7 +8,7 @@
  * This software is licensed under the GNU LGPL license
  * for more information, please see: 
  * 
- * <http://code.google.com/p/php-annotations>
+ * <https://github.com/mindplay-dk/php-annotations>
  */
 
 namespace Mindplay\Annotation\Standard;
@@ -19,6 +19,4 @@ namespace Mindplay\Annotation\Standard;
  * @usage('property'=>true, 'inherited'=>true)
  */
 class RequiredAnnotation extends ValidationAnnotationBase
-{
-  // @todo add flags indicating what "empty" means
-}
+{}

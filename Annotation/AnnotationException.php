@@ -8,17 +8,16 @@
  * This software is licensed under the GNU LGPL license
  * for more information, please see: 
  * 
- * <http://code.google.com/p/php-annotations>
+ * <https://github.com/mindplay-dk/php-annotations>
  */
 
 namespace Mindplay\Annotation;
 
-use \Exception;
+use Exception;
 
 /**
  * This exception is thrown by various classes in the annotations package,
  * making it possible to catch annotation-specific exceptions in user code.
  */
 class AnnotationException extends Exception
-{
-}
+{}

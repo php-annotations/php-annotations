@@ -8,7 +8,7 @@
  * This software is licensed under the GNU LGPL license
  * for more information, please see: 
  * 
- * <http://code.google.com/p/php-annotations>
+ * <https://github.com/mindplay-dk/php-annotations>
  */
 
 namespace Mindplay\Annotation\Standard;
