@@ -20,8 +20,8 @@ use Mindplay\Annotation\Annotation;
  */
 abstract class ValidationAnnotationBase extends Annotation
 {
-  /**
-   * @var string The error-message to display on validation failure.
-   */
-  public $message;
+    /**
+     * @var string The error-message (or string identifier) to display on validation failure
+     */
+    public $message;
 }

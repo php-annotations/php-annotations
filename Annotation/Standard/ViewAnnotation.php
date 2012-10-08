@@ -23,11 +23,13 @@ use Mindplay\Annotation\Annotation;
  * used to establish the name of a view to use for rendering an input, too.
  *
  * @usage('class'=>true, 'property'=>true, 'inherited'=>true)
+ *
+ * @todo implement this
  */
 class ViewAnnotation extends Annotation
 {
-  /**
-   * The name of the view to use when displaying a class or property.
-   */
-  public $name;
+    /**
+     * The name of the view to use when displaying a class or property.
+     */
+    public $name;
 }

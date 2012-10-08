@@ -24,32 +24,33 @@ use Mindplay\Annotation\Annotation;
  */
 class ReturnAnnotation extends Annotation implements IAnnotationParser
 {
-  /**
-   * @var string
-   */
-  public $type;
-  
-  /**
-   * Parse the standard PHP-DOC @var annotation
-   */
-  public static function parseAnnotation($value)
-  {
-    $parts = explode(' ', trim($value), 2);
-    
-    return array('type' => array_shift($parts));
-  }
-  
-  /**
-   * Initialize the annotation.
-   */
-  public function initAnnotation($properties)
-  {
-    $this->map($properties, array('type'));
-    
-    parent::initAnnotation($properties);
-    
-    if (!isset($this->type)) {
-      throw new AnnotationException('ReturnAnnotation requires a type property');
+    /**
+     * @var string
+     */
+    public $type;
+
+    /**
+     * Parse the standard PHP-DOC
+     * @var annotation
+     */
+    public static function parseAnnotation($value)
+    {
+        $parts = explode(' ', trim($value), 2);
+
+        return array('type' => array_shift($parts));
     }
-  }
+
+    /**
+     * Initialize the annotation.
+     */
+    public function initAnnotation($properties)
+    {
+        $this->map($properties, array('type'));
+
+        parent::initAnnotation($properties);
+
+        if (!isset($this->type)) {
+            throw new AnnotationException('ReturnAnnotation requires a type property');
+        }
+    }
 }

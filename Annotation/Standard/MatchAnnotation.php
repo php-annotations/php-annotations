@@ -20,23 +20,22 @@ use Mindplay\Annotation\AnnotationException;
  */
 class MatchAnnotation extends ValidationAnnotationBase
 {
-  /**
-   * @var string The regular expression pattern to match against.
-   */
-  public $pattern;
-  
-  /**
-   * Initialize the annotation.
-   */
-  public function initAnnotation($properties)
-  {
-    $this->map($properties, array('pattern'));
-    
-    parent::initAnnotation($properties);
-    
-    if (!isset($this->pattern))
+    /**
+     * @var string The regular expression pattern to match against.
+     */
+    public $pattern;
+
+    /**
+     * Initialize the annotation.
+     */
+    public function initAnnotation($properties)
     {
-      throw new AnnotationException('PatternAnnotation requires a pattern property');
+        $this->map($properties, array('pattern'));
+
+        parent::initAnnotation($properties);
+
+        if (!isset($this->pattern)) {
+            throw new AnnotationException('PatternAnnotation requires a pattern property');
+        }
     }
-  }
 }

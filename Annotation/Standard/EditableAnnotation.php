@@ -22,24 +22,24 @@ use Mindplay\Annotation\Annotation;
  */
 class EditableAnnotation extends Annotation
 {
-  /**
-   * @var bool Indicates whether or not a property is editable.
-   */
-  public $allow=false;
+    /**
+     * @var bool Indicates whether or not a property is editable.
+     */
+    public $allow = false;
 
-  /**
-   * @var bool Indicates whether or not a property is editable on a new instance.
-   *           (this value only has meaning when $allow is false.)
-   */
-  public $first=false;
+    /**
+     * @var bool Indicates whether or not a property is editable on a new instance.
+     *           (this value only has meaning when $allow is false.)
+     */
+    public $first = false;
 
-  /**
-   * Initialize the annotation.
-   */
-  public function initAnnotation($properties)
-  {
-    $this->map($properties, array('allow', 'first'));
-    
-    parent::initAnnotation($properties);
-  }
+    /**
+     * Initialize the annotation.
+     */
+    public function initAnnotation($properties)
+    {
+        $this->map($properties, array('allow', 'first'));
+
+        parent::initAnnotation($properties);
+    }
 }

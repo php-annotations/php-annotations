@@ -17,6 +17,9 @@ use Mindplay\Annotation\Annotation;
 
 /**
  * Defines a magic/virtual method
+ *
+ * @todo implement this
  */
 class MethodAnnotation extends Annotation
-{}
+{
+}

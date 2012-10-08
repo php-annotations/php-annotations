@@ -17,6 +17,9 @@ use Mindplay\Annotation\Annotation;
 
 /**
  * Defines a magic/virtual property and it's type
+ *
+ * @todo implement this
  */
 class PropertyAnnotation extends Annotation
-{}
+{
+}

@@ -22,23 +22,23 @@ use Mindplay\Annotation\Annotation;
  */
 class DisplayAnnotation extends Annotation
 {
-  /**
-   * @var string A group name - for use with helpers that render multiple fields as a group.
-   */
-  public $group;
-  
-  /**
-   * @var integer Order index - for use with helpers that render multiple fields. Fields are sorted in ascending order.
-   */
-  public $order;
-  
-  /**
-   * Initialize the annotation.
-   */
-  public function initAnnotation($properties)
-  {
-    $this->map($properties, array('order'));
-    
-    parent::initAnnotation($properties);
-  }
+    /**
+     * @var string A group name - for use with helpers that render multiple fields as a group.
+     */
+    public $group;
+
+    /**
+     * @var integer Order index - for use with helpers that render multiple fields. Fields are sorted in ascending order.
+     */
+    public $order;
+
+    /**
+     * Initialize the annotation.
+     */
+    public function initAnnotation($properties)
+    {
+        $this->map($properties, array('order'));
+
+        parent::initAnnotation($properties);
+    }
 }

@@ -27,18 +27,18 @@ use Mindplay\Annotation\Annotation;
  */
 class EditorAnnotation extends Annotation
 {
-  /**
-   * @var string The name of the view to use when editing a class or property.
-   */
-  public $name;
-  
-  /**
-   * Initialize the annotation.
-   */
-  public function initAnnotation($properties)
-  {
-    $this->map($properties, array('name'));
-    
-    parent::initAnnotation($properties);
-  }
+    /**
+     * @var string The name of the view to use when editing a class or property.
+     */
+    public $name;
+
+    /**
+     * Initialize the annotation.
+     */
+    public function initAnnotation($properties)
+    {
+        $this->map($properties, array('name'));
+
+        parent::initAnnotation($properties);
+    }
 }

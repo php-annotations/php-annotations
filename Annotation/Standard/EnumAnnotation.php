@@ -23,28 +23,27 @@ use Mindplay\Annotation\AnnotationException;
  */
 class EnumAnnotation extends ValidationAnnotationBase
 {
-  /**
-   * @var array A list of acceptable values in key => value format.
-   */
-  public $values;
-  
-  /**
-   * @var boolean Indicates whether or not to use strict comparison (===)
-   */
-  public $strict=false;
-  
-  /**
-   * Initialize the annotation.
-   */
-  public function initAnnotation($properties)
-  {
-    $this->map($properties, array('values'));
-    
-    parent::initAnnotation($properties);
-    
-    if (!isset($this->values))
+    /**
+     * @var array A list of acceptable values in key => value format.
+     */
+    public $values;
+
+    /**
+     * @var boolean Indicates whether or not to use strict comparison (===)
+     */
+    public $strict = false;
+
+    /**
+     * Initialize the annotation.
+     */
+    public function initAnnotation($properties)
     {
-      throw new AnnotationException('EnumAnnotation requires a list of possible values');
+        $this->map($properties, array('values'));
+
+        parent::initAnnotation($properties);
+
+        if (!isset($this->values)) {
+            throw new AnnotationException('EnumAnnotation requires a list of possible values');
+        }
     }
-  }
 }

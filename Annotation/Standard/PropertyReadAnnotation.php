@@ -17,4 +17,5 @@ namespace Mindplay\Annotation\Standard;
  * Defines a magic/virtual property, it's type and visibility
  */
 class PropertyReadAnnotation extends PropertyAnnotation
-{}
+{
+}
