@@ -71,7 +71,7 @@ class AnnotationCache
     {
         $path = $this->_getPath($key);
 
-        $content = self::PHP_TAG . $code . ";\n";
+        $content = self::PHP_TAG . $code . "\n";
 
         if (@file_put_contents($path, $content, LOCK_EX) === false) {
             throw new AnnotationException("unable to write cache file: $path");
