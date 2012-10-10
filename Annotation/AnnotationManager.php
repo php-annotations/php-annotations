@@ -452,7 +452,7 @@ class AnnotationManager
      * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
      *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
      *
-     * @return array Annotation instances
+     * @return Annotation[] Annotation instances
      * @throws AnnotationException if a given class-name is undefined
      */
     public function getClassAnnotations($class, $type = null)

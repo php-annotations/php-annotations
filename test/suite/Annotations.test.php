@@ -7,6 +7,7 @@ use Mindplay\Annotation\AnnotationParser;
 use Mindplay\Annotation\AnnotationManager;
 use Mindplay\Annotation\AnnotationException;
 use Mindplay\Annotation\Annotations;
+use Mindplay\Annotation\Annotation;
 
 /**
  * This class implements tests for core annotations
@@ -340,6 +341,10 @@ class AnnotationsTest extends xTest
 
     protected function testCanUseAnnotationAlias()
     {
+        /**
+         * @var Annotation[] $anns
+         */
+
         $manager = new AnnotationManager();
         $manager->namespace = 'Sample';
         $manager->cache = new FileDataCache(Annotations::getManager()->cache->getPath(), '12345678');
@@ -349,6 +354,7 @@ class AnnotationsTest extends xTest
         $anns = $manager->getClassAnnotations('Sample\AliasMe');
 
         $this->check(count($anns) == 1, 'the @aliased annotation should be aliased');
+        $this->check(get_class($anns[0]) == 'Sample\SampleAnnotation', 'returned @aliased annotation should map to Sample\SampleAnnotation');
     }
 
     protected function testCanFindAnnotationsByAlias()
