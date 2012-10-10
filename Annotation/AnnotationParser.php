@@ -58,9 +58,10 @@ class AnnotationParser
 
     /**
      * @param string $source The PHP source code to be parsed
-     * @param string $path The path of the source file being parsed (used only for error-reporting)
+     * @param string $path The path of the source file being parsed (for error-reporting only)
      *
      * @return string PHP source code to construct the annotations of the given PHP source code
+     * @throws AnnotationException if orphaned annotations are found at the end of the file
      */
     public function parse($source, $path)
     {
@@ -210,8 +211,9 @@ class AnnotationParser
      * Scan a PHP source code comment for annotation data
      *
      * @param string $str PHP comment containing annotations
-     *
      * @return array PHP source code snippets with annotation initialization arrays
+     *
+     * @throws AnnotationException for various run-time errors
      */
     protected function findAnnotations($str)
     {

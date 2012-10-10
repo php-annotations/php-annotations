@@ -35,8 +35,10 @@ class ParamAnnotation extends Annotation implements IAnnotationParser
     public $name;
 
     /**
-     * Parse the standard PHP-DOC
-     * @param annotation
+     * Parse the standard PHP-DOC "param" annotation.
+     *
+     * @param string $value
+     * @return array ['type', 'name']
      */
     public static function parseAnnotation($value)
     {

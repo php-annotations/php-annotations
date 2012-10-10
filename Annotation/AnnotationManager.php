@@ -150,6 +150,7 @@ class AnnotationManager
      */
     public function __construct($cacheSeed = '')
     {
+        $this->_cacheSeed = $cacheSeed;
         $this->_usageAnnotation = new UsageAnnotation();
         $this->_usageAnnotation->class = true;
         $this->_usageAnnotation->inherited = true;
@@ -215,7 +216,7 @@ class AnnotationManager
      *
      * @param string $name the annotation-name
      *
-     * @return string|false The fully qualified annotation class-name, or false if the
+     * @return string|bool The fully qualified annotation class-name, or false if the
      * requested annotation has been disabled (set to false) in the registry.
      *
      * @see $registry
@@ -520,6 +521,8 @@ class AnnotationManager
      *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
      *
      * @return array Annotation instances
+     *
+     * @throws AnnotationException
      */
     public function getPropertyAnnotations($class, $property = null, $type = null)
     {

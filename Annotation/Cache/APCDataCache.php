@@ -16,8 +16,6 @@ namespace Mindplay\Annotation\Cache;
 use Mindplay\Annotation\Cache\IDataCache;
 use Mindplay\Annotation\AnnotationException;
 
-use APCIterator;
-
 /**
  * This cache-provider implements APC as a back-end for storing annotation-data.
  *
