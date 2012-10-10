@@ -19,7 +19,7 @@ use ReflectionProperty;
 
 use Mindplay\Annotation\AnnotationParser;
 use Mindplay\Annotation\UsageAnnotation;
-use Mindplay\Annotation\Cache\IDataCache;
+use Mindplay\Annotation\AnnotationCache;
 
 /**
  * This class manages the retrieval of Annotations from source code files
@@ -42,7 +42,7 @@ class AnnotationManager
     public $namespace = '';
 
     /**
-     * @var IDataCache|bool a cache-provider used to store annotation-data after parsing; or false to disable caching
+     * @var AnnotationCache|bool a cache-provider used to store annotation-data after parsing; or false to disable caching
      * @see getAnnotationData()
      */
     public $cache;
@@ -179,7 +179,7 @@ class AnnotationManager
      * @param string $path the path of the source-code file from which to obtain annotation-data.
      * @return array[] map where $member_name => array of annotation-data
      *
-     * @throws AnnotationException if cache is not configured (or explicitly turned off)
+     * @throws AnnotationException if cache is not configured
      *
      * @see $data
      * @see $cache
@@ -198,11 +198,11 @@ class AnnotationManager
                 $key = basename($path) . '-' . sprintf('%x', crc32($path . $this->_cacheSeed));
 
                 if (($this->cache->exists($key) === false) || (filemtime($path) > $this->cache->getTimestamp($key))) {
-                    $data = eval($this->getParser()->parseFile($path));
-                    $this->cache->store($key, $data);
-                } else {
-                    $data = $this->cache->fetch($key);
+                    $code = $this->getParser()->parseFile($path);
+                    $this->cache->store($key, $code);
                 }
+
+                $data = $this->cache->fetch($key);
             }
 
             $this->data[$path] = $data;

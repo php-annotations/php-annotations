@@ -2,7 +2,7 @@
 require_once 'suite/Annotations.case.php';
 require_once 'suite/Annotations.Sample.case.php';
 
-use Mindplay\Annotation\Cache\FileDataCache;
+use Mindplay\Annotation\AnnotationCache;
 use Mindplay\Annotation\AnnotationParser;
 use Mindplay\Annotation\AnnotationManager;
 use Mindplay\Annotation\AnnotationException;
@@ -19,8 +19,7 @@ class AnnotationsTest extends xTest
         $cachePath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'runtime';
 
         Annotations::$config = array(
-            'cache' => new FileDataCache($cachePath),
-            // turn caching on (or else AnnotationManager will generate E_NOTICE)
+            'cache' => new AnnotationCache($cachePath),
         );
 
         if (!is_writable($cachePath)) {
@@ -28,7 +27,7 @@ class AnnotationsTest extends xTest
         }
 
         // manually wipe out the cache:
-        $pattern = Annotations::getManager()->cache->getPath() . DIRECTORY_SEPARATOR . '*.annotations.php';
+        $pattern = Annotations::getManager()->cache->getRoot() . DIRECTORY_SEPARATOR . '*.annotations.php';
 
         foreach (glob($pattern) as $path) {
             unlink($path);
@@ -319,7 +318,7 @@ class AnnotationsTest extends xTest
     {
         $manager = new AnnotationManager();
         $manager->namespace = 'Sample';
-        $manager->cache = new FileDataCache(Annotations::getManager()->cache->getPath(), 'abc123');
+        $manager->cache = false;
 
         $anns = $manager->getClassAnnotations('Sample\AnnotationInDefaultNamespace', 'Sample\SampleAnnotation');
 
@@ -330,7 +329,7 @@ class AnnotationsTest extends xTest
     {
         $manager = new AnnotationManager();
         $manager->namespace = 'Sample';
-        $manager->cache = new FileDataCache(Annotations::getManager()->cache->getPath(), 'xyz');
+        $manager->cache = false;
 
         $manager->registry['ignored'] = false;
 
@@ -347,7 +346,7 @@ class AnnotationsTest extends xTest
 
         $manager = new AnnotationManager();
         $manager->namespace = 'Sample';
-        $manager->cache = new FileDataCache(Annotations::getManager()->cache->getPath(), '12345678');
+        $manager->cache = false;
 
         $manager->registry['aliased'] = 'Sample\SampleAnnotation';
 

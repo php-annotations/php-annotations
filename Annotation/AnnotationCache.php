@@ -11,15 +11,14 @@
  * <https://github.com/mindplay-dk/php-annotations>
  */
 
-namespace Mindplay\Annotation\Cache;
+namespace Mindplay\Annotation;
 
-use Mindplay\Annotation\Cache\IDataCache;
 use Mindplay\Annotation\AnnotationException;
 
 /**
- * This cache-provider stores annotation-data in PHP files.
+ * This class is responsible for storing and updating parsed annotation-data in PHP files.
  */
-class FileDataCache implements IDataCache
+class AnnotationCache
 {
     /**
      * @var string The PHP opening tag (used when writing cache files)
@@ -34,17 +33,17 @@ class FileDataCache implements IDataCache
     /**
      * @var string Absolute path to a folder where cache files will be created
      */
-    private $_path;
+    private $_root;
 
     /**
      * Initializes the file cache-provider
      *
-     * @param string $path absolute path to a folder where cache files will be created
-     * @param int $fileMode
+     * @param string $root absolute path to the root-folder where cache-files will be stored
+     * @param int $fileMode file creation mode; defaults to 0777
      */
-    public function __construct($path, $fileMode = 0777)
+    public function __construct($root, $fileMode = 0777)
     {
-        $this->_path = $path;
+        $this->_root = $root;
         $this->_fileMode = $fileMode;
     }
 
@@ -65,14 +64,14 @@ class FileDataCache implements IDataCache
      * Caches the given data with the given key.
      *
      * @param string $key cache key
-     * @param array $data the data to be cached
-     * @see IDataCache
+     * @param array $code the source-code to be cached
+     * @throws AnnotationException if file could not be written
      */
-    public function store($key, $data)
+    public function store($key, $code)
     {
         $path = $this->_getPath($key);
 
-        $content = self::PHP_TAG . 'return ' . var_export($data, true) . ";\n";
+        $content = self::PHP_TAG . $code . ";\n";
 
         if (@file_put_contents($path, $content, LOCK_EX) === false) {
             throw new AnnotationException("unable to write cache file: $path");
@@ -115,14 +114,14 @@ class FileDataCache implements IDataCache
      */
     private function _getPath($key)
     {
-        return $this->_path . DIRECTORY_SEPARATOR . $key . '.annotations.php';
+        return $this->_root . DIRECTORY_SEPARATOR . $key . '.annotations.php';
     }
 
     /**
      * @return string absolute path of the folder where cache files are created
      */
-    public function getPath()
+    public function getRoot()
     {
-        return $this->_path;
+        return $this->_root;
     }
 }
