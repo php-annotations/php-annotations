@@ -229,10 +229,6 @@ class AnnotationManager
 
         $type = lcfirst($name);
 
-        if (@$this->registry[$type] === false) {
-            return false; // annotation is disabled
-        }
-
         if (isset($this->registry[$type])) {
             return $this->registry[$type]; // type-name is registered
         }
