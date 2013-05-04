@@ -4,10 +4,10 @@
  * This file is part of the php-annotation framework.
  *
  * (c) Rasmus Schultz <rasmus@mindplay.dk>
- * 
+ *
  * This software is licensed under the GNU LGPL license
- * for more information, please see: 
- * 
+ * for more information, please see:
+ *
  * <https://github.com/mindplay-dk/php-annotations>
  */
 
@@ -455,10 +455,10 @@ class AnnotationManager
     {
         if ($class instanceof ReflectionClass) {
             $class = $class->getName();
+        } else if (is_object($class)) {
+            $class = get_class($class);
         } else {
-            if (is_object($class)) {
-                $class = get_class($class);
-            }
+            $class = ltrim($class, '\\');
         }
 
         if (!class_exists($class, $this->autoload)) {
@@ -491,6 +491,8 @@ class AnnotationManager
             $class = $class->class;
         } else if (is_object($class)) {
             $class = get_class($class);
+        } else {
+            $class = ltrim($class, '\\');
         }
 
         if (!class_exists($class, $this->autoload)) {
@@ -529,6 +531,8 @@ class AnnotationManager
             $class = $class->class;
         } else if (is_object($class)) {
             $class = get_class($class);
+        } else {
+            $class = ltrim($class, '\\');
         }
 
         if (!class_exists($class, $this->autoload)) {
