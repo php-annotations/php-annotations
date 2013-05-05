@@ -390,6 +390,10 @@ class AnnotationManager
             $type = $this->resolveName(substr($type, 1));
         }
 
+        if ($type === false) {
+            return array();
+        }
+
         $result = array();
 
         foreach ($annotations as $annotation) {
