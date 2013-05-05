@@ -1,0 +1,21 @@
+{
+    "name": "mindplay/php-annotations",
+    "type": "library",
+    "description": "Source-code annotations for PHP",
+    "keywords": ["framework"],
+    "homepage": "http://symfony.com",
+    "license": "LGPL-3",
+    "authors": [
+        {
+            "name": "Rasmus Schultz",
+            "email": "rasmus@mindplay.dk"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "autoload": {
+        "psr-0": { "Mindplay\\": "./" }
+    },
+    "minimum-stability": "dev"
+}
