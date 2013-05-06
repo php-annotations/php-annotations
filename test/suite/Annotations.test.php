@@ -100,7 +100,7 @@ class AnnotationsTest extends xTest
         $this->check($test['Sample'][1][0] === 'abc', 'value of second annotation is "abc"');
 
         $this->check(
-            $test['Sample'][2]['#type'] === 'mindplay\annotations\Standard\RequiredAnnotation',
+            $test['Sample'][2]['#type'] === 'mindplay\annotations\standard\RequiredAnnotation',
             'third annotation is a RequiredAnnotation'
         );
 
