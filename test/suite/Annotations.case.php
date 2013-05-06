@@ -4,9 +4,9 @@
  * TEST CASE: Sample Annotations
  */
 
-use Mindplay\Annotation\Annotation;
-use Mindplay\Annotation\IAnnotationParser;
-use Mindplay\Annotation\AnnotationException;
+use mindplay\annotations\Annotation;
+use mindplay\annotations\IAnnotationParser;
+use mindplay\annotations\AnnotationException;
 
 /**
  * @usage('class'=>true, 'property'=>true, 'method'=>true, 'inherited'=>true, 'multiple'=>true)

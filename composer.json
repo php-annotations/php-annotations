@@ -1,9 +1,9 @@
 {
-    "name": "mindplay/php-annotations",
+    "name": "mindplay/annotations",
     "type": "library",
     "description": "Source-code annotations for PHP",
-    "keywords": ["framework"],
-    "homepage": "http://symfony.com",
+    "keywords": ["annotations", "framework"],
+    "homepage": "http://blog.mindplay.dk/",
     "license": "LGPL-3",
     "authors": [
         {
@@ -15,7 +15,7 @@
         "php": ">=5.3.3"
     },
     "autoload": {
-        "psr-0": { "Mindplay\\": "./" }
+        "psr-0": { "mindplay\\annotations": "" }
     },
     "minimum-stability": "dev"
 }

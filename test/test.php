@@ -11,9 +11,9 @@ set_include_path(
 require 'lib/Loader.php';
 
 $loader = new Loader;
-$loader->paths['Mindplay'] = dirname(dirname(__FILE__));;
+$loader->paths['mindplay'] = dirname(dirname(__FILE__)) . '/mindplay';
 $loader->paths['Sample'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'suite';
 
-$runner = new xTestRunner(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Annotation');
+$runner = new xTestRunner(dirname(dirname(__FILE__)) . '/mindplay/annotations');
 
 $runner->run(dirname(__FILE__).DIRECTORY_SEPARATOR.'suite'.DIRECTORY_SEPARATOR.'*.test.php');

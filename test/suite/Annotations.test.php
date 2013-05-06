@@ -2,12 +2,12 @@
 require_once 'suite/Annotations.case.php';
 require_once 'suite/Annotations.Sample.case.php';
 
-use Mindplay\Annotation\AnnotationCache;
-use Mindplay\Annotation\AnnotationParser;
-use Mindplay\Annotation\AnnotationManager;
-use Mindplay\Annotation\AnnotationException;
-use Mindplay\Annotation\Annotations;
-use Mindplay\Annotation\Annotation;
+use mindplay\annotations\AnnotationCache;
+use mindplay\annotations\AnnotationParser;
+use mindplay\annotations\AnnotationManager;
+use mindplay\annotations\AnnotationException;
+use mindplay\annotations\Annotations;
+use mindplay\annotations\Annotation;
 
 /**
  * This class implements tests for core annotations
@@ -100,7 +100,7 @@ class AnnotationsTest extends xTest
         $this->check($test['Sample'][1][0] === 'abc', 'value of second annotation is "abc"');
 
         $this->check(
-            $test['Sample'][2]['#type'] === 'Mindplay\Annotation\Standard\RequiredAnnotation',
+            $test['Sample'][2]['#type'] === 'mindplay\annotations\Standard\RequiredAnnotation',
             'third annotation is a RequiredAnnotation'
         );
 
