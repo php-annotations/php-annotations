@@ -11,7 +11,7 @@
  * <https://github.com/mindplay-dk/php-annotations>
  */
 
-namespace mindplay\annotations\Standard;
+namespace mindplay\annotations\standard;
 
 use mindplay\annotations\Annotation;
 
