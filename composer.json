@@ -4,7 +4,7 @@
     "description": "Source-code annotations for PHP",
     "keywords": ["annotations", "framework"],
     "homepage": "http://blog.mindplay.dk/",
-    "license": "LGPL-3",
+    "license": "LGPL-3.0+",
     "authors": [
         {
             "name": "Rasmus Schultz",
