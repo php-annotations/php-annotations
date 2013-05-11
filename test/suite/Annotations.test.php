@@ -80,32 +80,51 @@ class AnnotationsTest extends xTest
 
         $source = "
             <?php
+
+            namespace foo\\bar;
+
+            use
+                baz\\Hat as Zing,
+                baz\\Zap;
+
             /**
              * @doc 123
              * @note('abc')
              * @required
              * @note('xyz');
              */
-            class Sample {}
+            class Sample {
+                public function test()
+                {
+                    \$var = null;
+
+                    \$test = function () use (\$var) {
+                        // this inline function is here to assert that the parser
+                        // won't pick up the use-clause of an inline function
+                    };
+                }
+            }
         ";
 
         $code = $parser->parse($source, 'inline-test');
-
         $test = eval($code);
 
-        $this->check($test['Sample'][0]['#type'] === 'DocAnnotation', 'first annotation is a DocAnnotation');
-        $this->check($test['Sample'][0]['value'] === 123, 'first annotation has the value 123');
+        $this->check($test['#namespace'] === 'foo\bar', 'file namespace should be parsed and cached');
+        $this->check($test['#uses'] === array('baz\Hat' => 'Zing', 'baz\Zap' => 'Zap'), 'use-clauses should be parsed and cached: ' . var_export($test['#uses'], true));
 
-        $this->check($test['Sample'][1]['#type'] === 'NoteAnnotation', 'second annotation is a NoteAnnotation');
-        $this->check($test['Sample'][1][0] === 'abc', 'value of second annotation is "abc"');
+        $this->check($test['foo\bar\Sample'][0]['#type'] === 'DocAnnotation', 'first annotation is a DocAnnotation');
+        $this->check($test['foo\bar\Sample'][0]['value'] === 123, 'first annotation has the value 123');
+
+        $this->check($test['foo\bar\Sample'][1]['#type'] === 'NoteAnnotation', 'second annotation is a NoteAnnotation');
+        $this->check($test['foo\bar\Sample'][1][0] === 'abc', 'value of second annotation is "abc"');
 
         $this->check(
-            $test['Sample'][2]['#type'] === 'mindplay\annotations\standard\RequiredAnnotation',
+            $test['foo\bar\Sample'][2]['#type'] === 'mindplay\annotations\standard\RequiredAnnotation',
             'third annotation is a RequiredAnnotation'
         );
 
-        $this->check($test['Sample'][3]['#type'] === 'NoteAnnotation', 'last annotation is a NoteAnnotation');
-        $this->check($test['Sample'][3][0] === 'xyz', 'value of last annotation is "xyz"');
+        $this->check($test['foo\bar\Sample'][3]['#type'] === 'NoteAnnotation', 'last annotation is a NoteAnnotation');
+        $this->check($test['foo\bar\Sample'][3][0] === 'xyz', 'value of last annotation is "xyz"');
     }
 
     protected function testCanGetStaticAnnotationManager()

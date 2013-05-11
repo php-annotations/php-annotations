@@ -25,6 +25,8 @@ class AnnotationParser
     const MEMBER = 4;
     const METHOD_NAME = 5;
     const NAMESPACE_NAME = 6;
+    const USE_CLAUSE = 11;
+    const USE_CLAUSE_AS = 12;
 
     const SKIP = 7;
     const NAME = 8;
@@ -72,6 +74,9 @@ class AnnotationParser
         $nesting = 0;
         $class = null;
         $namespace = '';
+        $use = '';
+        $use_as = '';
+        $uses = array();
 
         $VISIBILITY = array(T_PUBLIC, T_PRIVATE, T_PROTECTED, T_VAR);
 
@@ -93,6 +98,10 @@ class AnnotationParser
                         $state = self::NAMESPACE_NAME;
                         $namespace = '';
                     }
+                    if ($type === T_USE && $nesting === 0) {
+                        $state = self::USE_CLAUSE;
+                        $use = '';
+                    }
                     break;
 
                 case self::NAMESPACE_NAME:
@@ -101,14 +110,50 @@ class AnnotationParser
                     } else {
                         if ($str == ';') {
                             $state = self::SCAN;
-                            $namespace .= '\\';
+                        }
+                    }
+                    break;
+
+                case self::USE_CLAUSE:
+                    if ($type == T_AS) {
+                        $use_as = '';
+                        $state = self::USE_CLAUSE_AS;
+                    } else if ($type == T_STRING || $type == T_NS_SEPARATOR) {
+                        $use .= $str;
+                    } else if ($type === self::CHAR) {
+                        if ($str === ',' || $str === ';') {
+                            $uses[$use] = substr($use, 1 + strrpos($use, '\\'));
+
+                            if ($str === ',') {
+                                $state = self::USE_CLAUSE;
+                                $use = '';
+                            } else if ($str === ';') {
+                                $state = self::SCAN;
+                            }
+                        }
+                    }
+                    break;
+
+                case self::USE_CLAUSE_AS:
+                    if ($type === T_STRING || $type === T_NS_SEPARATOR) {
+                        $use_as .= $str;
+                    } else if ($type === self::CHAR) {
+                        if ($str === ',' || $str === ';') {
+                            $uses[$use] = $use_as;
+
+                            if ($str === ',') {
+                                $state = self::USE_CLAUSE;
+                                $use = '';
+                            } else if ($str === ';') {
+                                $state = self::SCAN;
+                            }
                         }
                     }
                     break;
 
                 case self::CLASS_NAME:
                     if ($type == T_STRING) {
-                        $class = $namespace . $str;
+                        $class = ($namespace ? $namespace . '\\' : '') . $str;
                         $index[$class] = $annotations;
                         $annotations = array();
                         $state = self::SCAN_CLASS;
@@ -183,6 +228,8 @@ class AnnotationParser
         }
 
         $code = "return array(\n";
+        $code .= "  '#namespace' => " . var_export($namespace, true) . ",\n";
+        $code .= "  '#uses' => " . var_export($uses, true) . ",\n";
         foreach ($index as $key => $array) {
             if (count($array)) {
                 $code .= "  " . trim(var_export($key, true)) . " => array(\n    " . implode(
