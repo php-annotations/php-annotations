@@ -53,7 +53,6 @@ class AnnotationCache
      * @param string $key cache key
      *
      * @return bool true if data with the given key has been stored; otherwise false
-     * @see IDataCache
      */
     public function exists($key)
     {
@@ -87,7 +86,6 @@ class AnnotationCache
      *
      * @param string $key cache key
      * @return mixed the cached data
-     * @see IDataCache
      */
     public function fetch($key)
     {
@@ -99,7 +97,6 @@ class AnnotationCache
      *
      * @param string $key cache key
      * @return int unix timestamp
-     * @see IDataCache
      */
     public function getTimestamp($key)
     {
