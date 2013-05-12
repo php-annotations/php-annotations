@@ -340,7 +340,8 @@ class AnnotationParser
         $annotations = array();
 
         foreach ($matches as $match) {
-            $type = $this->manager->resolveName($match[0]);
+            $name = $match[0];
+            $type = $this->manager->resolveName($name);
 
             if ($type === false) {
                 continue;
@@ -352,14 +353,15 @@ class AnnotationParser
 
             $value = $match[1];
 
-            $quotedType = "'#type' => " . trim(var_export($type, true));
+            $quoted_name = "'#name' => " . trim(var_export($name, true));
+            $quoted_type = "'#type' => " . trim(var_export($type, true));
 
             if ($value === null) {
                 # value-less annotation:
-                $annotations[] = "array({$quotedType})";
+                $annotations[] = "array({$quoted_name}, {$quoted_type})";
             } else if (substr($value, 0, 1) == '(') {
                 # array-style annotation:
-                $annotations[] = "array({$quotedType}, " . substr($value, 1);
+                $annotations[] = "array({$quoted_name}, {$quoted_type}, " . substr($value, 1);
             } else {
                 # PHP-DOC-style annotation:
                 if (!array_key_exists(__NAMESPACE__ . '\IAnnotationParser', class_implements($type, $this->autoload))) {
@@ -372,7 +374,7 @@ class AnnotationParser
                     throw new AnnotationException("the {$type} Annotation did not parse correctly");
                 }
 
-                $array = "array({$quotedType}";
+                $array = "array({$quoted_name}, {$quoted_type}";
                 foreach ($properties as $name => $value) {
                     $array .= ", '{$name}' => " . trim(var_export($value, true));
                 }

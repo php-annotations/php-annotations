@@ -244,29 +244,29 @@ class AnnotationManager
     /**
      * Constructs, initializes and returns IAnnotation objects
      *
-     * @param string $class The name of the class from which to obtain Annotations
-     * @param string $member The type of member, e.g. "class", "property" or "method"
-     * @param string $name Optional member name, e.g. "method" or "$property"
+     * @param string $class_name The name of the class from which to obtain Annotations
+     * @param string $member_type The type of member, e.g. "class", "property" or "method"
+     * @param string $member_name Optional member name, e.g. "method" or "$property"
      *
      * @return IAnnotation[] array of IAnnotation objects for the given class/member/name
      * @throws AnnotationException for bad annotations
      */
-    protected function getAnnotations($class, $member = 'class', $name = null)
+    protected function getAnnotations($class_name, $member_type = 'class', $member_name = null)
     {
-        $key = $class . ($name ? '::' . $name : '');
+        $key = $class_name . ($member_name ? '::' . $member_name : '');
 
         if (!isset($this->initialized[$key])) {
             if (!isset($this->annotations[$key])) {
                 $this->annotations[$key] = array();
             }
 
-            if ($member !== 'class') {
-                $this->getAnnotations($class, 'class');
+            if ($member_type !== 'class') {
+                $this->getAnnotations($class_name, 'class');
             }
 
-            if ($parent = get_parent_class($class)) {
+            if ($parent = get_parent_class($class_name)) {
                 if ($parent !== 'Annotation\Annotation') {
-                    foreach ($this->getAnnotations($parent, $member, $name) as $annotation) {
+                    foreach ($this->getAnnotations($parent, $member_type, $member_name) as $annotation) {
                         if ($this->getUsage(get_class($annotation))->inherited) {
                             $this->annotations[$key][] = $annotation;
                         }
@@ -276,15 +276,17 @@ class AnnotationManager
 
             $this->initialized[$key] = true;
 
-            $reflection = new ReflectionClass($class);
+            $reflection = new ReflectionClass($class_name);
             $specs = $this->getAnnotationData($reflection->getFileName());
 
             if (isset($specs[$key])) {
                 $annotations = array();
 
                 foreach ($specs[$key] as $spec) {
+                    $name = $spec['#name']; // currently unused
                     $type = $spec['#type'];
-                    unset($spec['#type']);
+
+                    unset($spec['#name'], $spec['#type']);
 
                     if (!class_exists($type, $this->autoload)) {
                         throw new AnnotationException("annotation type {$type} not found");
@@ -334,7 +336,7 @@ class AnnotationManager
                 );
             }
 
-            $this->applyConstraints($this->annotations[$key], $member);
+            $this->applyConstraints($this->annotations[$key], $member_type);
         }
 
         return $this->annotations[$key];

@@ -112,9 +112,11 @@ class AnnotationsTest extends xTest
         $this->check($test['#namespace'] === 'foo\bar', 'file namespace should be parsed and cached');
         $this->check($test['#uses'] === array('baz\Hat' => 'Zing', 'baz\Zap' => 'Zap'), 'use-clauses should be parsed and cached: ' . var_export($test['#uses'], true));
 
+        $this->check($test['foo\bar\Sample'][0]['#name'] === 'doc', 'first annotation is an @doc annotation');
         $this->check($test['foo\bar\Sample'][0]['#type'] === 'DocAnnotation', 'first annotation is a DocAnnotation');
         $this->check($test['foo\bar\Sample'][0]['value'] === 123, 'first annotation has the value 123');
 
+        $this->check($test['foo\bar\Sample'][1]['#name'] === 'note', 'second annotation is an @note annotation');
         $this->check($test['foo\bar\Sample'][1]['#type'] === 'NoteAnnotation', 'second annotation is a NoteAnnotation');
         $this->check($test['foo\bar\Sample'][1][0] === 'abc', 'value of second annotation is "abc"');
 
