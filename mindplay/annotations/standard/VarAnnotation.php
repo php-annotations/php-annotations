@@ -51,8 +51,9 @@ class VarAnnotation extends Annotation implements IAnnotationParser
     public $type;
 
     /**
-     * Parse the standard PHP-DOC
+     * Parse the standard PHP-DOC annotation
      * @param string $value
+     * @return array
      */
     public static function parseAnnotation($value)
     {

@@ -193,7 +193,8 @@ class AnnotationManager
 
             if ($this->cache === false) {
                 # caching is disabled
-                $data = eval($this->getParser()->parseFile($path));
+                $code = $this->getParser()->parseFile($path);
+                $data = eval($code);
             } else {
                 $key = basename($path) . '-' . sprintf('%x', crc32($path . $this->_cacheSeed));
 
