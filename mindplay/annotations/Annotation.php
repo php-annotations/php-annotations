@@ -22,7 +22,7 @@ namespace mindplay\annotations;
 abstract class Annotation implements IAnnotation
 {
     /**
-     * @internal Insulation against read-access to undeclared properties
+     * Insulation against read-access to undeclared properties
      */
     public function __get($name)
     {
@@ -30,7 +30,7 @@ abstract class Annotation implements IAnnotation
     }
 
     /**
-     * @internal Insulation against write-access to undeclared properties
+     * Insulation against write-access to undeclared properties
      */
     public function __set($name, $value)
     {
@@ -54,7 +54,7 @@ abstract class Annotation implements IAnnotation
     }
 
     /**
-     * @internal Initializes this annotation instance.
+     * Initializes this annotation instance.
      * @see IAnnotation
      */
     public function initAnnotation($properties)

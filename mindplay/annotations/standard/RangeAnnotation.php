@@ -23,12 +23,12 @@ use mindplay\annotations\AnnotationException;
 class RangeAnnotation extends ValidationAnnotationBase
 {
     /**
-     * @var mixed $min Minimum numeric value (integer or floating point)
+     * @var int|float $min Minimum numeric value (integer or floating point)
      */
     public $min = null;
 
     /**
-     * @var mixed $max Maximum numeric value (integer or floating point)
+     * @var int|float $max Maximum numeric value (integer or floating point)
      */
     public $max = null;
 

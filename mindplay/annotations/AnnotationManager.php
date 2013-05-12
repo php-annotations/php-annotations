@@ -128,12 +128,12 @@ class AnnotationManager
     protected $initialized = array();
 
     /**
-     * @var array An internal cache for UsageAnnotation instances
+     * @var UsageAnnotation[] An internal cache for UsageAnnotation instances
      */
     protected $usage = array();
 
     /**
-     * @var $_usageAnnotation UsageAnnotation The standard UsageAnnotation
+     * @var UsageAnnotation The standard UsageAnnotation
      */
     private $_usageAnnotation;
 
@@ -157,7 +157,7 @@ class AnnotationManager
     }
 
     /**
-     * @internal Creates and returns the AnnotationParser instance
+     * Creates and returns the AnnotationParser instance
      * @return AnnotationParser
      */
     public function getParser()
@@ -343,7 +343,7 @@ class AnnotationManager
      * Validates the constraints (as defined by the UsageAnnotation of each annotation) of a
      * list of annotations for a given type of member.
      *
-     * @param array &$annotations An array of IAnnotation objects to be validated.
+     * @param IAnnotation[] &$annotations An array of IAnnotation objects to be validated.
      * @param string $member The type of member to validate against (e.g. "class", "property" or "method")
      * @throws AnnotationException if a constraint is violated
      */
@@ -379,8 +379,9 @@ class AnnotationManager
     /**
      * Filters annotations by class name
      *
-     * @param array $annotations An array of annotation objects
-     * @param string $type The class name by which to filter annotation objects
+     * @param IAnnotation[] $annotations An array of annotation objects
+     * @param string $type The class-name by which to filter annotation objects; or annotation
+     * type-name with a leading "@", e.g. "@var", which will be resolved through the registry
      *
      * @return array The filtered array of annotation objects - may return an empty array
      */
@@ -479,12 +480,13 @@ class AnnotationManager
     /**
      * Inspects Annotations applied to a given method
      *
-     * @param mixed $class A class name, an object, a ReflectionClass, or a ReflectionMethod instance
+     * @param string|object|ReflectionClass|ReflectionMethod $class A class name, an object, a ReflectionClass, or a ReflectionMethod instance
      * @param string $method The name of a method of the given class (or null, if the first parameter is a ReflectionMethod)
      * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
      *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
      *
-     * @return array Annotation instances
+     * @throws AnnotationException for undefined method or class-name
+     * @return IAnnotation[] list of Annotation objects
      */
     public function getMethodAnnotations($class, $method = null, $type = null)
     {
@@ -517,14 +519,14 @@ class AnnotationManager
     /**
      * Inspects Annotations applied to a given property
      *
-     * @param mixed $class A class name, an object, a ReflectionClass, or a ReflectionProperty instance
+     * @param string|object|ReflectionClass|ReflectionProperty $class A class name, an object, a ReflectionClass, or a ReflectionProperty instance
      * @param string $property The name of a defined property of the given class (or null, if the first parameter is a ReflectionProperty)
      * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
      *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
      *
-     * @return array Annotation instances
+     * @return IAnnotation[] list of Annotation objects
      *
-     * @throws AnnotationException
+     * @throws AnnotationException for undefined class-name
      */
     public function getPropertyAnnotations($class, $property = null, $type = null)
     {

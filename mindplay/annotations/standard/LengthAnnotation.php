@@ -23,12 +23,12 @@ use mindplay\annotations\AnnotationException;
 class LengthAnnotation extends ValidationAnnotationBase
 {
     /**
-     * @var mixed Minimum string length (or null, if no minimum)
+     * @var int|null Minimum string length (or null, if no minimum)
      */
     public $min = null;
 
     /**
-     * @var mixed Maximum string length (or null, if no maximum)
+     * @var int|null Maximum string length (or null, if no maximum)
      */
     public $max = null;
 
