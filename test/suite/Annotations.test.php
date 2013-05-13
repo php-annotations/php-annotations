@@ -152,107 +152,136 @@ class AnnotationsTest extends xTest
     protected function testCanGetClassAnnotations()
     {
         $ann = Annotations::ofClass('Test');
+
         $this->check(count($ann) > 0);
     }
 
     protected function testCanGetMethodAnnotations()
     {
         $ann = Annotations::ofMethod('Test', 'run');
+
         $this->check(count($ann) > 0);
     }
 
     protected function testCanGetPropertyAnnotations()
     {
         $ann = Annotations::ofProperty('Test', 'sample');
+
         $this->check(count($ann) > 0);
     }
 
     protected function testCanGetFilteredPropertyAnnotations()
     {
         $anns = Annotations::ofProperty('Test', 'mixed', 'NoteAnnotation');
+
         if (!count($anns)) {
-            return $this->fail('No annotations found');
+            $this->fail('No annotations found');
+            return;
         }
+
         foreach ($anns as $ann) {
             if (!$ann instanceof NoteAnnotation) {
                 $this->fail();
             }
         }
+
         $this->pass();
     }
 
     protected function testCanGetFilteredClassAnnotations()
     {
         $anns = Annotations::ofClass('TestBase', 'NoteAnnotation');
+
         if (!count($anns)) {
-            return $this->fail('No annotations found');
+            $this->fail('No annotations found');
+            return;
         }
+
         foreach ($anns as $ann) {
             if (!$ann instanceof NoteAnnotation) {
                 $this->fail();
             }
         }
+
         $this->pass();
     }
 
     protected function testCanGetFilteredMethodAnnotations()
     {
         $anns = Annotations::ofMethod('TestBase', 'run', 'NoteAnnotation');
+
         if (!count($anns)) {
-            return $this->fail('No annotations found');
+            $this->fail('No annotations found');
+            return;
         }
+
         foreach ($anns as $ann) {
             if (!$ann instanceof NoteAnnotation) {
                 $this->fail();
             }
         }
+
         $this->pass();
     }
 
     protected function testCanGetInheritedClassAnnotations()
     {
         $anns = Annotations::ofClass('Test');
+
         foreach ($anns as $ann) {
             if ($ann->note == 'Applied to the TestBase class') {
-                return $this->pass();
+                $this->pass();
+                return;
             }
         }
+
         $this->fail();
     }
 
     protected function testCanGetInheritedMethodAnnotations()
     {
         $anns = Annotations::ofMethod('Test', 'run');
+
         foreach ($anns as $ann) {
             if ($ann->note == 'Applied to a hidden TestBase method') {
-                return $this->pass();
+                $this->pass();
+                return;
             }
         }
+
         $this->fail();
     }
 
     protected function testCanGetInheritedPropertyAnnotations()
     {
         $anns = Annotations::ofProperty('Test', 'sample');
+
         foreach ($anns as $ann) {
             if ($ann->note == 'Applied to a TestBase member') {
-                return $this->pass();
+                $this->pass();
+                return;
             }
         }
+
         $this->fail();
     }
 
     protected function testDoesNotInheritUninheritableAnnotations()
     {
         $anns = Annotations::ofClass('Test');
+
         if (count($anns) == 0) {
             $this->fail();
+            return;
         }
+
         foreach ($anns as $ann) {
             if ($ann instanceof UninheritableAnnotation) {
                 $this->fail();
+                return;
             }
         }
+
         $this->pass();
     }
 
@@ -261,8 +290,10 @@ class AnnotationsTest extends xTest
         try {
             $anns = Annotations::ofProperty('Test', 'only_one');
         } catch (AnnotationException $e) {
-            return $this->pass();
+            $this->pass();
+            return;
         }
+
         $this->fail('Did not throw expected exception');
     }
 
@@ -271,7 +302,8 @@ class AnnotationsTest extends xTest
         $anns = Annotations::ofProperty('Test', 'override_me');
 
         if (count($anns) != 1) {
-            return $this->fail(count($anns) . ' annotations found - expected 1');
+            $this->fail(count($anns) . ' annotations found - expected 1');
+            return;
         }
 
         $ann = reset($anns);
@@ -282,37 +314,6 @@ class AnnotationsTest extends xTest
             $this->pass();
         }
     }
-
-    /*
-
-    // The delegation feature has been disabled in the 1.x branch of this library.
-
-    protected function testCanDelegateAnnotations()
-    {
-      $anns = Annotations::ofProperty('Test', 'foo');
-
-      if (count($anns)!=1)
-        return $this->fail(count($anns).' annotations found - expected 1');
-
-      $ann = reset($anns);
-
-      if ($ann->note != 'abc')
-        return $this->fail('value of delegated annotation does not match the expected value');
-
-      $anns = Annotations::ofProperty('Test', 'bar');
-
-      if (count($anns)!=1)
-        return $this->fail(count($anns).' annotations found - expected 1');
-
-      $ann = reset($anns);
-
-      if ($ann->note != '123')
-        return $this->fail('value of delegated annotation does not match the expected value');
-
-      $this->pass('delegation tests passed');
-    }
-
-    */
 
     protected function testCanHandleEdgeCaseInParser()
     {
