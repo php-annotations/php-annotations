@@ -111,9 +111,9 @@ class AnnotationManager
     /**
      * An internal cache for annotation-data loaded from source-code files
      *
-     * @var array map where $member_name => annotation-data
+     * @var AnnotationFile[] hash where absolute path to php source-file => AnnotationFile instance
      */
-    protected $data = array();
+    protected $files = array();
 
     /**
      * @var array[] An internal cache for Annotation instances
@@ -177,16 +177,16 @@ class AnnotationManager
      * Member-names in the returned array have the following format: Class, Class::method or Class::$member
      *
      * @param string $path the path of the source-code file from which to obtain annotation-data.
-     * @return array[] map where $member_name => array of annotation-data
+     * @return AnnotationFile
      *
      * @throws AnnotationException if cache is not configured
      *
-     * @see $data
+     * @see $files
      * @see $cache
      */
-    protected function getAnnotationData($path)
+    protected function getAnnotationFile($path)
     {
-        if (!isset($this->data[$path])) {
+        if (!isset($this->files[$path])) {
             if ($this->cache === null) {
                 throw new AnnotationException("AnnotationManager::\$cache is not configured");
             }
@@ -206,10 +206,10 @@ class AnnotationManager
                 $data = $this->cache->fetch($key);
             }
 
-            $this->data[$path] = $data;
+            $this->files[$path] = new AnnotationFile($path, $data);
         }
 
-        return $this->data[$path];
+        return $this->files[$path];
     }
 
     /**
@@ -265,7 +265,7 @@ class AnnotationManager
             }
 
             if ($parent = get_parent_class($class_name)) {
-                if ($parent !== 'Annotation\Annotation') {
+                if ($parent !== __NAMESPACE__ . '\Annotation') {
                     foreach ($this->getAnnotations($parent, $member_type, $member_name) as $annotation) {
                         if ($this->getUsage(get_class($annotation))->inherited) {
                             $this->annotations[$key][] = $annotation;
@@ -274,15 +274,14 @@ class AnnotationManager
                 }
             }
 
-            $this->initialized[$key] = true;
-
             $reflection = new ReflectionClass($class_name);
-            $specs = $this->getAnnotationData($reflection->getFileName());
 
-            if (isset($specs[$key])) {
+            $file = $this->getAnnotationFile($reflection->getFileName());
+
+            if (isset($file->data[$key])) {
                 $annotations = array();
 
-                foreach ($specs[$key] as $spec) {
+                foreach ($file->data[$key] as $spec) {
                     $name = $spec['#name']; // currently unused
                     $type = $spec['#type'];
 
@@ -303,33 +302,6 @@ class AnnotationManager
                     $annotations[] = $annotation;
                 }
 
-                /*
-
-                // This feature has been disabled in the 1.x branch of this library
-
-                if ($member === 'class')
-                {
-                  $offset = 0;
-
-                  foreach ($annotations as $index => $annotation)
-                  {
-                    if ($annotation instanceof IAnnotationDelegate)
-                    {
-                      $delegate = $class.'::'.$annotation->delegateAnnotation();
-
-                      for ($i=$offset; $i<$index; $i++)
-                      {
-                        $this->annotations[$delegate][] = $annotations[$i];
-                        unset($annotations[$i]);
-                      }
-
-                      $offset = $index+1;
-                    }
-                  }
-                }
-
-                */
-
                 $this->annotations[$key] = array_merge(
                     $this->annotations[$key],
                     $annotations
@@ -337,6 +309,8 @@ class AnnotationManager
             }
 
             $this->applyConstraints($this->annotations[$key], $member_type);
+
+            $this->initialized[$key] = true;
         }
 
         return $this->annotations[$key];
@@ -418,7 +392,7 @@ class AnnotationManager
      */
     public function getUsage($class)
     {
-        if ($class == 'mindplay\\annotations\\UsageAnnotation') {
+        if ($class === $this->registry['usage']) {
             return $this->_usageAnnotation;
         }
 

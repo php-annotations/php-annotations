@@ -15,6 +15,10 @@ namespace mindplay\annotations;
 
 /**
  * Thin, static class with shortcut methods for inspection of Annotations
+ *
+ * Using this static wrapper is optional - if your application uses a service container
+ * or a dependency injection container, you most likely want to configure an instance
+ * of the AnnotationManager using that layer instead.
  */
 abstract class Annotations
 {

@@ -2,6 +2,7 @@
 require_once 'suite/Annotations.case.php';
 require_once 'suite/Annotations.Sample.case.php';
 
+use mindplay\annotations\AnnotationFile;
 use mindplay\annotations\AnnotationCache;
 use mindplay\annotations\AnnotationParser;
 use mindplay\annotations\AnnotationManager;
@@ -70,6 +71,37 @@ class AnnotationsTest extends xTest
         $this->check($manager->resolveName('hello') === 'ABC\HelloAnnotation', 'should default to standard namespace');
     }
 
+    protected function testCanGetAnnotationFile()
+    {
+        /**
+         * @var AnnotationFile $file
+         * @var string $file_path absolute path to the class-file used for testing
+         */
+
+        // This test is for an internal API, so we need to perform some invasive maneuvers:
+
+        $manager = Annotations::getManager();
+
+        $manager_reflection = new ReflectionClass($manager);
+
+        $method = $manager_reflection->getMethod('getAnnotationFile');
+        $method->setAccessible(true);
+
+        $class_reflection = new ReflectionClass('Sample\SampleClass');
+
+        $file_path = $class_reflection->getFileName();
+
+        // Now get the AnnotationFile instance:
+
+        $file = $method->invoke($manager, $file_path);
+
+        $this->check($file instanceof AnnotationFile, 'should be an instance of AnnotationFile');
+        $this->check(count($file->data) > 0, 'should contain Annotation data');
+        $this->check($file->path === $file_path, 'should reflect path to class-file');
+        $this->check($file->namespace === 'Sample', 'should reflect namespace');
+        $this->check($file->uses === array('SampleAlias' => 'mindplay\annotations\Annotation'), 'should reflect use-clause');
+    }
+
     protected function testCanParseAnnotations()
     {
         $manager = new AnnotationManager;
@@ -110,7 +142,7 @@ class AnnotationsTest extends xTest
         $test = eval($code);
 
         $this->check($test['#namespace'] === 'foo\bar', 'file namespace should be parsed and cached');
-        $this->check($test['#uses'] === array('baz\Hat' => 'Zing', 'baz\Zap' => 'Zap'), 'use-clauses should be parsed and cached: ' . var_export($test['#uses'], true));
+        $this->check($test['#uses'] === array('Zing' => 'baz\Hat', 'Zap' => 'baz\Zap'), 'use-clauses should be parsed and cached: ' . var_export($test['#uses'], true));
 
         $this->check($test['foo\bar\Sample'][0]['#name'] === 'doc', 'first annotation is an @doc annotation');
         $this->check($test['foo\bar\Sample'][0]['#type'] === 'DocAnnotation', 'first annotation is a DocAnnotation');
@@ -381,6 +413,7 @@ class AnnotationsTest extends xTest
     protected function testCanFindAnnotationsByAlias()
     {
         $ann = Annotations::ofProperty('TestBase', 'sample', '@note');
+
         $this->check(count($ann) === 1, 'TestBase::$sample has one @note annotation');
     }
 }
