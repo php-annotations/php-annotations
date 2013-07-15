@@ -13,7 +13,9 @@
 
 namespace mindplay\annotations\standard;
 
+use mindplay\annotations\AnnotationContext;
 use mindplay\annotations\AnnotationException;
+use mindplay\annotations\IAnnotationContext;
 use mindplay\annotations\IAnnotationParser;
 use mindplay\annotations\Annotation;
 
@@ -22,12 +24,19 @@ use mindplay\annotations\Annotation;
  *
  * @usage('method'=>true, 'inherited'=>true)
  */
-class ReturnAnnotation extends Annotation implements IAnnotationParser
+class ReturnAnnotation extends Annotation implements IAnnotationParser, IAnnotationContext
 {
     /**
      * @var string
      */
     public $type;
+
+    /**
+     * Annotation file.
+     *
+     * @var AnnotationContext
+     */
+    protected $context;
 
     /**
      * Parse the standard PHP-DOC annotation
@@ -53,5 +62,12 @@ class ReturnAnnotation extends Annotation implements IAnnotationParser
         if (!isset($this->type)) {
             throw new AnnotationException('ReturnAnnotation requires a type property');
         }
+
+        $this->type = $this->context->resolveType($this->type);
+    }
+
+    public function setAnnotationContext(AnnotationContext $context)
+    {
+        $this->context = $context;
     }
 }

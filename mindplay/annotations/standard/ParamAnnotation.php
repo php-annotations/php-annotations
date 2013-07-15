@@ -13,7 +13,9 @@
 
 namespace mindplay\annotations\standard;
 
+use mindplay\annotations\AnnotationContext;
 use mindplay\annotations\AnnotationException;
+use mindplay\annotations\IAnnotationContext;
 use mindplay\annotations\IAnnotationParser;
 use mindplay\annotations\Annotation;
 
@@ -22,7 +24,7 @@ use mindplay\annotations\Annotation;
  *
  * @usage('method'=>true, 'inherited'=>true, 'multiple'=>true)
  */
-class ParamAnnotation extends Annotation implements IAnnotationParser
+class ParamAnnotation extends Annotation implements IAnnotationParser, IAnnotationContext
 {
     /**
      * @var string
@@ -33,6 +35,13 @@ class ParamAnnotation extends Annotation implements IAnnotationParser
      * @var string
      */
     public $name;
+
+    /**
+         * Annotation file.
+         *
+         * @var AnnotationContext
+         */
+        protected $context;
 
     /**
      * Parse the standard PHP-DOC "param" annotation.
@@ -63,5 +72,12 @@ class ParamAnnotation extends Annotation implements IAnnotationParser
         if (!isset($this->name)) {
             throw new AnnotationException('ParamAnnotation requires a name property');
         }
+
+        $this->type = $this->context->resolveType($this->type);
+    }
+
+    public function setAnnotationContext(AnnotationContext $context)
+    {
+        $this->context = $context;
     }
 }

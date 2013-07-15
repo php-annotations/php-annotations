@@ -297,6 +297,11 @@ class AnnotationManager
                         throw new AnnotationException("annotation type {$type} does not implement the mandatory IAnnotation interface");
                     }
 
+                    if ($annotation instanceof IAnnotationContext) {
+                        $context = new AnnotationContext($file);
+                        $annotation->setAnnotationContext($context);
+                    }
+
                     $annotation->initAnnotation($spec);
 
                     $annotations[] = $annotation;

@@ -14,7 +14,9 @@
 namespace mindplay\annotations\standard;
 
 use mindplay\annotations\Annotation;
+use mindplay\annotations\AnnotationContext;
 use mindplay\annotations\AnnotationException;
+use mindplay\annotations\IAnnotationContext;
 use mindplay\annotations\IAnnotationParser;
 
 /**
@@ -22,7 +24,7 @@ use mindplay\annotations\IAnnotationParser;
  *
  * @usage('property'=>true, 'inherited'=>true)
  */
-class VarAnnotation extends Annotation implements IAnnotationParser
+class VarAnnotation extends Annotation implements IAnnotationParser, IAnnotationContext
 {
     /**
      * @var string Specifies the type of value (e.g. for validation, for
@@ -51,6 +53,13 @@ class VarAnnotation extends Annotation implements IAnnotationParser
     public $type;
 
     /**
+     * Annotation file.
+     *
+     * @var AnnotationContext
+     */
+    protected $context;
+
+    /**
      * Parse the standard PHP-DOC annotation
      * @param string $value
      * @return array
@@ -74,5 +83,12 @@ class VarAnnotation extends Annotation implements IAnnotationParser
         if (!isset($this->type)) {
             throw new AnnotationException('VarAnnotation requires a type property');
         }
+
+        $this->type = $this->context->resolveType($this->type);
+    }
+
+    public function setAnnotationContext(AnnotationContext $context)
+    {
+        $this->context = $context;
     }
 }
