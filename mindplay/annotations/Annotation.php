@@ -43,7 +43,7 @@ abstract class Annotation implements IAnnotation
      * @param array &$properties Array of annotation properties, as passed into IAnnotation::initAnnotation()
      * @param array $indexes Array of unnamed properties
      */
-    protected function map(&$properties, $indexes)
+    protected function map(array &$properties, array $indexes)
     {
         foreach ($indexes as $index => $name) {
             if (isset($properties[$index])) {
@@ -57,7 +57,7 @@ abstract class Annotation implements IAnnotation
      * Initializes this annotation instance.
      * @see IAnnotation
      */
-    public function initAnnotation($properties)
+    public function initAnnotation(array $properties)
     {
         foreach ($properties as $name => $value) {
             $this->$name = $value;

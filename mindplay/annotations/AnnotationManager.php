@@ -362,7 +362,7 @@ class AnnotationManager
      *
      * @return array The filtered array of annotation objects - may return an empty array
      */
-    protected function filterAnnotations($annotations, $type)
+    protected function filterAnnotations(array $annotations, $type)
     {
         if (substr($type, 0, 1) === '@') {
             $type = $this->resolveName(substr($type, 1));

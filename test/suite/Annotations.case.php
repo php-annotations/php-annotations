@@ -15,7 +15,7 @@ class NoteAnnotation extends Annotation
 {
   public $note;
   
-  public function initAnnotation($params)
+  public function initAnnotation(array $params)
   {
     $this->map($params, array('note'));
     

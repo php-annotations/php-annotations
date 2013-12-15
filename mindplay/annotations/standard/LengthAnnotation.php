@@ -35,7 +35,7 @@ class LengthAnnotation extends ValidationAnnotationBase
     /**
      * Initialize the annotation.
      */
-    public function initAnnotation($properties)
+    public function initAnnotation(array $properties)
     {
         if (isset($properties[0])) {
             if (isset($properties[1])) {
