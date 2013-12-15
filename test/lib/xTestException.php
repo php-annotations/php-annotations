@@ -5,4 +5,5 @@
  * interrupt the execution of a failed test.
  */
 class xTestException extends Exception
-{}
+{
+}

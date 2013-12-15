@@ -13,15 +13,16 @@ use mindplay\annotations\AnnotationException;
  */
 class NoteAnnotation extends Annotation
 {
-  public $note;
-  
-  public function initAnnotation(array $params)
-  {
-    $this->map($params, array('note'));
-    
-    if (!isset($this->note))
-      throw new AnnotationException("NoteAnnotation requires a note property");
-  }
+    public $note;
+
+    public function initAnnotation(array $params)
+    {
+        $this->map($params, array('note'));
+
+        if (!isset($this->note)) {
+            throw new AnnotationException("NoteAnnotation requires a note property");
+        }
+    }
 }
 
 /**
@@ -29,12 +30,12 @@ class NoteAnnotation extends Annotation
  */
 class DocAnnotation extends Annotation implements IAnnotationParser
 {
-  public $value;
-  
-  public static function parseAnnotation($value)
-  {
-    return array('value' => intval($value));
-  }
+    public $value;
+
+    public static function parseAnnotation($value)
+    {
+        return array('value' => intval($value));
+    }
 }
 
 /**
@@ -42,7 +43,7 @@ class DocAnnotation extends Annotation implements IAnnotationParser
  */
 class SingleAnnotation extends Annotation
 {
-  public $test;
+    public $test;
 }
 
 /**
@@ -50,7 +51,7 @@ class SingleAnnotation extends Annotation
  */
 class OverrideAnnotation extends Annotation
 {
-  public $test;
+    public $test;
 }
 
 /**
@@ -58,7 +59,7 @@ class OverrideAnnotation extends Annotation
  */
 class SampleAnnotation extends Annotation
 {
-  public $test;
+    public $test;
 }
 
 /**
@@ -66,7 +67,7 @@ class SampleAnnotation extends Annotation
  */
 class UninheritableAnnotation extends Annotation
 {
-  public $test;
+    public $test;
 }
 
 /**
@@ -81,35 +82,35 @@ class UninheritableAnnotation extends Annotation
  */
 class TestBase
 {
-  /**
-   * @note("Applied to a TestBase member")
-   */
-  private $sample='test';
-  
-  /**
-   * @single('test'=>'one is okay')
-   * @single('test'=>'two is one too many')
-   */
-  private $only_one;
-  
-  /**
-   * override('test'=>'This will be overridden')
-   */
-  private $override_me;
-  
-  /**
-   * @note("First note annotation")
-   * @override('test'=>'This annotation should get filtered')
-   */
-  private $mixed;
-  
-  /**
-   * @note("Applied to a hidden TestBase method")
-   * @sample('test'=>'This should get filtered')
-   */
-  public function run()
-  {
-  }
+    /**
+     * @note("Applied to a TestBase member")
+     */
+    private $sample = 'test';
+
+    /**
+     * @single('test'=>'one is okay')
+     * @single('test'=>'two is one too many')
+     */
+    private $only_one;
+
+    /**
+     * override('test'=>'This will be overridden')
+     */
+    private $override_me;
+
+    /**
+     * @note("First note annotation")
+     * @override('test'=>'This annotation should get filtered')
+     */
+    private $mixed;
+
+    /**
+     * @note("Applied to a hidden TestBase method")
+     * @sample('test'=>'This should get filtered')
+     */
+    public function run()
+    {
+    }
 }
 
 /**
@@ -118,31 +119,29 @@ class TestBase
  * @Note(
  *   "Applied to the Test class (a)"
  * )
- * 
+ *
  * @Note("And another one for good measure (b)")
  */
 class Test extends TestBase
 {
-  /**
-   * @Note("Applied to a property")
-   */
-  public $hello='World';
-  
-  /**
-   * @Override('test'=>'This annotation overrides the one in TestBase')
-   */
-  private $override_me;
-  
-  /**
-   * @Note("Second note annotation")
-   */
-  private $mixed;
-  
-  /**
-   * @Note("First Note Applied to the run() method")
-   * @Note("And a second Note")
-   */
-  public function run()
-  {
-  }
+    /**
+     * @Note("Applied to a property")
+     */
+    public $hello = 'World';
+    /**
+     * @Override('test'=>'This annotation overrides the one in TestBase')
+     */
+    private $override_me;
+    /**
+     * @Note("Second note annotation")
+     */
+    private $mixed;
+
+    /**
+     * @Note("First Note Applied to the run() method")
+     * @Note("And a second Note")
+     */
+    public function run()
+    {
+    }
 }

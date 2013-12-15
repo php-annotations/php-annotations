@@ -6,4 +6,5 @@ namespace Sample;
  * @ignored
  */
 class IgnoreMe
-{}
+{
+}

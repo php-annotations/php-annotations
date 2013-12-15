@@ -9,8 +9,9 @@ use mindplay\annotations\Annotation;
  */
 class SampleAnnotation extends Annotation
 {
-  public $test = 'ok';
+    public $test = 'ok';
 }
 
 class DefaultSampleAnnotation extends SampleAnnotation
-{}
+{
+}
