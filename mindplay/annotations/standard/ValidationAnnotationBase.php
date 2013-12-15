@@ -16,7 +16,7 @@ namespace mindplay\annotations\standard;
 use mindplay\annotations\Annotation;
 
 /**
- * Abstact base class for validation annotations.
+ * Abstract base class for validation annotations.
  */
 abstract class ValidationAnnotationBase extends Annotation
 {
