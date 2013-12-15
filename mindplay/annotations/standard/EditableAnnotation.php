@@ -36,7 +36,7 @@ class EditableAnnotation extends Annotation
     /**
      * Initialize the annotation.
      */
-    public function initAnnotation($properties)
+    public function initAnnotation(array $properties)
     {
         $this->map($properties, array('allow', 'first'));
 

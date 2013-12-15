@@ -44,7 +44,7 @@ class ReturnAnnotation extends Annotation implements IAnnotationParser
     /**
      * Initialize the annotation.
      */
-    public function initAnnotation($properties)
+    public function initAnnotation(array $properties)
     {
         $this->map($properties, array('type'));
 

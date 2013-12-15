@@ -18,5 +18,5 @@ namespace mindplay\annotations;
  */
 interface IAnnotation
 {
-    public function initAnnotation($properties);
+    public function initAnnotation(array $properties);
 }
