@@ -118,16 +118,16 @@ class AnnotationParser
                     if ($type == T_AS) {
                         $use_as = '';
                         $state = self::USE_CLAUSE_AS;
-                    } else if ($type == T_STRING || $type == T_NS_SEPARATOR) {
+                    } elseif ($type == T_STRING || $type == T_NS_SEPARATOR) {
                         $use .= $str;
-                    } else if ($type === self::CHAR) {
+                    } elseif ($type === self::CHAR) {
                         if ($str === ',' || $str === ';') {
                             $uses[substr($use, 1 + strrpos($use, '\\'))] = $use;
 
                             if ($str === ',') {
                                 $state = self::USE_CLAUSE;
                                 $use = '';
-                            } else if ($str === ';') {
+                            } elseif ($str === ';') {
                                 $state = self::SCAN;
                             }
                         }
@@ -137,14 +137,14 @@ class AnnotationParser
                 case self::USE_CLAUSE_AS:
                     if ($type === T_STRING || $type === T_NS_SEPARATOR) {
                         $use_as .= $str;
-                    } else if ($type === self::CHAR) {
+                    } elseif ($type === self::CHAR) {
                         if ($str === ',' || $str === ';') {
                             $uses[$use_as] = $use;
 
                             if ($str === ',') {
                                 $state = self::USE_CLAUSE;
                                 $use = '';
-                            } else if ($str === ';') {
+                            } elseif ($str === ';') {
                                 $state = self::SCAN;
                             }
                         }
@@ -283,7 +283,7 @@ class AnnotationParser
                         $name = '';
                         $value = '';
                         $state = self::NAME;
-                    } else if ($char != "\n" && $char != " " && $char != "\t") {
+                    } elseif ($char != "\n" && $char != " " && $char != "\t") {
                         $state = self::SKIP;
                     }
                     break;
@@ -297,13 +297,13 @@ class AnnotationParser
                 case self::NAME:
                     if (preg_match('/[a-zA-Z\-\\\\]/', $char)) {
                         $name .= $char;
-                    } else if ($char == ' ') {
+                    } elseif ($char == ' ') {
                         $state = self::COPY_LINE;
-                    } else if ($char == '(') {
+                    } elseif ($char == '(') {
                         $nesting++;
                         $value = $char;
                         $state = self::COPY_ARRAY;
-                    } else if ($char == "\n") {
+                    } elseif ($char == "\n") {
                         $matches[] = array($name, null);
                         $state = self::SCAN;
                     } else {
@@ -359,7 +359,7 @@ class AnnotationParser
             if ($value === null) {
                 # value-less annotation:
                 $annotations[] = "array({$quoted_name}, {$quoted_type})";
-            } else if (substr($value, 0, 1) == '(') {
+            } elseif (substr($value, 0, 1) == '(') {
                 # array-style annotation:
                 $annotations[] = "array({$quoted_name}, {$quoted_type}, " . substr($value, 1);
             } else {
@@ -368,6 +368,7 @@ class AnnotationParser
                     throw new AnnotationException("the {$type} Annotation does not support PHP-DOC style syntax (because it does not implement the " . __NAMESPACE__ . "\\IAnnotationParser interface)");
                 }
 
+                /** @var IAnnotationParser $type */
                 $properties = $type::parseAnnotation($value);
 
                 if (!is_array($properties)) {

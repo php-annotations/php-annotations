@@ -437,7 +437,7 @@ class AnnotationManager
     {
         if ($class instanceof ReflectionClass) {
             $class = $class->getName();
-        } else if (is_object($class)) {
+        } elseif (is_object($class)) {
             $class = get_class($class);
         } else {
             $class = ltrim($class, '\\');
@@ -469,10 +469,10 @@ class AnnotationManager
     {
         if ($class instanceof ReflectionClass) {
             $class = $class->getName();
-        } else if ($class instanceof ReflectionMethod) {
+        } elseif ($class instanceof ReflectionMethod) {
             $method = $class->name;
             $class = $class->class;
-        } else if (is_object($class)) {
+        } elseif (is_object($class)) {
             $class = get_class($class);
         } else {
             $class = ltrim($class, '\\');
@@ -509,10 +509,10 @@ class AnnotationManager
     {
         if ($class instanceof ReflectionClass) {
             $class = $class->getName();
-        } else if ($class instanceof ReflectionProperty) {
+        } elseif ($class instanceof ReflectionProperty) {
             $property = $class->name;
             $class = $class->class;
-        } else if (is_object($class)) {
+        } elseif (is_object($class)) {
             $class = get_class($class);
         } else {
             $class = ltrim($class, '\\');
