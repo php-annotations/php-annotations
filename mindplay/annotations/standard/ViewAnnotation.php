@@ -19,7 +19,7 @@ use mindplay\annotations\Annotation;
  * Specifies the name of a view to use to format a class or property for display.
  *
  * When rendering forms/widgets/inputs, if an EditorAnnotation is present, it
- * takes precence over a ViewAnnotation - otherwise, the ViewAnnotation may be
+ * takes precedence over a ViewAnnotation - otherwise, the ViewAnnotation may be
  * used to establish the name of a view to use for rendering an input, too.
  *
  * @usage('class'=>true, 'property'=>true, 'inherited'=>true)
