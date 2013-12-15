@@ -20,4 +20,5 @@ use Exception;
  * making it possible to catch annotation-specific exceptions in user code.
  */
 class AnnotationException extends Exception
-{}
+{
+}
