@@ -14,9 +14,9 @@
 namespace mindplay\annotations\standard;
 
 use mindplay\annotations\Annotation;
-use mindplay\annotations\AnnotationContext;
 use mindplay\annotations\AnnotationException;
-use mindplay\annotations\IAnnotationContext;
+use mindplay\annotations\AnnotationFile;
+use mindplay\annotations\IAnnotationFileAware;
 use mindplay\annotations\IAnnotationParser;
 
 /**
@@ -24,7 +24,7 @@ use mindplay\annotations\IAnnotationParser;
  *
  * @usage('property'=>true, 'inherited'=>true)
  */
-class VarAnnotation extends Annotation implements IAnnotationParser, IAnnotationContext
+class VarAnnotation extends Annotation implements IAnnotationParser, IAnnotationFileAware
 {
     /**
      * @var string Specifies the type of value (e.g. for validation, for
@@ -55,9 +55,9 @@ class VarAnnotation extends Annotation implements IAnnotationParser, IAnnotation
     /**
      * Annotation file.
      *
-     * @var AnnotationContext
+     * @var AnnotationFile
      */
-    protected $context;
+    protected $file;
 
     /**
      * Parse the standard PHP-DOC annotation
@@ -84,11 +84,18 @@ class VarAnnotation extends Annotation implements IAnnotationParser, IAnnotation
             throw new AnnotationException('VarAnnotation requires a type property');
         }
 
-        $this->type = $this->context->resolveType($this->type);
+        $this->type = $this->file->resolveType($this->type);
     }
 
-    public function setAnnotationContext(AnnotationContext $context)
+    /**
+     * Provides information about file, that contains this annotation.
+     *
+     * @param AnnotationFile $file Annotation file.
+     *
+     * @return void
+     */
+    public function setAnnotationFile(AnnotationFile $file)
     {
-        $this->context = $context;
+        $this->file = $file;
     }
 }

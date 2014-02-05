@@ -16,7 +16,14 @@ namespace mindplay\annotations;
 /**
  * This interface mandatory for all Annotations, that require more information about annotation origins.
  */
-interface IAnnotationContext
+interface IAnnotationFileAware
 {
-    public function setAnnotationContext(AnnotationContext $context);
+    /**
+     * Provides information about file, that contains this annotation.
+     *
+     * @param AnnotationFile $file Annotation file.
+     *
+     * @return void
+     */
+    public function setAnnotationFile(AnnotationFile $file);
 }
