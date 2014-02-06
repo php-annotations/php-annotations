@@ -14,6 +14,8 @@
 namespace mindplay\annotations\standard;
 
 use mindplay\annotations\AnnotationException;
+use mindplay\annotations\AnnotationFile;
+use mindplay\annotations\IAnnotationFileAware;
 use mindplay\annotations\IAnnotationParser;
 use mindplay\annotations\Annotation;
 
@@ -22,7 +24,7 @@ use mindplay\annotations\Annotation;
  *
  * @usage('method'=>true, 'inherited'=>true, 'multiple'=>true)
  */
-class ParamAnnotation extends Annotation implements IAnnotationParser
+class ParamAnnotation extends Annotation implements IAnnotationParser, IAnnotationFileAware
 {
     /**
      * @var string
@@ -33,6 +35,13 @@ class ParamAnnotation extends Annotation implements IAnnotationParser
      * @var string
      */
     public $name;
+
+    /**
+     * Annotation file.
+     *
+     * @var AnnotationFile
+     */
+    protected $file;
 
     /**
      * Parse the standard PHP-DOC "param" annotation.
@@ -63,5 +72,19 @@ class ParamAnnotation extends Annotation implements IAnnotationParser
         if (!isset($this->name)) {
             throw new AnnotationException('ParamAnnotation requires a name property');
         }
+
+        $this->type = $this->file->resolveType($this->type);
+    }
+
+    /**
+     * Provides information about file, that contains this annotation.
+     *
+     * @param AnnotationFile $file Annotation file.
+     *
+     * @return void
+     */
+    public function setAnnotationFile(AnnotationFile $file)
+    {
+        $this->file = $file;
     }
 }

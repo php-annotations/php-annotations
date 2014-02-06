@@ -14,6 +14,8 @@
 namespace mindplay\annotations\standard;
 
 use mindplay\annotations\AnnotationException;
+use mindplay\annotations\AnnotationFile;
+use mindplay\annotations\IAnnotationFileAware;
 use mindplay\annotations\IAnnotationParser;
 use mindplay\annotations\Annotation;
 
@@ -22,12 +24,19 @@ use mindplay\annotations\Annotation;
  *
  * @usage('method'=>true, 'inherited'=>true)
  */
-class ReturnAnnotation extends Annotation implements IAnnotationParser
+class ReturnAnnotation extends Annotation implements IAnnotationParser, IAnnotationFileAware
 {
     /**
      * @var string
      */
     public $type;
+
+    /**
+     * Annotation file.
+     *
+     * @var AnnotationFile
+     */
+    protected $file;
 
     /**
      * Parse the standard PHP-DOC annotation
@@ -53,5 +62,19 @@ class ReturnAnnotation extends Annotation implements IAnnotationParser
         if (!isset($this->type)) {
             throw new AnnotationException('ReturnAnnotation requires a type property');
         }
+
+        $this->type = $this->file->resolveType($this->type);
+    }
+
+    /**
+     * Provides information about file, that contains this annotation.
+     *
+     * @param AnnotationFile $file Annotation file.
+     *
+     * @return void
+     */
+    public function setAnnotationFile(AnnotationFile $file)
+    {
+        $this->file = $file;
     }
 }
