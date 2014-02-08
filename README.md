@@ -1,5 +1,4 @@
-php-annotations
-===============
+# php-annotations
 
 Source-code annotations for PHP.
 
@@ -12,38 +11,38 @@ For documentation and updates, please visit the project Wiki:
 https://github.com/mindplay-dk/php-annotations/wiki
 
 
-Project Structure
------------------
+## Project Structure
 
 The files in this project are organized as follows:
 
-  php-annotations         This README and the LGPL license
-    /Annotation           The core of the library itself
-      /Standard           Standard library of annotation classes
-    /demo                 Browser-based example/demonstration
-    /test                 Unit tests for the core of the library
-      /test.php           Browser-based test suite runner
-      /lib                Unit test library
-      /runtime            Run-time cache folder used for tests
-      /suite              The test suite for the unit test framework
+```
+php-annotations         This README and the LGPL license
+  /mindplay
+    /annotations        The core of the library itself
+      /standard         Standard library of annotation classes
+  /demo                 Browser-based example/demonstration
+  /test                 Unit tests for the core of the library
+    /test.php           Browser-based test suite runner
+    /lib                Unit test library
+    /runtime            Run-time cache folder used for tests
+    /suite              The test suite for the unit test framework
+```
 
-The "Annotation" folder is the only folder required for the annotation
+The "mindplay" folder is the only folder required for the annotation
 framework itself - other folders contain demonstration code, tests, etc.
 
 To run the test suite, run "php-annotations/test/test.php" from a
 browser - a summary of the test-results will be displayed on the page.
 
 
-Code Style
-----------
+## Code Style
 
 Largely PSR-2 compliant:
 
 https://raw.github.com/php-fig/fig-standards/master/accepted/PSR-2-coding-style-guide.md
 
 
-License
--------
+## License
 
 http://www.gnu.org/licenses/lgpl-3.0.txt
 
