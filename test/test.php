@@ -1,19 +1,19 @@
 <?php
+define('FULL_PATH', realpath(__DIR__ . '/..'));
 
-## Configure PHP include paths
+$vendor_path = FULL_PATH . '/vendor';
 
-set_include_path(
-    dirname(dirname(__FILE__))
-    . DIRECTORY_SEPARATOR . 'test'
-    . DIRECTORY_SEPARATOR . 'lib'
-);
+if (!is_dir($vendor_path)) {
+    echo 'Install dependencies first' . PHP_EOL;
+    exit(1);
+}
 
-require 'lib/Loader.php';
+require_once($vendor_path . '/autoload.php');
 
-$loader = new Loader;
-$loader->paths['mindplay'] = dirname(dirname(__FILE__)) . '/mindplay';
-$loader->paths['Sample'] = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'suite';
+$auto_loader = new \Composer\Autoload\ClassLoader();
+$auto_loader->add("test\\", FULL_PATH);
+$auto_loader->add("Sample\\", FULL_PATH . '/test/suite');
+$auto_loader->register();
 
-$runner = new xTestRunner(dirname(dirname(__FILE__)) . '/mindplay/annotations');
-
+$runner = new \test\lib\xTestRunner(dirname(dirname(__FILE__)) . '/mindplay/annotations');
 $runner->run(dirname(__FILE__).DIRECTORY_SEPARATOR.'suite'.DIRECTORY_SEPARATOR.'*.test.php');

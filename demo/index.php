@@ -1,14 +1,16 @@
 <?php
-
 use mindplay\annotations\Annotations;
 use mindplay\annotations\AnnotationCache;
 
 ## Configure a simple auto-loader
+$vendor_path = realpath(__DIR__ . '/../vendor');
 
-require '../test/lib/Loader.php';
+if (!is_dir($vendor_path)) {
+    echo 'Install dependencies first' . PHP_EOL;
+    exit(1);
+}
 
-$loader = new Loader;
-$loader->paths['mindplay'] = dirname(dirname(__FILE__)) . '/mindplay';
+require_once($vendor_path . '/autoload.php');
 
 ## Configure the cache-path. The static `Annotations` class will configure any public
 ## properties of `AnnotationManager` when it creates it. The `AnnotationManager::$cachePath`

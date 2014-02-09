@@ -1,4 +1,5 @@
 <?php
+namespace test\lib;
 
 /**
  * A base class to support simple unit tests.
@@ -26,7 +27,7 @@ abstract class xTest
         echo '<h3>' . htmlspecialchars($class) . '</h3>';
         echo '<table id="' . $class . '-results"><tr><th>Test</th><th>Result</th></tr>';
 
-        $reflection = new ReflectionClass(get_class($this));
+        $reflection = new \ReflectionClass(get_class($this));
         $methods = $reflection->getMethods();
 
         $passed = 0;
@@ -35,7 +36,7 @@ abstract class xTest
         if (method_exists($this, 'init')) {
             try {
                 $this->init();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 echo '<tr style="color:white; background:red;"><td>init() failed</td><td><pre>' . $e . '</pre></td></tr></table>';
                 return;
             }
@@ -59,7 +60,7 @@ abstract class xTest
 
                 try {
                     $this->$test();
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     if (!($e instanceof xTestException)) {
                         $this->result = (string)$e;
                     }
