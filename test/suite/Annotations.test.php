@@ -9,6 +9,7 @@ use mindplay\annotations\AnnotationManager;
 use mindplay\annotations\AnnotationException;
 use mindplay\annotations\Annotations;
 use mindplay\annotations\Annotation;
+use test\lib\xTest;
 
 /**
  * This class implements tests for core annotations

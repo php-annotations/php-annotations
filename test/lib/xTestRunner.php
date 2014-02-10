@@ -1,4 +1,5 @@
 <?php
+namespace test\lib;
 
 /**
  * This class implements a very simple test suite runner and code
@@ -12,12 +13,12 @@ class xTestRunner
     /**
      * @param string $rootpath The absolute path to the root folder of the test suite.
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct($rootpath)
     {
         if (!is_dir($rootpath)) {
-            throw new Exception("{$rootpath} is not a directory");
+            throw new \Exception("{$rootpath} is not a directory");
         }
 
         $this->rootpath = $rootpath;
@@ -55,7 +56,7 @@ class xTestRunner
      *
      * @param string $pattern A filename pattern compatible with glob()
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function run($pattern)
     {
@@ -73,7 +74,7 @@ class xTestRunner
             $test = require($path);
 
             if (!$test instanceof xTest) {
-                throw new Exception("'{$path}' is not a valid unit test");
+                throw new \Exception("'{$path}' is not a valid unit test");
             }
 
             $test->run();
