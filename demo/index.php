@@ -1,9 +1,13 @@
 <?php
-use mindplay\annotations\Annotations;
+namespace mindplay\demo;
+
+use Composer\Autoload\ClassLoader;
 use mindplay\annotations\AnnotationCache;
+use mindplay\annotations\Annotations;
+use mindplay\demo\annotations\Package;
 
 ## Configure a simple auto-loader
-$vendor_path = realpath(__DIR__ . '/../vendor');
+$vendor_path = dirname(__DIR__) . '/vendor';
 
 if (!is_dir($vendor_path)) {
     echo 'Install dependencies first' . PHP_EOL;
@@ -12,12 +16,19 @@ if (!is_dir($vendor_path)) {
 
 require_once($vendor_path . '/autoload.php');
 
+$auto_loader = new ClassLoader();
+$auto_loader->addPsr4("mindplay\\demo\\", __DIR__);
+$auto_loader->register();
+
 ## Configure the cache-path. The static `Annotations` class will configure any public
 ## properties of `AnnotationManager` when it creates it. The `AnnotationManager::$cachePath`
 ## property is a path to a writable folder, where the `AnnotationManager` caches parsed
 ## annotations from individual source code files.
 
-Annotations::$config['cache'] = new AnnotationCache(dirname(__FILE__) . '/runtime');
+Annotations::$config['cache'] = new AnnotationCache(__DIR__ . '/runtime');
+
+## Register demo annotations.
+Package::register(Annotations::getManager());
 
 ## For this example, we're going to generate a simple form that allows us to edit a `Person`
 ## object. We'll define a few public properties and annotate them with some useful metadata,
@@ -217,6 +228,11 @@ class Form
 {
     private $object;
 
+    /**
+     * Widget list.
+     *
+     * @var Widget[]
+     */
     private $widgets = array();
 
     ## The constructor just needs to know which object we're editing.
@@ -228,12 +244,12 @@ class Form
     {
         $this->object = $object;
 
-        $class = new ReflectionClass($this->object);
+        $class = new \ReflectionClass($this->object);
 
         foreach ($class->getProperties() as $property) {
             $type = $this->getMetadata($property->name, '@var', 'type', 'string');
 
-            $wtype = ucfirst($type) . 'Widget';
+            $wtype = 'mindplay\\demo\\' . ucfirst($type) . 'Widget';
 
             $this->widgets[$property->name] = new $wtype($this->object, $property->name);
         }
