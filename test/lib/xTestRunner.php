@@ -90,7 +90,7 @@ class xTestRunner
                 if (substr($path, 0, strlen($this->rootpath)) == $this->rootpath && strpos($path, "eval()'d code") === false) {
                     $relpath = substr($path, strlen($this->rootpath) + 1);
 
-                    $file = explode("\n", file_get_contents($path));
+                    $file = file($path);
 
                     ob_start();
                     foreach ($lines as $line => $coverage) {
