@@ -1,4 +1,6 @@
 # php-annotations
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/php-annotations/php-annotations/badges/quality-score.png?s=41628593655dae3740c3a64f172438430ee26b84)](https://scrutinizer-ci.com/g/php-annotations/php-annotations/)
+[![Code Coverage](https://scrutinizer-ci.com/g/php-annotations/php-annotations/badges/coverage.png?s=dbea8860e011cdb7b5352b48c25259ca950fe2c6)](https://scrutinizer-ci.com/g/php-annotations/php-annotations/)
 
 Source-code annotations for PHP.
 
