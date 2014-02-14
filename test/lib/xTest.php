@@ -1,5 +1,5 @@
 <?php
-namespace test\lib;
+namespace mindplay\test\lib;
 
 /**
  * A base class to support simple unit tests.

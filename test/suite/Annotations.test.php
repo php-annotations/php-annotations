@@ -1,6 +1,6 @@
 <?php
-require_once 'suite/Annotations.case.php';
-require_once 'suite/Annotations.Sample.case.php';
+require_once __DIR__ . '/Annotations.case.php';
+require_once __DIR__ . '/Annotations.Sample.case.php';
 
 use mindplay\annotations\AnnotationFile;
 use mindplay\annotations\AnnotationCache;
@@ -9,7 +9,8 @@ use mindplay\annotations\AnnotationManager;
 use mindplay\annotations\AnnotationException;
 use mindplay\annotations\Annotations;
 use mindplay\annotations\Annotation;
-use test\lib\xTest;
+use mindplay\test\annotations\Package;
+use mindplay\test\lib\xTest;
 
 /**
  * This class implements tests for core annotations
@@ -88,7 +89,7 @@ class AnnotationsTest extends xTest
         $method = $manager_reflection->getMethod('getAnnotationFile');
         $method->setAccessible(true);
 
-        $class_reflection = new ReflectionClass('Sample\SampleClass');
+        $class_reflection = new ReflectionClass('mindplay\test\Sample\SampleClass');
 
         $file_path = $class_reflection->getFileName();
 
@@ -99,13 +100,14 @@ class AnnotationsTest extends xTest
         $this->check($file instanceof AnnotationFile, 'should be an instance of AnnotationFile');
         $this->check(count($file->data) > 0, 'should contain Annotation data');
         $this->check($file->path === $file_path, 'should reflect path to class-file');
-        $this->check($file->namespace === 'Sample', 'should reflect namespace');
+        $this->check($file->namespace === 'mindplay\test\Sample', 'should reflect namespace');
         $this->check($file->uses === array('SampleAlias' => 'mindplay\annotations\Annotation'), 'should reflect use-clause');
     }
 
     protected function testCanParseAnnotations()
     {
         $manager = new AnnotationManager;
+        Package::register($manager);
         $manager->namespace = ''; // look for annotations in the global namespace
         $manager->suffix = 'Annotation'; // use a suffix for annotation class-names
 
@@ -154,7 +156,7 @@ class AnnotationsTest extends xTest
         $this->check($test['foo\bar\Sample'][1][0] === 'abc', 'value of second annotation is "abc"');
 
         $this->check(
-            $test['foo\bar\Sample'][2]['#type'] === 'mindplay\annotations\standard\RequiredAnnotation',
+            $test['foo\bar\Sample'][2]['#type'] === 'mindplay\test\annotations\RequiredAnnotation',
             'third annotation is a RequiredAnnotation'
         );
 
@@ -364,7 +366,7 @@ class AnnotationsTest extends xTest
         // be namespaced, and that asking for annotations of a namespaced annotation-type
         // yields the expected result.
 
-        $anns = Annotations::ofClass('Sample\SampleClass', 'Sample\SampleAnnotation');
+        $anns = Annotations::ofClass('mindplay\test\Sample\SampleClass', 'mindplay\test\Sample\SampleAnnotation');
 
         $this->check(count($anns) == 1, 'one SampleAnnotation was expected - found ' . count($anns));
     }
@@ -372,10 +374,10 @@ class AnnotationsTest extends xTest
     protected function testCanUseAnnotationsInDefaultNamespace()
     {
         $manager = new AnnotationManager();
-        $manager->namespace = 'Sample';
+        $manager->namespace = 'mindplay\test\Sample';
         $manager->cache = false;
 
-        $anns = $manager->getClassAnnotations('Sample\AnnotationInDefaultNamespace', 'Sample\SampleAnnotation');
+        $anns = $manager->getClassAnnotations('mindplay\test\Sample\AnnotationInDefaultNamespace', 'mindplay\test\Sample\SampleAnnotation');
 
         $this->check(count($anns) == 1, 'one SampleAnnotation was expected - found ' . count($anns));
     }
@@ -383,12 +385,12 @@ class AnnotationsTest extends xTest
     protected function testCanIgnoreAnnotations()
     {
         $manager = new AnnotationManager();
-        $manager->namespace = 'Sample';
+        $manager->namespace = 'mindplay\test\Sample';
         $manager->cache = false;
 
         $manager->registry['ignored'] = false;
 
-        $anns = $manager->getClassAnnotations('Sample\IgnoreMe');
+        $anns = $manager->getClassAnnotations('mindplay\test\Sample\IgnoreMe');
 
         $this->check(count($anns) == 0, 'the @ignored annotation should be ignored');
     }
@@ -400,15 +402,15 @@ class AnnotationsTest extends xTest
          */
 
         $manager = new AnnotationManager();
-        $manager->namespace = 'Sample';
+        $manager->namespace = 'mindplay\test\Sample';
         $manager->cache = false;
 
-        $manager->registry['aliased'] = 'Sample\SampleAnnotation';
+        $manager->registry['aliased'] = 'mindplay\test\Sample\SampleAnnotation';
 
-        $anns = $manager->getClassAnnotations('Sample\AliasMe');
+        $anns = $manager->getClassAnnotations('mindplay\test\Sample\AliasMe');
 
         $this->check(count($anns) == 1, 'the @aliased annotation should be aliased');
-        $this->check(get_class($anns[0]) == 'Sample\SampleAnnotation', 'returned @aliased annotation should map to Sample\SampleAnnotation');
+        $this->check(get_class($anns[0]) == 'mindplay\test\Sample\SampleAnnotation', 'returned @aliased annotation should map to mindplay\test\Sample\SampleAnnotation');
     }
 
     protected function testCanFindAnnotationsByAlias()

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sample;
+namespace mindplay\test\Sample;
 
 use mindplay\annotations\Annotation;
 
@@ -14,4 +14,5 @@ class SampleAnnotation extends Annotation
 
 class DefaultSampleAnnotation extends SampleAnnotation
 {
+
 }
