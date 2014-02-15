@@ -7,7 +7,7 @@ namespace mindplay\test\lib;
  */
 class xTestRunner
 {
-    private $rootpath;
+    private $rootPath;
 
     /**
      * Code coverage information tracker.
@@ -17,21 +17,21 @@ class xTestRunner
     private $coverage;
 
     /**
-     * @param string $rootpath The absolute path to the root folder of the test suite.
+     * @param string $rootPath The absolute path to the root folder of the test suite.
      *
      * @throws \Exception
      */
-    public function __construct($rootpath)
+    public function __construct($rootPath)
     {
-        if (!is_dir($rootpath)) {
-            throw new \Exception("{$rootpath} is not a directory");
+        if (!is_dir($rootPath)) {
+            throw new \Exception("{$rootPath} is not a directory");
         }
 
-        $this->rootpath = $rootpath;
+        $this->rootPath = $rootPath;
 
         try {
             $this->coverage = new \PHP_CodeCoverage();
-            $this->coverage->filter()->addDirectoryToWhitelist($rootpath);
+            $this->coverage->filter()->addDirectoryToWhitelist($rootPath);
         } catch (\PHP_CodeCoverage_Exception $e) {
             // can't collect coverage
         }
@@ -98,7 +98,7 @@ class xTestRunner
     {
         $this->header();
 
-        echo '<h4>Codebase: ' . $this->rootpath . '</h4>';
+        echo '<h4>Codebase: ' . $this->rootPath . '</h4>';
         echo '<h4>Test Suite: ' . $pattern . '</h4>';
 
         foreach (glob($pattern) as $path) {
