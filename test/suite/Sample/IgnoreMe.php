@@ -1,6 +1,6 @@
 <?php
 
-namespace Sample;
+namespace mindplay\test\Sample;
 
 /**
  * @ignored

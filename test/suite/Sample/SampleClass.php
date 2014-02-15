@@ -1,11 +1,11 @@
 <?php
 
-namespace Sample;
+namespace mindplay\test\Sample;
 
 use mindplay\annotations\Annotation as SampleAlias; // for AnnotationsTest::testCanGetAnnotationFile()
 
 /**
- * @Sample\Sample
+ * @mindplay\test\Sample\Sample
  */
 class SampleClass
 {

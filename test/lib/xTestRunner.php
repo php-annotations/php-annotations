@@ -1,5 +1,5 @@
 <?php
-namespace test\lib;
+namespace mindplay\test\lib;
 
 /**
  * This class implements a very simple test suite runner and code
