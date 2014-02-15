@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the php-annotation framework.
  *
  * (c) Rasmus Schultz <rasmus@mindplay.dk>
