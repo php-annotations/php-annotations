@@ -20,5 +20,5 @@ $auto_loader->addPsr4("mindplay\\test\\", FULL_PATH . '/test');
 $auto_loader->addPsr4("mindplay\\test\\Sample\\", FULL_PATH . '/test/suite/Sample');
 $auto_loader->register();
 
-$runner = new xTestRunner(dirname(__DIR__) . '/mindplay/annotations');
+$runner = new xTestRunner(dirname(__DIR__) . '/src/annotations');
 $runner->run(__DIR__.'/suite/*.test.php');

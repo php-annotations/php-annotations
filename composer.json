@@ -15,7 +15,7 @@
         "php": ">=5.3.3"
     },
     "autoload": {
-        "psr-0": { "mindplay\\annotations": "" }
+        "psr-4": { "mindplay\\annotations\\": "src\\annotations" }
     },
     "minimum-stability": "dev"
 }
