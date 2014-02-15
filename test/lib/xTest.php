@@ -18,10 +18,22 @@ abstract class xTest
     private $result;
 
     /**
-     * Runs this test
+     * Test runner.
+     *
+     * @var xTestRunner
      */
-    public function run()
+    private $testRunner;
+
+    /**
+     * Run this test.
+     *
+     * @param xTestRunner $testRunner Test runner.
+     * @return void
+     */
+    public function run(xTestRunner $testRunner)
     {
+        $this->testRunner = $testRunner;
+
         $class = get_class($this);
 
         echo '<h3>' . htmlspecialchars($class) . '</h3>';
@@ -53,6 +65,8 @@ abstract class xTest
                 if (count($_GET) && @$_GET[$name] !== '') {
                     continue;
                 }
+
+                $this->testRunner->startCoverageCollector($name);
 
                 if (method_exists($this, 'setup')) {
                     $this->setup();
@@ -91,6 +105,8 @@ abstract class xTest
                 if (method_exists($this, 'teardown')) {
                     $this->teardown();
                 }
+
+                $this->testRunner->stopCoverageCollector();
 
                 echo '<tr style="color:white; background:' . $color . '"><td>(' . $method->getStartLine() . ') <a style="color:white" href="?' . $name . '">' . preg_replace('/([A-Z])/', ' \1', $name) . '</a></td><td><pre>' . htmlspecialchars($result) . '</pre></td></tr>';
             }

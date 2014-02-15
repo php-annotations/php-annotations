@@ -8,7 +8,13 @@ namespace mindplay\test\lib;
 class xTestRunner
 {
     private $rootpath;
-    private $xdebug;
+
+    /**
+     * Code coverage information tracker.
+     *
+     * @var \PHP_CodeCoverage
+     */
+    private $coverage;
 
     /**
      * @param string $rootpath The absolute path to the root folder of the test suite.
@@ -23,7 +29,37 @@ class xTestRunner
 
         $this->rootpath = $rootpath;
 
-        $this->xdebug = function_exists('xdebug_start_code_coverage');
+        try {
+            $this->coverage = new \PHP_CodeCoverage();
+            $this->coverage->filter()->addDirectoryToWhitelist($rootpath);
+        } catch (\PHP_CodeCoverage_Exception $e) {
+            // can't collect coverage
+        }
+    }
+
+    /**
+     * Starts coverage information collection for a test.
+     *
+     * @param string $testName Test name.
+     * @return void
+     */
+    public function startCoverageCollector($testName)
+    {
+        if (isset($this->coverage)) {
+            $this->coverage->start($testName);
+        }
+    }
+
+    /**
+     * Stops coverage information collection.
+     *
+     * @return void
+     */
+    public function stopCoverageCollector()
+    {
+        if (isset($this->coverage)) {
+            $this->coverage->stop();
+        }
     }
 
     /**
@@ -60,11 +96,6 @@ class xTestRunner
      */
     public function run($pattern)
     {
-        if ($this->xdebug) {
-            xdebug_stop_code_coverage(true);
-            xdebug_start_code_coverage(XDEBUG_CC_UNUSED + XDEBUG_CC_DEAD_CODE);
-        }
-
         $this->header();
 
         echo '<h4>Codebase: ' . $this->rootpath . '</h4>';
@@ -77,39 +108,27 @@ class xTestRunner
                 throw new \Exception("'{$path}' is not a valid unit test");
             }
 
-            $test->run();
+            $test->run($this);
         }
 
-        if ($this->xdebug) {
-            xdebug_stop_code_coverage(false);
+        $this->createCodeCoverageReport();
+        $this->footer();
+    }
 
-            // we can safely ignore uncovered empty lines, closing braces and else-clauses that don't have a statement
-            $uncovered = array('', '}', 'else');
+    /**
+     * Creates code coverage report.
+     *
+     * @return void
+     */
+    protected function createCodeCoverageReport()
+    {
+        if (isset($this->coverage)) {
+            $writer = new \PHP_CodeCoverage_Report_HTML;
+            $writer->process($this->coverage, FULL_PATH . '/test/runtime/coverage');
 
-            foreach (xdebug_get_code_coverage() as $path => $lines) {
-                if (substr($path, 0, strlen($this->rootpath)) == $this->rootpath && strpos($path, "eval()'d code") === false) {
-                    $relpath = substr($path, strlen($this->rootpath) + 1);
-
-                    $file = file($path);
-
-                    ob_start();
-                    foreach ($lines as $line => $coverage) {
-                        if ($coverage !== 1 && !in_array(trim($file[$line]), $uncovered)) {
-                            echo '<span style="color:#' . ($coverage == -1 ? 'f00' : '888') . '">' . sprintf('%5d', $line + 1) . ' : ' . $file[$line] . "</span>";
-                        }
-                    }
-                    $report = ob_get_clean();
-
-                    if ($report) {
-                        echo '<h3>Uncovered code in: ' . $relpath . '</h3>';
-                        echo '<pre>' . $report . '</pre>';
-                    } // else echo '<h3>100% Code coverage in: '.$relpath.'</h3>';
-                }
-            }
+            echo '<a href="runtime/coverage">Code coverage report</a>';
         } else {
             echo '<h3>Code coverage analysis unavailable</h3><p>To enable code coverage, the xdebug php module must be installed and enabled.</p>';
         }
-
-        $this->footer();
     }
 }
