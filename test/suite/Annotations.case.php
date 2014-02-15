@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * TEST CASE: Sample Annotations
  */
 
