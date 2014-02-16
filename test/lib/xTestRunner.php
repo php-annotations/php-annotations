@@ -1,33 +1,62 @@
 <?php
 namespace mindplay\test\lib;
 
+
+use mindplay\test\lib\ResultPrinter\CliResultPrinter;
+use mindplay\test\lib\ResultPrinter\ResultPrinter;
+use mindplay\test\lib\ResultPrinter\WebResultPrinter;
+
 /**
  * This class implements a very simple test suite runner and code
  * coverage benchmarking (where supported by the xdebug extension).
  */
 class xTestRunner
 {
-    private $rootPath;
+    protected $rootPath;
 
     /**
      * Code coverage information tracker.
      *
      * @var \PHP_CodeCoverage
      */
-    private $coverage;
+    protected $coverage;
 
     /**
-     * @param string $rootPath The absolute path to the root folder of the test suite.
+     * Result printer.
      *
+     * @var ResultPrinter
+     */
+    protected $resultPrinter;
+
+    /**
+     * Creates result printer based on environment.
+     *
+     * @return ResultPrinter
+     */
+    public static function createResultPrinter()
+    {
+        if (PHP_SAPI == 'cli') {
+            return new CliResultPrinter(new Colors());
+        }
+
+        return new WebResultPrinter();
+    }
+
+    /**
+     * Creates test runner instance.
+     *
+     * @param string        $rootPath      The absolute path to the root folder of the test suite.
+     * @param ResultPrinter $resultPrinter Result printer.
      * @throws \Exception
      */
-    public function __construct($rootPath)
+    public function __construct($rootPath, ResultPrinter $resultPrinter)
     {
         if (!is_dir($rootPath)) {
             throw new \Exception("{$rootPath} is not a directory");
         }
 
         $this->rootPath = $rootPath;
+        $this->resultPrinter = $resultPrinter;
 
         try {
             $this->coverage = new \PHP_CodeCoverage();
@@ -35,6 +64,16 @@ class xTestRunner
         } catch (\PHP_CodeCoverage_Exception $e) {
             // can't collect coverage
         }
+    }
+
+    /**
+     * Returns library root path.
+     *
+     * @return string
+     */
+    public function getRootPath()
+    {
+        return $this->rootPath;
     }
 
     /**
@@ -63,44 +102,17 @@ class xTestRunner
     }
 
     /**
-     * Prints the header before the test output
-     */
-    protected function header()
-    {
-        echo '<html>
-                <head>
-                    <title>Unit Tests</title>
-                    <style type="text/css">
-                        table { border-collapse:collapse; }
-                        td, th { text-align:left; padding:2px 6px; border:solid 1px #aaa; }
-                    </style>
-                </head>
-                <body>
-                    <h2>Unit Tests</h2>';
-    }
-
-    /**
-     * Prints the footer after the test output
-     */
-    protected function footer()
-    {
-        echo '</body></html>';
-    }
-
-    /**
      * Runs a suite of unit tests
      *
      * @param string $pattern A filename pattern compatible with glob()
-     *
-     * @throws \Exception
+     * @return boolean
+     * @throws \Exception When invalid test found.
      */
     public function run($pattern)
     {
-        $this->header();
+        $this->resultPrinter->suiteHeader($this, $pattern);
 
-        echo '<h4>Codebase: ' . $this->rootPath . '</h4>';
-        echo '<h4>Test Suite: ' . $pattern . '</h4>';
-
+        $passed = true;
         foreach (glob($pattern) as $path) {
             $test = require($path);
 
@@ -108,27 +120,13 @@ class xTestRunner
                 throw new \Exception("'{$path}' is not a valid unit test");
             }
 
-            $test->run($this);
+            $test->setResultPrinter($this->resultPrinter);
+            $passed = $passed && $test->run($this);
         }
 
-        $this->createCodeCoverageReport();
-        $this->footer();
-    }
+        $this->resultPrinter->createCodeCoverageReport($this->coverage);
+        $this->resultPrinter->suiteFooter($this);
 
-    /**
-     * Creates code coverage report.
-     *
-     * @return void
-     */
-    protected function createCodeCoverageReport()
-    {
-        if (isset($this->coverage)) {
-            $writer = new \PHP_CodeCoverage_Report_HTML;
-            $writer->process($this->coverage, FULL_PATH . '/test/runtime/coverage');
-
-            echo '<a href="runtime/coverage">Code coverage report</a>';
-        } else {
-            echo '<h3>Code coverage analysis unavailable</h3><p>To enable code coverage, the xdebug php module must be installed and enabled.</p>';
-        }
+        return $passed;
     }
 }

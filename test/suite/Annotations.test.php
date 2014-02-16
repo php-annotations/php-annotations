@@ -75,11 +75,6 @@ class AnnotationsTest extends xTest
 
     protected function testCanGetAnnotationFile()
     {
-        /**
-         * @var AnnotationFile $file
-         * @var string $file_path absolute path to the class-file used for testing
-         */
-
         // This test is for an internal API, so we need to perform some invasive maneuvers:
 
         $manager = Annotations::getManager();
@@ -91,10 +86,12 @@ class AnnotationsTest extends xTest
 
         $class_reflection = new ReflectionClass('mindplay\test\Sample\SampleClass');
 
+        // absolute path to the class-file used for testing
         $file_path = $class_reflection->getFileName();
 
         // Now get the AnnotationFile instance:
 
+        /** @var AnnotationFile $file */
         $file = $method->invoke($manager, $file_path);
 
         $this->check($file instanceof AnnotationFile, 'should be an instance of AnnotationFile');
@@ -397,16 +394,13 @@ class AnnotationsTest extends xTest
 
     protected function testCanUseAnnotationAlias()
     {
-        /**
-         * @var Annotation[] $anns
-         */
-
         $manager = new AnnotationManager();
         $manager->namespace = 'mindplay\test\Sample';
         $manager->cache = false;
 
         $manager->registry['aliased'] = 'mindplay\test\Sample\SampleAnnotation';
 
+        /** @var Annotation[] $anns */
         $anns = $manager->getClassAnnotations('mindplay\test\Sample\AliasMe');
 
         $this->check(count($anns) == 1, 'the @aliased annotation should be aliased');
