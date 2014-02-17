@@ -1,5 +1,6 @@
 <?php
 namespace mindplay\test\lib;
+use mindplay\test\lib\ResultPrinter\ResultPrinter;
 
 /**
  * A base class to support simple unit tests.
@@ -18,27 +19,52 @@ abstract class xTest
     private $result;
 
     /**
-     * Runs this test
+     * Test runner.
+     *
+     * @var xTestRunner
      */
-    public function run()
-    {
-        $class = get_class($this);
+    private $testRunner;
 
-        echo '<h3>' . htmlspecialchars($class) . '</h3>';
-        echo '<table id="' . $class . '-results"><tr><th>Test</th><th>Result</th></tr>';
+    /**
+     * Result printer.
+     *
+     * @var ResultPrinter
+     */
+    private $resultPrinter;
+
+    /**
+     * Sets result printer.
+     *
+     * @param ResultPrinter $resultPrinter Result printer.
+     * @return void
+     */
+    public function setResultPrinter(ResultPrinter $resultPrinter)
+    {
+        $this->resultPrinter = $resultPrinter;
+    }
+
+    /**
+     * Run this test.
+     *
+     * @param xTestRunner $testRunner Test runner.
+     * @return boolean
+     */
+    public function run(xTestRunner $testRunner)
+    {
+        $this->testRunner = $testRunner;
+        $this->resultPrinter->testHeader($this);
 
         $reflection = new \ReflectionClass(get_class($this));
         $methods = $reflection->getMethods();
 
-        $passed = 0;
-        $count = 0;
+        $passed = $count = 0;
 
         if (method_exists($this, 'init')) {
             try {
                 $this->init();
             } catch (\Exception $e) {
                 echo '<tr style="color:white; background:red;"><td>init() failed</td><td><pre>' . $e . '</pre></td></tr></table>';
-                return;
+                return false;
             }
         }
 
@@ -47,12 +73,13 @@ abstract class xTest
                 $this->result = null;
 
                 $test = $method->name;
-
                 $name = substr($test, 4);
 
                 if (count($_GET) && @$_GET[$name] !== '') {
                     continue;
                 }
+
+                $this->testRunner->startCoverageCollector($test);
 
                 if (method_exists($this, 'setup')) {
                     $this->setup();
@@ -66,22 +93,6 @@ abstract class xTest
                     }
                 }
 
-                if ($this->result !== true) {
-                    $color = 'red';
-                } elseif ($this->result === null) {
-                    $color = 'blue';
-                } else {
-                    $color = 'green';
-                }
-
-                if ($this->result === true) {
-                    $result = 'PASS';
-                } elseif ($this->result === null) {
-                    $result = 'FAIL: Incomplete Test';
-                } else {
-                    $result = 'FAIL' . (is_string($this->result) ? ': ' . $this->result : '');
-                }
-
                 $count++;
 
                 if ($this->result === true) {
@@ -92,25 +103,50 @@ abstract class xTest
                     $this->teardown();
                 }
 
-                echo '<tr style="color:white; background:' . $color . '"><td>(' . $method->getStartLine() . ') <a style="color:white" href="?' . $name . '">' . preg_replace('/([A-Z])/', ' \1', $name) . '</a></td><td><pre>' . htmlspecialchars($result) . '</pre></td></tr>';
+                $this->testRunner->stopCoverageCollector();
+                $this->resultPrinter->testCaseResult($method, $this->getResultColor(), $this->getResultMessage());
             }
         }
 
-        echo '<tr style="background-color:gray; color:white"><tr><th>' . $count . ' Tests</th><th>';
+        $this->resultPrinter->testFooter($this, $count, $passed);
 
-        if ($passed == $count) {
-            echo 'All Tests Passed';
+        return $passed == $count;
+    }
+
+    /**
+     * Returns test result color.
+     *
+     * @return string
+     */
+    private function getResultColor()
+    {
+        if ($this->result !== true) {
+            $color = 'red';
+        } elseif ($this->result === null) {
+            $color = 'blue';
         } else {
-            echo ($count - $passed) . ' Tests Failed';
+            $color = 'green';
         }
 
-        echo '</th></tr>';
+        return $color;
+    }
 
-        echo '</table>';
-
-        if ($passed == $count) {
-            echo '<h4 id="' . $class . '-toggle" style="cursor:pointer" onclick="' . "document.getElementById('{$class}-results').style.display='table'; document.getElementById('{$class}-toggle').style.display='none'; return false;" . '">&raquo; All Tests Passed</h4><script type="text/javascript">document.getElementById("' . $class . '-results").style.display="none";</script>';
+    /**
+     * Returns test result message.
+     *
+     * @return string
+     */
+    private function getResultMessage()
+    {
+        if ($this->result === true) {
+            $result = 'PASS';
+        } elseif ($this->result === null) {
+            $result = 'FAIL: Incomplete Test';
+        } else {
+            $result = 'FAIL' . (is_string($this->result) ? ': ' . $this->result : '');
         }
+
+        return $result;
     }
 
     /**
