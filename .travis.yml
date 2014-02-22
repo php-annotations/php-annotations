@@ -8,6 +8,5 @@ before_script:
 script: php test/test.php
 
 after_script:
-  - cat clover.xml
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover clover.xml
