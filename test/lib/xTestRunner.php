@@ -104,16 +104,19 @@ class xTestRunner
     /**
      * Runs a suite of unit tests
      *
-     * @param string $pattern A filename pattern compatible with glob()
-     * @return boolean
+     * @param string $directory Directory with tests.
+     * @param string $suffix    Test file suffix.
      * @throws \Exception When invalid test found.
+     * @return boolean
      */
-    public function run($pattern)
+    public function run($directory, $suffix)
     {
-        $this->resultPrinter->suiteHeader($this, $pattern);
+        $this->resultPrinter->suiteHeader($this, $directory . '/*' . $suffix);
 
         $passed = true;
-        foreach (glob($pattern) as $path) {
+        $facade = new \File_Iterator_Facade;
+
+        foreach ($facade->getFilesAsArray($directory, $suffix) as $path) {
             $test = require($path);
 
             if (!$test instanceof xTest) {
