@@ -33,6 +33,27 @@ abstract class xTest
     private $resultPrinter;
 
     /**
+     * The name of the expected Exception.
+     *
+     * @var mixed
+     */
+    private $expectedException = null;
+
+    /**
+     * The message of the expected Exception.
+     *
+     * @var string
+     */
+    private $expectedExceptionMessage = '';
+
+    /**
+     * The code of the expected Exception.
+     *
+     * @var integer
+     */
+    private $expectedExceptionCode;
+
+    /**
      * Sets result printer.
      *
      * @param ResultPrinter $resultPrinter Result printer.
@@ -62,8 +83,8 @@ abstract class xTest
         if (method_exists($this, 'init')) {
             try {
                 $this->init();
-            } catch (\Exception $e) {
-                echo '<tr style="color:white; background:red;"><td>init() failed</td><td><pre>' . $e . '</pre></td></tr></table>';
+            } catch (\Exception $exception) {
+                echo '<tr style="color:white; background:red;"><td>init() failed</td><td><pre>' . $exception . '</pre></td></tr></table>';
                 return false;
             }
         }
@@ -87,9 +108,15 @@ abstract class xTest
 
                 try {
                     $this->$test();
-                } catch (\Exception $e) {
-                    if (!($e instanceof xTestException)) {
-                        $this->result = (string)$e;
+                } catch (\Exception $exception) {
+                    try {
+                        $this->assertException($exception);
+                    } catch (xTestException $subException) {
+
+                    }
+
+                    if (is_null($this->result) && !($exception instanceof xTestException)) {
+                        $this->result = (string)$exception;
                     }
                 }
 
@@ -111,6 +138,40 @@ abstract class xTest
         $this->resultPrinter->testFooter($this, $count, $passed);
 
         return $passed == $count;
+    }
+
+    /**
+     * Checks that given exception matches expected one.
+     *
+     * @param \Exception $e Exception.
+     * @return void
+     */
+    private function assertException(\Exception $e)
+    {
+        if (!is_string($this->expectedException)) {
+            return;
+        }
+
+        $this->check(
+            get_class($e) == $this->expectedException,
+            'Exception with "' . get_class($e) . '" class thrown instead of "' . $this->expectedException . '"'
+        );
+
+        if (is_string($this->expectedExceptionMessage) && !empty($this->expectedExceptionMessage)) {
+            $this->check(
+                $e->getMessage() == $this->expectedExceptionMessage,
+                'Exception with "' . $e->getMessage() . '" message thrown instead of "' . $this->expectedExceptionMessage . '"'
+            );
+        }
+
+        if ($this->expectedExceptionCode !== null) {
+            $this->check(
+                $e->getCode() == $this->expectedExceptionCode,
+                'Exception with "' . $e->getCode() . '" code thrown instead of "' . $this->expectedExceptionCode . '"'
+            );
+        }
+
+        $this->pass();
     }
 
     /**
@@ -202,4 +263,19 @@ abstract class xTest
             $this->fail($fail === false ? var_export($a, true) . ' !== ' . var_export($b, true) : $fail);
         }
     }
+
+    /**
+     * Sets expected exception.
+     *
+     * @param mixed   $exceptionName    Exception class name.
+     * @param string  $exceptionMessage Exception message.
+     * @param integer $exceptionCode    Exception code.
+     */
+    public function setExpectedException($exceptionName, $exceptionMessage = '', $exceptionCode = null)
+    {
+        $this->expectedException = $exceptionName;
+        $this->expectedExceptionMessage = $exceptionMessage;
+        $this->expectedExceptionCode = $exceptionCode;
+    }
+
 }
