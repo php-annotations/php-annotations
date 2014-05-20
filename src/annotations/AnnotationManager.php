@@ -448,7 +448,13 @@ class AnnotationManager
         }
 
         if (!class_exists($class, $this->autoload)) {
-            throw new AnnotationException("undefined class {$class}");
+            $isTrait = function_exists('trait_exists') ? trait_exists($class, $this->autoload) : false;
+
+            if (interface_exists($class, $this->autoload) || $isTrait) {
+                throw new AnnotationException('Reading annotations from interface/trait "' . $class . '" is not supported');
+            }
+
+            throw new AnnotationException('Unable to read annotations from an undefined class "' . $class . '"');
         }
 
         if ($type === null) {
