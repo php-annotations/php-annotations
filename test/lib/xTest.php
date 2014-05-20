@@ -96,7 +96,7 @@ abstract class xTest
                 $test = $method->name;
                 $name = substr($test, 4);
 
-                if (count($_GET) && @$_GET[$name] !== '') {
+                if (count($_GET) && isset($_GET[$name]) && $_GET[$name] !== '') {
                     continue;
                 }
 
