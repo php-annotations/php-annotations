@@ -413,6 +413,35 @@ class AnnotationsTest extends xTest
 
         $this->check(count($ann) === 1, 'TestBase::$sample has one @note annotation');
     }
+
+    public function testGetAnnotationsFromNonExistingClass()
+    {
+        $this->setExpectedException('mindplay\annotations\AnnotationException', 'Unable to read annotations from an undefined class "NonExistingClass"');
+        Annotations::ofClass('NonExistingClass', '@note');
+    }
+
+    public function testGetAnnotationsFromAnInterface()
+    {
+        $this->setExpectedException('mindplay\annotations\AnnotationException', 'Reading annotations from interface/trait "TestInterface" is not supported');
+        Annotations::ofClass('TestInterface', '@note');
+    }
+
+    public function testGetAnnotationsFromTrait()
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            $this->pass();
+            return;
+        }
+
+        eval('trait TestTrait { }');
+        $this->setExpectedException('mindplay\annotations\AnnotationException', 'Reading annotations from interface/trait "TestTrait" is not supported');
+        Annotations::ofClass('TestTrait', '@note');
+    }
+
+}
+
+interface TestInterface {
+
 }
 
 return new AnnotationsTest;
