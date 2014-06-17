@@ -430,7 +430,7 @@ class AnnotationManager
     /**
      * Inspects Annotations applied to a given class
      *
-     * @param string|ReflectionClass $class A class name, an object, or a ReflectionClass instance
+     * @param string|object|ReflectionClass $class A class name, an object, or a ReflectionClass instance
      * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
      *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
      *
