@@ -276,9 +276,11 @@ class AnnotationManager
 
             $reflection = new ReflectionClass($class_name);
 
-            $file = $this->getAnnotationFile($reflection->getFileName());
+            if ($reflection->getFileName() && !$reflection->isInternal()) {
+                $file = $this->getAnnotationFile($reflection->getFileName());
+            }
 
-            if (isset($file->data[$key])) {
+            if (isset($file) && isset($file->data[$key])) {
                 $annotations = array();
 
                 foreach ($file->data[$key] as $spec) {
