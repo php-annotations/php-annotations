@@ -145,3 +145,45 @@ class Test extends TestBase
     {
     }
 }
+
+
+/**
+ * Test that using an core class will not break parsing.
+ * https://github.com/php-annotations/php-annotations/issues/59
+ *
+ * @Note("An example class annotation.")
+ */
+class TestClassExtendingCore extends ReflectionClass
+{
+
+}
+
+/**
+ * Test that using an extension class will not break parsing.
+ * https://github.com/php-annotations/php-annotations/issues/59
+ *
+ * @Note("An example class annotation.")
+ */
+class TestClassExtendingExtension extends SplFileObject
+{
+
+}
+
+/**
+ * @Note("Base note.")
+ */
+class TestClassExtendingUserDefinedBase
+{
+
+}
+
+/**
+ * Test that using an user defined class will not break parsing.
+ * https://github.com/php-annotations/php-annotations/issues/59
+ *
+ * @Note("Note of child.")
+ */
+class TestClassExtendingUserDefined extends TestClassExtendingUserDefinedBase
+{
+
+}

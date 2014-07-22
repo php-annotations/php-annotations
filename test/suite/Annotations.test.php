@@ -414,6 +414,27 @@ class AnnotationsTest extends xTest
         $this->check(count($ann) === 1, 'TestBase::$sample has one @note annotation');
     }
 
+    protected function testParseUserDefinedClasses()
+    {
+        $annotations = Annotations::ofClass('TestClassExtendingUserDefined', '@note');
+
+        $this->check(count($annotations) == 2, 'TestClassExtendingUserDefined has two note annotations.');
+    }
+
+    protected function testDoNotParseCoreClasses()
+    {
+        $annotations = Annotations::ofClass('TestClassExtendingCore', '@note');
+
+        $this->check(count($annotations) == 1, 'TestClassExtendingCore has one note annotations.');
+    }
+
+    protected function testDoNotParseExtensionClasses()
+    {
+        $annotations = Annotations::ofClass('TestClassExtendingExtension', '@note');
+
+        $this->check(count($annotations) == 1, 'TestClassExtendingExtension has one note annotations.');
+    }
+
     public function testGetAnnotationsFromNonExistingClass()
     {
         $this->setExpectedException('mindplay\annotations\AnnotationException', 'Unable to read annotations from an undefined class "NonExistingClass"');

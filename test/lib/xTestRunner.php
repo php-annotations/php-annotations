@@ -116,6 +116,8 @@ class xTestRunner
         $passed = true;
         $facade = new \File_Iterator_Facade;
 
+        $old_handler = set_error_handler(array($this, 'handlePHPErrors'));
+
         foreach ($facade->getFilesAsArray($directory, $suffix) as $path) {
             $test = require($path);
 
@@ -127,9 +129,20 @@ class xTestRunner
             $passed = $passed && $test->run($this);
         }
 
+        if ($old_handler) {
+            set_error_handler($old_handler);
+        } else {
+            restore_error_handler();
+        }
+
         $this->resultPrinter->createCodeCoverageReport($this->coverage);
         $this->resultPrinter->suiteFooter($this);
 
         return $passed;
+    }
+
+    public function handlePHPErrors($errno, $errstr)
+    {
+        throw new xTestException($errstr, xTestException::PHP_ERROR);
     }
 }

@@ -115,7 +115,7 @@ abstract class xTest
 
                     }
 
-                    if (is_null($this->result) && !($exception instanceof xTestException)) {
+                    if (is_null($this->result) && !(($exception instanceof xTestException) && $exception->getCode() == xTestException::FAIL)) {
                         $this->result = (string)$exception;
                     }
                 }
