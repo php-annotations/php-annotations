@@ -21,5 +21,9 @@
     "autoload": {
         "psr-4": { "mindplay\\annotations\\": "src\\annotations" }
     },
-    "minimum-stability": "dev"
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.2.x-dev"
+        }
+    }
 }
