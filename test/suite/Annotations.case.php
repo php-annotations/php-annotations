@@ -120,6 +120,16 @@ class NoUsageAnnotation
 }
 
 /**
+ * @usage('class'=>true)
+ * @usage('method'=>true)
+ */
+class MultiUsageAnnotation extends Annotation
+{
+
+
+}
+
+/**
  * TEST CASE: Sample Classes
  *
  * @doc 1234 (this is a sample PHP-DOC style annotation)

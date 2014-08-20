@@ -225,6 +225,16 @@ class AnnotationsTest extends xTest
         $this->check($usage->method === true);
     }
 
+    public function testAnnotationWithMultipleUsageAnnotations()
+    {
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            "the class 'MultiUsageAnnotation' must have exactly one UsageAnnotation (no other Annotations are allowed)"
+        );
+
+        Annotations::getUsage('MultiUsageAnnotation');
+    }
+
     protected function testGetUsageOfUndefinedAnnotationClass()
     {
         $this->setExpectedException(
