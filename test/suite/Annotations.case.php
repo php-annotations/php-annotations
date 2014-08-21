@@ -70,6 +70,12 @@ class UninheritableAnnotation extends Annotation
     public $test;
 }
 
+class InheritUsageAnnotation extends SampleAnnotation
+{
+
+
+}
+
 /**
  * @Doc
  * @usage('class'=>true)

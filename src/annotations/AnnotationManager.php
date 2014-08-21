@@ -413,11 +413,7 @@ class AnnotationManager
             $usage = $this->getAnnotations($class);
 
             if (count($usage) == 0) {
-                if ($parent = get_parent_class($class)) {
-                    $usage = $this->getUsage($parent);
-                } else {
-                    throw new AnnotationException("the class '{$class}' must have exactly one UsageAnnotation");
-                }
+                throw new AnnotationException("the class '{$class}' must have exactly one UsageAnnotation");
             } else {
                 if (count($usage) !== 1 || !($usage[0] instanceof UsageAnnotation)) {
                     throw new AnnotationException("the class '{$class}' must have exactly one UsageAnnotation (no other Annotations are allowed)");

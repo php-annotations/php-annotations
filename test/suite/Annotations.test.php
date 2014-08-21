@@ -201,6 +201,12 @@ class AnnotationsTest extends xTest
         Annotations::getUsage('SingleNonUsageAnnotation');
     }
 
+    public function testUsageAnnotationIsInherited()
+    {
+        $usage = Annotations::getUsage('InheritUsageAnnotation');
+        $this->check($usage->method === true);
+    }
+
     protected function testCanGetClassAnnotations()
     {
         $ann = Annotations::ofClass('Test');
