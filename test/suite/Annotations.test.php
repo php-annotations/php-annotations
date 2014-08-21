@@ -181,6 +181,26 @@ class AnnotationsTest extends xTest
         $this->check($usage->multiple === true);
     }
 
+    public function testAnnotationWithNonUsageAndUsageAnnotations()
+    {
+        $this->setExpectedException(
+            'mindplay\annotations\AnnotationException',
+            "the class 'UsageAndNonUsageAnnotation' must have exactly one UsageAnnotation (no other Annotations are allowed)"
+        );
+
+        Annotations::getUsage('UsageAndNonUsageAnnotation');
+    }
+
+    public function testAnnotationWithSingleNonUsageAnnotation()
+    {
+        $this->setExpectedException(
+            'mindplay\annotations\AnnotationException',
+            "the class 'SingleNonUsageAnnotation' must have exactly one UsageAnnotation (no other Annotations are allowed)"
+        );
+
+        Annotations::getUsage('SingleNonUsageAnnotation');
+    }
+
     protected function testCanGetClassAnnotations()
     {
         $ann = Annotations::ofClass('Test');

@@ -71,6 +71,24 @@ class UninheritableAnnotation extends Annotation
 }
 
 /**
+ * @Doc
+ * @usage('class'=>true)
+ */
+class UsageAndNonUsageAnnotation extends Annotation
+{
+
+}
+
+/**
+ * @Doc
+ */
+class SingleNonUsageAnnotation extends Annotation
+{
+
+
+}
+
+/**
  * TEST CASE: Sample Classes
  *
  * @doc 1234 (this is a sample PHP-DOC style annotation)

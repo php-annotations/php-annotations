@@ -357,6 +357,9 @@ class AnnotationManager
                 }
             }
         }
+
+        // Ensure sequential indexes in the array after removing annotations from beginning of it.
+        $annotations = array_values($annotations);
     }
 
     /**
