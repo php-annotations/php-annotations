@@ -4,21 +4,29 @@ require_once __DIR__ . '/Annotations.Sample.case.php';
 
 use mindplay\annotations\AnnotationFile;
 use mindplay\annotations\AnnotationCache;
-use mindplay\annotations\AnnotationParser;
 use mindplay\annotations\AnnotationManager;
-use mindplay\annotations\AnnotationException;
 use mindplay\annotations\Annotations;
 use mindplay\annotations\Annotation;
 use mindplay\test\annotations\Package;
 use mindplay\test\lib\xTest;
+use mindplay\test\lib\xTestRunner;
 
 /**
  * This class implements tests for core annotations
  */
 class AnnotationsTest extends xTest
 {
-    public function __construct()
+    const ANNOTATION_EXCEPTION = 'mindplay\annotations\AnnotationException';
+
+    /**
+     * Run this test.
+     *
+     * @param xTestRunner $testRunner Test runner.
+     * @return boolean
+     */
+    public function run(xTestRunner $testRunner)
     {
+        $testRunner->startCoverageCollector(__CLASS__);
         $cachePath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'runtime';
 
         Annotations::$config = array(
@@ -39,6 +47,10 @@ class AnnotationsTest extends xTest
         // disable some annotations not used during testing:
         Annotations::getManager()->registry['var'] = false;
         Annotations::getManager()->registry['param'] = false;
+        Annotations::getManager()->registry['undefined'] = 'UndefinedAnnotation';
+        $testRunner->stopCoverageCollector();
+
+        return parent::run($testRunner);
     }
 
     protected function testCanResolveAnnotationNames()
@@ -98,7 +110,10 @@ class AnnotationsTest extends xTest
         $this->check(count($file->data) > 0, 'should contain Annotation data');
         $this->check($file->path === $file_path, 'should reflect path to class-file');
         $this->check($file->namespace === 'mindplay\test\Sample', 'should reflect namespace');
-        $this->check($file->uses === array('SampleAlias' => 'mindplay\annotations\Annotation'), 'should reflect use-clause');
+        $this->check(
+            $file->uses === array('SampleAlias' => 'mindplay\annotations\Annotation'),
+            'should reflect use-clause'
+        );
     }
 
     protected function testCanParseAnnotations()
@@ -142,7 +157,10 @@ class AnnotationsTest extends xTest
         $test = eval($code);
 
         $this->check($test['#namespace'] === 'foo\bar', 'file namespace should be parsed and cached');
-        $this->check($test['#uses'] === array('Zing' => 'baz\Hat', 'Zap' => 'baz\Zap'), 'use-clauses should be parsed and cached: ' . var_export($test['#uses'], true));
+        $this->check(
+            $test['#uses'] === array('Zing' => 'baz\Hat', 'Zap' => 'baz\Zap'),
+            'use-clauses should be parsed and cached: ' . var_export($test['#uses'], true)
+        );
 
         $this->check($test['foo\bar\Sample'][0]['#name'] === 'doc', 'first annotation is an @doc annotation');
         $this->check($test['foo\bar\Sample'][0]['#type'] === 'DocAnnotation', 'first annotation is a DocAnnotation');
@@ -181,78 +199,128 @@ class AnnotationsTest extends xTest
         $this->check($usage->multiple === true);
     }
 
-    public function testAnnotationWithNonUsageAndUsageAnnotations()
+    protected function testAnnotationWithNonUsageAndUsageAnnotations()
     {
         $this->setExpectedException(
-            'mindplay\annotations\AnnotationException',
+            self::ANNOTATION_EXCEPTION,
             "the class 'UsageAndNonUsageAnnotation' must have exactly one UsageAnnotation (no other Annotations are allowed)"
         );
 
         Annotations::getUsage('UsageAndNonUsageAnnotation');
     }
 
-    public function testAnnotationWithSingleNonUsageAnnotation()
+    protected function testAnnotationWithSingleNonUsageAnnotation()
     {
         $this->setExpectedException(
-            'mindplay\annotations\AnnotationException',
+            self::ANNOTATION_EXCEPTION,
             "the class 'SingleNonUsageAnnotation' must have exactly one UsageAnnotation (no other Annotations are allowed)"
         );
 
         Annotations::getUsage('SingleNonUsageAnnotation');
     }
 
-    public function testUsageAnnotationIsInherited()
+    protected function testUsageAnnotationIsInherited()
     {
         $usage = Annotations::getUsage('InheritUsageAnnotation');
         $this->check($usage->method === true);
     }
 
+    protected function testGetUsageOfUndefinedAnnotationClass()
+    {
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            "undefined Annotation type 'NoSuchAnnotation'"
+        );
+
+        Annotations::getUsage('NoSuchAnnotation');
+    }
+
+    protected function testAnnotationWithoutUsageAnnotation()
+    {
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            "the class 'NoUsageAnnotation' must have exactly one UsageAnnotation"
+        );
+
+        Annotations::getUsage('NoUsageAnnotation');
+    }
+
     protected function testCanGetClassAnnotations()
     {
-        $ann = Annotations::ofClass('Test');
+        $annotations = Annotations::ofClass(new \ReflectionClass('Test'));
+        $this->check(count($annotations) > 0, 'from class reflection');
 
-        $this->check(count($ann) > 0);
+        $annotations = Annotations::ofClass(new Test());
+        $this->check(count($annotations) > 0, 'from class object');
+
+        $annotations = Annotations::ofClass('Test');
+        $this->check(count($annotations) > 0, 'from class name');
     }
 
     protected function testCanGetMethodAnnotations()
     {
-        $ann = Annotations::ofMethod('Test', 'run');
+        $annotations = Annotations::ofMethod(new \ReflectionClass('Test'), 'run');
+        $this->check(count($annotations) > 0, 'from class reflection and method name');
 
-        $this->check(count($ann) > 0);
+        $annotations = Annotations::ofMethod(new \ReflectionMethod('Test', 'run'));
+        $this->check(count($annotations) > 0, 'from method reflection');
+
+        $annotations = Annotations::ofMethod(new Test(), 'run');
+        $this->check(count($annotations) > 0, 'from class object and method name');
+
+        $annotations = Annotations::ofMethod('Test', 'run');
+        $this->check(count($annotations) > 0, 'from class name and method name');
+    }
+
+    protected function testGetAnnotationsFromMethodOfNonExistingClass()
+    {
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'undefined class NonExistingClass'
+        );
+        Annotations::ofMethod('NonExistingClass');
+    }
+
+    protected function testGetAnnotationsFromNonExistingMethodOfAClass()
+    {
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'undefined method Test::nonExistingMethod()'
+        );
+        Annotations::ofMethod('Test', 'nonExistingMethod');
     }
 
     protected function testCanGetPropertyAnnotations()
     {
-        $ann = Annotations::ofProperty('Test', 'sample');
+        $annotations = Annotations::ofProperty(new \ReflectionClass('Test'), 'sample');
+        $this->check(count($annotations) > 0, 'from class reflection and property name');
 
-        $this->check(count($ann) > 0);
+        $annotations = Annotations::ofProperty(new \ReflectionProperty('TestBase', 'sample'));
+        $this->check(count($annotations) > 0, 'from property reflection');
+
+        $annotations = Annotations::ofProperty(new Test(), 'sample');
+        $this->check(count($annotations) > 0, 'from class object and property name');
+
+        $annotations = Annotations::ofProperty('Test', 'sample');
+        $this->check(count($annotations) > 0, 'from class name and property name');
+    }
+
+    protected function testGetAnnotationsFromPropertyOfNonExistingClass()
+    {
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'undefined class NonExistingClass'
+        );
+        Annotations::ofProperty('NonExistingClass', 'sample');
     }
 
     public function testGetAnnotationsFromNonExistingPropertyOfExistingClass()
     {
         $this->setExpectedException(
-            'mindplay\annotations\AnnotationException',
+            self::ANNOTATION_EXCEPTION,
             'undefined property Test::$nonExisting'
         );
         Annotations::ofProperty('Test', 'nonExisting');
-    }
-
-    protected function testCanGetFilteredPropertyAnnotations()
-    {
-        $anns = Annotations::ofProperty('Test', 'mixed', 'NoteAnnotation');
-
-        if (!count($anns)) {
-            $this->fail('No annotations found');
-            return;
-        }
-
-        foreach ($anns as $ann) {
-            if (!$ann instanceof NoteAnnotation) {
-                $this->fail();
-            }
-        }
-
-        $this->pass();
     }
 
     protected function testCanGetFilteredClassAnnotations()
@@ -276,6 +344,24 @@ class AnnotationsTest extends xTest
     protected function testCanGetFilteredMethodAnnotations()
     {
         $anns = Annotations::ofMethod('TestBase', 'run', 'NoteAnnotation');
+
+        if (!count($anns)) {
+            $this->fail('No annotations found');
+            return;
+        }
+
+        foreach ($anns as $ann) {
+            if (!$ann instanceof NoteAnnotation) {
+                $this->fail();
+            }
+        }
+
+        $this->pass();
+    }
+
+    protected function testCanGetFilteredPropertyAnnotations()
+    {
+        $anns = Annotations::ofProperty('Test', 'mixed', 'NoteAnnotation');
 
         if (!count($anns)) {
             $this->fail('No annotations found');
@@ -354,14 +440,12 @@ class AnnotationsTest extends xTest
 
     protected function testThrowsExceptionIfSingleAnnotationAppliedTwice()
     {
-        try {
-            $anns = Annotations::ofProperty('Test', 'only_one');
-        } catch (AnnotationException $e) {
-            $this->pass();
-            return;
-        }
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'only one annotation of type SingleAnnotation may be applied to the same property'
+        );
 
-        $this->fail('Did not throw expected exception');
+        Annotations::ofProperty('Test', 'only_one');
     }
 
     protected function testCanOverrideSingleAnnotation()
@@ -409,7 +493,10 @@ class AnnotationsTest extends xTest
         $manager->namespace = 'mindplay\test\Sample';
         $manager->cache = false;
 
-        $anns = $manager->getClassAnnotations('mindplay\test\Sample\AnnotationInDefaultNamespace', 'mindplay\test\Sample\SampleAnnotation');
+        $anns = $manager->getClassAnnotations(
+            'mindplay\test\Sample\AnnotationInDefaultNamespace',
+            'mindplay\test\Sample\SampleAnnotation'
+        );
 
         $this->check(count($anns) == 1, 'one SampleAnnotation was expected - found ' . count($anns));
     }
@@ -439,7 +526,10 @@ class AnnotationsTest extends xTest
         $anns = $manager->getClassAnnotations('mindplay\test\Sample\AliasMe');
 
         $this->check(count($anns) == 1, 'the @aliased annotation should be aliased');
-        $this->check(get_class($anns[0]) == 'mindplay\test\Sample\SampleAnnotation', 'returned @aliased annotation should map to mindplay\test\Sample\SampleAnnotation');
+        $this->check(
+            get_class($anns[0]) == 'mindplay\test\Sample\SampleAnnotation',
+            'returned @aliased annotation should map to mindplay\test\Sample\SampleAnnotation'
+        );
     }
 
     protected function testCanFindAnnotationsByAlias()
@@ -470,19 +560,25 @@ class AnnotationsTest extends xTest
         $this->check(count($annotations) == 1, 'TestClassExtendingExtension has one note annotations.');
     }
 
-    public function testGetAnnotationsFromNonExistingClass()
+    protected function testGetAnnotationsFromNonExistingClass()
     {
-        $this->setExpectedException('mindplay\annotations\AnnotationException', 'Unable to read annotations from an undefined class "NonExistingClass"');
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'Unable to read annotations from an undefined class "NonExistingClass"'
+        );
         Annotations::ofClass('NonExistingClass', '@note');
     }
 
-    public function testGetAnnotationsFromAnInterface()
+    protected function testGetAnnotationsFromAnInterface()
     {
-        $this->setExpectedException('mindplay\annotations\AnnotationException', 'Reading annotations from interface/trait "TestInterface" is not supported');
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'Reading annotations from interface/trait "TestInterface" is not supported'
+        );
         Annotations::ofClass('TestInterface', '@note');
     }
 
-    public function testGetAnnotationsFromTrait()
+    protected function testGetAnnotationsFromTrait()
     {
         if (version_compare(PHP_VERSION, '5.4.0', '<')) {
             $this->pass();
@@ -490,14 +586,117 @@ class AnnotationsTest extends xTest
         }
 
         eval('trait TestTrait { }');
-        $this->setExpectedException('mindplay\annotations\AnnotationException', 'Reading annotations from interface/trait "TestTrait" is not supported');
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'Reading annotations from interface/trait "TestTrait" is not supported'
+        );
         Annotations::ofClass('TestTrait', '@note');
     }
 
-}
+    protected function testDisallowReadingUndefinedAnnotationProperties()
+    {
+        $nodeAnnotation = new NoteAnnotation();
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'NoteAnnotation::$nonExisting is not a valid property name'
+        );
+        $result = $nodeAnnotation->nonExisting;
+    }
 
-interface TestInterface {
+    protected function testDisallowWritingUndefinedAnnotationProperties()
+    {
+        $nodeAnnotation = new NoteAnnotation();
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'NoteAnnotation::$nonExisting is not a valid property name'
+        );
+        $nodeAnnotation->nonExisting = 'new value';
+    }
 
+    protected function testAnnotationCacheGetTimestamp()
+    {
+        $annotationCache = new AnnotationCache(sys_get_temp_dir());
+        $annotationCache->store('sample', '');
+
+        $this->check(
+            $annotationCache->getTimestamp('sample') > strtotime('midnight'),
+            'Annotation cache last update timestamp is not stale'
+        );
+    }
+
+    protected function testAnnotationFileTypeResolution()
+    {
+        $annotationFile = new AnnotationFile('', array(
+            '#namespace' => 'LevelA\NS',
+            '#uses' => array(
+                'LevelBClass' => 'LevelB\Class',
+            ),
+        ));
+
+        $this->check(
+            $annotationFile->resolveType('SubNS1\SubClass') == 'LevelA\NS\SubNS1\SubClass',
+            'Class in sub-namespace is resolved correctly'
+        );
+
+        $this->check(
+            $annotationFile->resolveType('\SubNS1\SubClass') == '\SubNS1\SubClass',
+            'Fully qualified class name is not changed during resolution'
+        );
+
+        $this->check(
+            $annotationFile->resolveType('LevelBClass') == 'LevelB\Class',
+            'The "uses ..." clause (exact match) is being used during resolution'
+        );
+
+        $this->check(
+            $annotationFile->resolveType('SomeClass[]') == 'LevelA\NS\SomeClass[]',
+            'The [] at then end of data type are preserved during resolution'
+        );
+
+        $this->check(
+            $annotationFile->resolveType('integer') == 'integer',
+            'Simple data type is kept as-is during resolution'
+        );
+    }
+
+    protected function testAnnotationManagerWithoutCache()
+    {
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'AnnotationManager::$cache is not configured'
+        );
+
+        $annotationManager = new AnnotationManager();
+        $annotationManager->getClassAnnotations('NoteAnnotation');
+    }
+
+    protected function testUsingNonExistentAnnotation()
+    {
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'annotation type WrongInterfaceAnnotation does not implement the mandatory IAnnotation interface'
+        );
+
+        Annotations::ofClass('TestClassWrongInterface');
+    }
+
+    protected function testReadingFileAwareAnnotation()
+    {
+        $annotations = Annotations::ofProperty('TestClassFileAwareAnnotation', 'prop', '@TypeAware');
+
+        $this->check(count($annotations) == 1, 'the @TypeAware annotation was found');
+        $this->check(
+            $annotations[0]->type == 'mindplay\annotations\IAnnotationParser',
+            'data type of type-aware annotation was resolved'
+        );
+    }
+
+    protected function testFilterUnresolvedAnnotationClass()
+    {
+        $annotations = Annotations::ofClass('TestBase', false);
+
+        $this->check($annotations === array(), 'empty annotation list when filtering failed');
+    }
 }
 
 return new AnnotationsTest;

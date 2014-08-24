@@ -7,6 +7,7 @@
 use mindplay\annotations\Annotation;
 use mindplay\annotations\IAnnotationParser;
 use mindplay\annotations\AnnotationException;
+use mindplay\annotations\standard\VarAnnotation;
 
 /**
  * @usage('class'=>true, 'property'=>true, 'method'=>true, 'inherited'=>true, 'multiple'=>true)
@@ -91,6 +92,21 @@ class UsageAndNonUsageAnnotation extends Annotation
 class SingleNonUsageAnnotation extends Annotation
 {
 
+
+}
+
+class WrongInterfaceAnnotation {
+
+}
+
+class TypeAwareAnnotation extends VarAnnotation
+{
+
+
+}
+
+class NoUsageAnnotation
+{
 
 }
 
@@ -209,5 +225,24 @@ class TestClassExtendingUserDefinedBase
  */
 class TestClassExtendingUserDefined extends TestClassExtendingUserDefinedBase
 {
+
+}
+/**
+ * @WrongInterface
+ */
+class TestClassWrongInterface
+{
+
+}
+
+class TestClassFileAwareAnnotation
+{
+
+    /** @TypeAware IAnnotationParser */
+    public $prop;
+
+}
+
+interface TestInterface {
 
 }
