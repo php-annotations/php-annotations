@@ -106,18 +106,22 @@ abstract class xTest
                     $this->setup();
                 }
 
+                $exception = null;
+
                 try {
                     $this->$test();
                 } catch (\Exception $exception) {
-                    try {
-                        $this->assertException($exception);
-                    } catch (xTestException $subException) {
 
-                    }
+                }
 
-                    if (is_null($this->result) && !(($exception instanceof xTestException) && $exception->getCode() == xTestException::FAIL)) {
-                        $this->result = (string)$exception;
-                    }
+                try {
+                    $this->assertException($exception);
+                } catch (xTestException $subException) {
+
+                }
+
+                if (is_null($this->result) && !(($exception instanceof xTestException) && $exception->getCode() == xTestException::FAIL)) {
+                    $this->result = (string)$exception;
                 }
 
                 $count++;
@@ -129,6 +133,8 @@ abstract class xTest
                 if (method_exists($this, 'teardown')) {
                     $this->teardown();
                 }
+
+                $this->setExpectedException(null, '', null);
 
                 $this->testRunner->stopCoverageCollector();
                 $this->resultPrinter->testCaseResult($method, $this->getResultColor(), $this->getResultMessage());
@@ -146,11 +152,16 @@ abstract class xTest
      * @param \Exception $e Exception.
      * @return void
      */
-    private function assertException(\Exception $e)
+    private function assertException(\Exception $e = null)
     {
         if (!is_string($this->expectedException)) {
             return;
         }
+
+        $this->check(
+            $e instanceof \Exception,
+            'Exception of "' . $this->expectedException . '" class was not thrown'
+        );
 
         $this->check(
             get_class($e) == $this->expectedException,
