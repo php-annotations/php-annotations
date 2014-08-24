@@ -333,8 +333,9 @@ class AnnotationManager
     protected function applyConstraints(array $annotations, $member)
     {
         $result = array();
+        $annotationCount = count($annotations);
 
-        foreach ($annotations as $outer => $annotation) {
+        foreach ($annotations as $outerIndex => $annotation) {
             $type = get_class($annotation);
             $usage = $this->getUsage($type);
 
@@ -344,13 +345,14 @@ class AnnotationManager
             }
 
             if (!$usage->multiple) {
-                for ($inner = $outer + 1; $inner < count($annotations); $inner += 1) {
-                    if (!$annotations[$inner] instanceof $type) {
+                // Process annotation coming after current (in the outer loop) and of same type.
+                for ($innerIndex = $outerIndex + 1; $innerIndex < $annotationCount; $innerIndex += 1) {
+                    if (!$annotations[$innerIndex] instanceof $type) {
                         continue;
                     }
 
                     if ($usage->inherited) {
-                        continue 2; // another annotation overrides this one - skip it
+                        continue 2; // Another annotation (in inner loop) overrides this one (in outer loop) - skip it.
                     }
 
                     throw new AnnotationException("only one annotation of type {$type} may be applied to the same {$member}");
