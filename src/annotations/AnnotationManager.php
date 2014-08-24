@@ -326,13 +326,14 @@ class AnnotationManager
      * Validates the constraints (as defined by the UsageAnnotation of each annotation) of a
      * list of annotations for a given type of member.
      *
-     * @param IAnnotation[] &$annotations An array of IAnnotation objects to be validated.
-     * @param string $member The type of member to validate against (e.g. "class", "property" or "method")
-     * @throws AnnotationException if a constraint is violated
+     * @param IAnnotation[] &$annotations An array of IAnnotation objects to be validated (sorted with inherited annotations on top).
+     * @param string        $member       The type of member to validate against (e.g. "class", "property" or "method").
+     *
+     * @throws AnnotationException if a constraint is violated.
      */
     protected function applyConstraints(array &$annotations, $member)
     {
-        foreach ($annotations as $outer => $annotation) {
+        foreach ($annotations as $outerIndex => $annotation) {
             $type = get_class($annotation);
 
             $usage = $this->getUsage($type);
@@ -341,20 +342,23 @@ class AnnotationManager
                 throw new AnnotationException("{$type} cannot be applied to a {$member}");
             }
 
-            if (!$usage->multiple) {
-                foreach ($annotations as $inner => $other) {
-                    if ($inner >= $outer) {
-                        break;
-                    }
+            if ($usage->multiple) {
+                // Multiple instances of same annotation allowed, proceed with next annotation.
+                continue;
+            }
 
-                    if ($other instanceof $type) {
-                        if ($usage->inherited) {
-                            unset($annotations[$inner]);
-                        } else {
-                            throw new AnnotationException("only one annotation of type {$type} may be applied to the same {$member}");
-                        }
-                    }
+            // Process annotation coming before current (in the outer loop) and of same type.
+            for ($innerIndex = 0; $innerIndex < $outerIndex; $innerIndex++) {
+                if (!$annotations[$innerIndex] instanceof $type) {
+                    continue;
                 }
+
+                if (!$usage->inherited) {
+                    throw new AnnotationException("only one annotation of type {$type} may be applied to the same {$member}");
+                }
+
+                // Remove inherited annotation, since only instance of same type is allowed.
+                unset($annotations[$innerIndex]);
             }
         }
 

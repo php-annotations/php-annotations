@@ -118,7 +118,7 @@ class TestBase
     private $only_one;
 
     /**
-     * override('test'=>'This will be overridden')
+     * @override('test'=>'This will be overridden')
      */
     private $override_me;
 
