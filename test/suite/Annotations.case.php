@@ -109,13 +109,13 @@ class TestBase
     /**
      * @note("Applied to a TestBase member")
      */
-    private $sample = 'test';
+    protected $sample = 'test';
 
     /**
      * @single('test'=>'one is okay')
      * @single('test'=>'two is one too many')
      */
-    private $only_one;
+    protected $only_one;
 
     /**
      * override('test'=>'This will be overridden')
