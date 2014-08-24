@@ -19,6 +19,27 @@ namespace mindplay\annotations;
 class AnnotationFile
 {
     /**
+     * Data types considered to be simple.
+     *
+     * @var array
+     */
+    private static $simpleTypes = array(
+        'array',
+        'bool',
+        'boolean',
+        'callback',
+        'double',
+        'float',
+        'int',
+        'integer',
+        'mixed',
+        'number',
+        'object',
+        'string',
+        'void',
+    );
+
+    /**
      * @var array hash where member name => annotation data
      */
     public $data;
@@ -83,11 +104,6 @@ class AnnotationFile
      */
     protected function isSimple($type)
     {
-        $data_types = array(
-            'bool', 'int',
-            'mixed', 'string', 'boolean', 'integer', 'float', 'double', 'array',
-        );
-
-        return in_array(strtolower($type), $data_types);
+        return in_array(strtolower($type), self::$simpleTypes);
     }
 }
