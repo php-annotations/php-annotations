@@ -537,6 +537,10 @@ class AnnotationManager
             throw new AnnotationException("undefined class {$class}");
         }
 
+        if (!property_exists($class, $property)) {
+            throw new AnnotationException("undefined property {$class}::\${$property}");
+        }
+
         if ($type === null) {
             return $this->getAnnotations($class, 'property', '$' . $property);
         } else {

@@ -228,6 +228,15 @@ class AnnotationsTest extends xTest
         $this->check(count($ann) > 0);
     }
 
+    public function testGetAnnotationsFromNonExistingPropertyOfExistingClass()
+    {
+        $this->setExpectedException(
+            'mindplay\annotations\AnnotationException',
+            'undefined property Test::$nonExisting'
+        );
+        Annotations::ofProperty('Test', 'nonExisting');
+    }
+
     protected function testCanGetFilteredPropertyAnnotations()
     {
         $anns = Annotations::ofProperty('Test', 'mixed', 'NoteAnnotation');
