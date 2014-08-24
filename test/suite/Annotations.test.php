@@ -691,6 +691,59 @@ class AnnotationsTest extends xTest
         );
     }
 
+    protected function testAnnotationsConstrainedByCorrectUsageAnnotation()
+    {
+        $annotations = array(new NoteAnnotation());
+
+        $this->assertApplyConstrains($annotations, 'class');
+    }
+
+    protected function testAnnotationsConstrainedByClass()
+    {
+        $annotations = array(new UselessAnnotation());
+
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'UselessAnnotation cannot be applied to a class'
+        );
+
+        $this->assertApplyConstrains($annotations, AnnotationManager::MEMBER_CLASS);
+    }
+
+    protected function testAnnotationsConstrainedByMethod()
+    {
+        $annotations = array(new UselessAnnotation());
+
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'UselessAnnotation cannot be applied to a method'
+        );
+
+        $this->assertApplyConstrains($annotations, AnnotationManager::MEMBER_METHOD);
+    }
+
+    protected function testAnnotationsConstrainedByProperty()
+    {
+        $annotations = array(new UselessAnnotation());
+
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'UselessAnnotation cannot be applied to a property'
+        );
+
+        $this->assertApplyConstrains($annotations, AnnotationManager::MEMBER_PROPERTY);
+    }
+
+    protected function assertApplyConstrains(array &$annotations, $memberType)
+    {
+        $manager = Annotations::getManager();
+        $methodReflection = new ReflectionMethod(get_class($manager), 'applyConstraints');
+        $methodReflection->setAccessible(true);
+        $methodReflection->invokeArgs($manager, array(&$annotations, $memberType));
+
+        $this->check(count($annotations) > 0);
+    }
+
     protected function testFilterUnresolvedAnnotationClass()
     {
         $annotations = Annotations::ofClass('TestBase', false);
