@@ -13,14 +13,6 @@
 
 namespace mindplay\annotations;
 
-use ReflectionClass;
-use ReflectionMethod;
-use ReflectionProperty;
-
-use mindplay\annotations\AnnotationParser;
-use mindplay\annotations\UsageAnnotation;
-use mindplay\annotations\AnnotationCache;
-
 /**
  * This class manages the retrieval of Annotations from source code files
  */
@@ -278,7 +270,7 @@ class AnnotationManager
                 }
             }
 
-            $reflection = new ReflectionClass($class_name);
+            $reflection = new \ReflectionClass($class_name);
 
             if ($reflection->getFileName() && !$reflection->isInternal()) {
                 $file = $this->getAnnotationFile($reflection->getFileName());
@@ -434,7 +426,7 @@ class AnnotationManager
     /**
      * Inspects Annotations applied to a given class
      *
-     * @param string|object|ReflectionClass $class A class name, an object, or a ReflectionClass instance
+     * @param string|object|\ReflectionClass $class A class name, an object, or a ReflectionClass instance
      * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
      *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
      *
@@ -443,7 +435,7 @@ class AnnotationManager
      */
     public function getClassAnnotations($class, $type = null)
     {
-        if ($class instanceof ReflectionClass) {
+        if ($class instanceof \ReflectionClass) {
             $class = $class->getName();
         } elseif (is_object($class)) {
             $class = get_class($class);
@@ -471,7 +463,7 @@ class AnnotationManager
     /**
      * Inspects Annotations applied to a given method
      *
-     * @param string|object|ReflectionClass|ReflectionMethod $class A class name, an object, a ReflectionClass, or a ReflectionMethod instance
+     * @param string|object|\ReflectionClass|\ReflectionMethod $class A class name, an object, a ReflectionClass, or a ReflectionMethod instance
      * @param string $method The name of a method of the given class (or null, if the first parameter is a ReflectionMethod)
      * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
      *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
@@ -481,9 +473,9 @@ class AnnotationManager
      */
     public function getMethodAnnotations($class, $method = null, $type = null)
     {
-        if ($class instanceof ReflectionClass) {
+        if ($class instanceof \ReflectionClass) {
             $class = $class->getName();
-        } elseif ($class instanceof ReflectionMethod) {
+        } elseif ($class instanceof \ReflectionMethod) {
             $method = $class->name;
             $class = $class->class;
         } elseif (is_object($class)) {
@@ -510,7 +502,7 @@ class AnnotationManager
     /**
      * Inspects Annotations applied to a given property
      *
-     * @param string|object|ReflectionClass|ReflectionProperty $class A class name, an object, a ReflectionClass, or a ReflectionProperty instance
+     * @param string|object|\ReflectionClass|\ReflectionProperty $class A class name, an object, a ReflectionClass, or a ReflectionProperty instance
      * @param string $property The name of a defined property of the given class (or null, if the first parameter is a ReflectionProperty)
      * @param string $type An optional annotation class/interface name - if specified, only annotations of the given type are returned.
      *                     Alternatively, prefixing with "@" invokes name-resolution (allowing you to query by annotation name.)
@@ -521,9 +513,9 @@ class AnnotationManager
      */
     public function getPropertyAnnotations($class, $property = null, $type = null)
     {
-        if ($class instanceof ReflectionClass) {
+        if ($class instanceof \ReflectionClass) {
             $class = $class->getName();
-        } elseif ($class instanceof ReflectionProperty) {
+        } elseif ($class instanceof \ReflectionProperty) {
             $property = $class->name;
             $class = $class->class;
         } elseif (is_object($class)) {
