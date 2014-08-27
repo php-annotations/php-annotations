@@ -73,11 +73,11 @@ class AnnotationCache
         $content = self::PHP_TAG . $code . "\n";
 
         if (@file_put_contents($path, $content, LOCK_EX) === false) {
-            throw new AnnotationException("unable to write cache file: $path");
+            throw new AnnotationException("Unable to write cache file: {$path}");
         }
 
         if (@chmod($path, $this->_fileMode) === false) {
-            throw new AnnotationException("unable to set permissions of cache file: $path");
+            throw new AnnotationException("Unable to set permissions of cache file: {$path}");
         }
     }
 
