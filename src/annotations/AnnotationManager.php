@@ -26,6 +26,12 @@ use mindplay\annotations\AnnotationCache;
  */
 class AnnotationManager
 {
+    const MEMBER_CLASS = 'class';
+
+    const MEMBER_PROPERTY = 'property';
+
+    const MEMBER_METHOD = 'method';
+
     /**
      * @var boolean Enable PHP autoloader when searching for annotation classes (defaults to true)
      */
@@ -251,7 +257,7 @@ class AnnotationManager
      * @return IAnnotation[] array of IAnnotation objects for the given class/member/name
      * @throws AnnotationException for bad annotations
      */
-    protected function getAnnotations($class_name, $member_type = 'class', $member_name = null)
+    protected function getAnnotations($class_name, $member_type = self::MEMBER_CLASS, $member_name = null)
     {
         $key = $class_name . ($member_name ? '::' . $member_name : '');
 
@@ -260,8 +266,8 @@ class AnnotationManager
                 $this->annotations[$key] = array();
             }
 
-            if ($member_type !== 'class') {
-                $this->getAnnotations($class_name, 'class');
+            if ($member_type !== self::MEMBER_CLASS) {
+                $this->getAnnotations($class_name, self::MEMBER_CLASS);
             }
 
             if ($parent = get_parent_class($class_name)) {
@@ -335,9 +341,9 @@ class AnnotationManager
     {
         foreach ($annotations as $outerIndex => $annotation) {
             $type = get_class($annotation);
-
             $usage = $this->getUsage($type);
 
+            // Checks, that annotation can be applied to given class/method/property according to it's @usage annotation.
             if (!$usage->$member) {
                 throw new AnnotationException("{$type} cannot be applied to a {$member}");
             }
@@ -502,9 +508,9 @@ class AnnotationManager
         }
 
         if ($type === null) {
-            return $this->getAnnotations($class, 'method', $method);
+            return $this->getAnnotations($class, self::MEMBER_METHOD, $method);
         } else {
-            return $this->filterAnnotations($this->getAnnotations($class, 'method', $method), $type);
+            return $this->filterAnnotations($this->getAnnotations($class, self::MEMBER_METHOD, $method), $type);
         }
     }
 
@@ -542,9 +548,9 @@ class AnnotationManager
         }
 
         if ($type === null) {
-            return $this->getAnnotations($class, 'property', '$' . $property);
+            return $this->getAnnotations($class, self::MEMBER_PROPERTY, '$' . $property);
         } else {
-            return $this->filterAnnotations($this->getAnnotations($class, 'property', '$' . $property), $type);
+            return $this->filterAnnotations($this->getAnnotations($class, self::MEMBER_PROPERTY, '$' . $property), $type);
         }
     }
 }

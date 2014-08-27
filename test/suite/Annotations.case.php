@@ -27,6 +27,15 @@ class NoteAnnotation extends Annotation
 }
 
 /**
+ * @usage
+ */
+class UselessAnnotation extends Annotation
+{
+
+
+}
+
+/**
  * @usage('class'=>true)
  */
 class DocAnnotation extends Annotation implements IAnnotationParser
