@@ -262,9 +262,7 @@ class AnnotationManager
         $key = $class_name . ($member_name ? '::' . $member_name : '');
 
         if (!isset($this->initialized[$key])) {
-            if (!isset($this->annotations[$key])) {
-                $this->annotations[$key] = array();
-            }
+            $annotations = array();
 
             if ($member_type !== self::MEMBER_CLASS) {
                 $this->getAnnotations($class_name, self::MEMBER_CLASS);
@@ -274,7 +272,7 @@ class AnnotationManager
                 if ($parent !== __NAMESPACE__ . '\Annotation') {
                     foreach ($this->getAnnotations($parent, $member_type, $member_name) as $annotation) {
                         if ($this->getUsage(get_class($annotation))->inherited) {
-                            $this->annotations[$key][] = $annotation;
+                            $annotations[] = $annotation;
                         }
                     }
                 }
@@ -287,8 +285,6 @@ class AnnotationManager
             }
 
             if (isset($file) && isset($file->data[$key])) {
-                $annotations = array();
-
                 foreach ($file->data[$key] as $spec) {
                     $name = $spec['#name']; // currently unused
                     $type = $spec['#type'];
@@ -313,14 +309,9 @@ class AnnotationManager
 
                     $annotations[] = $annotation;
                 }
-
-                $this->annotations[$key] = array_merge(
-                    $this->annotations[$key],
-                    $annotations
-                );
             }
 
-            $this->applyConstraints($this->annotations[$key], $member_type);
+            $this->annotations[$key] = $this->applyConstraints($annotations, $member_type);
 
             $this->initialized[$key] = true;
         }
@@ -332,13 +323,18 @@ class AnnotationManager
      * Validates the constraints (as defined by the UsageAnnotation of each annotation) of a
      * list of annotations for a given type of member.
      *
-     * @param IAnnotation[] &$annotations An array of IAnnotation objects to be validated (sorted with inherited annotations on top).
-     * @param string        $member       The type of member to validate against (e.g. "class", "property" or "method").
+     * @param IAnnotation[] $annotations An array of IAnnotation objects to be validated (sorted with inherited annotations on top).
+     * @param string        $member      The type of member to validate against (e.g. "class", "property" or "method").
+     *
+     * @return IAnnotation[] validated and filtered list of IAnnotations objects
      *
      * @throws AnnotationException if a constraint is violated.
      */
-    protected function applyConstraints(array &$annotations, $member)
+    protected function applyConstraints(array $annotations, $member)
     {
+        $result = array();
+        $annotationCount = count($annotations);
+
         foreach ($annotations as $outerIndex => $annotation) {
             $type = get_class($annotation);
             $usage = $this->getUsage($type);
@@ -348,28 +344,25 @@ class AnnotationManager
                 throw new AnnotationException("{$type} cannot be applied to a {$member}");
             }
 
-            if ($usage->multiple) {
-                // Multiple instances of same annotation allowed, proceed with next annotation.
-                continue;
-            }
+            if (!$usage->multiple) {
+                // Process annotation coming after current (in the outer loop) and of same type.
+                for ($innerIndex = $outerIndex + 1; $innerIndex < $annotationCount; $innerIndex += 1) {
+                    if (!$annotations[$innerIndex] instanceof $type) {
+                        continue;
+                    }
 
-            // Process annotation coming before current (in the outer loop) and of same type.
-            for ($innerIndex = 0; $innerIndex < $outerIndex; $innerIndex++) {
-                if (!$annotations[$innerIndex] instanceof $type) {
-                    continue;
-                }
+                    if ($usage->inherited) {
+                        continue 2; // Another annotation (in inner loop) overrides this one (in outer loop) - skip it.
+                    }
 
-                if (!$usage->inherited) {
                     throw new AnnotationException("only one annotation of type {$type} may be applied to the same {$member}");
                 }
-
-                // Remove inherited annotation, since only instance of same type is allowed.
-                unset($annotations[$innerIndex]);
             }
+
+            $result[] = $annotation;
         }
 
-        // Ensure sequential indexes in the array after removing annotations from beginning of it.
-        $annotations = array_values($annotations);
+        return $result;
     }
 
     /**
@@ -422,7 +415,7 @@ class AnnotationManager
 
             $usage = $this->getAnnotations($class);
 
-            if (count($usage) == 0) {
+            if (count($usage) === 0) {
                 throw new AnnotationException("the class '{$class}' must have exactly one UsageAnnotation");
             } else {
                 if (count($usage) !== 1 || !($usage[0] instanceof UsageAnnotation)) {
