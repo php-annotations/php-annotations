@@ -24,7 +24,7 @@ use mindplay\annotations\IAnnotationParser;
  *
  * @usage('property'=>true, 'inherited'=>true)
  */
-class VarAnnotation extends Annotation implements IAnnotationParser, IAnnotationFileAware
+class TypeAnnotation extends Annotation implements IAnnotationParser, IAnnotationFileAware
 {
     /**
      * @var string Specifies the type of value (e.g. for validation, for
@@ -81,7 +81,7 @@ class VarAnnotation extends Annotation implements IAnnotationParser, IAnnotation
         parent::initAnnotation($properties);
 
         if (!isset($this->type)) {
-            throw new AnnotationException('VarAnnotation requires a type property');
+            throw new AnnotationException('TypeAnnotation requires a type property');
         }
 
         $this->type = $this->file->resolveType($this->type);

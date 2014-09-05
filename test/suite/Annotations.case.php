@@ -7,7 +7,7 @@
 use mindplay\annotations\Annotation;
 use mindplay\annotations\IAnnotationParser;
 use mindplay\annotations\AnnotationException;
-use mindplay\annotations\standard\VarAnnotation;
+use mindplay\annotations\standard\TypeAnnotation;
 
 /**
  * @usage('class'=>true, 'property'=>true, 'method'=>true, 'inherited'=>true, 'multiple'=>true)
@@ -108,7 +108,7 @@ class WrongInterfaceAnnotation {
 
 }
 
-class TypeAwareAnnotation extends VarAnnotation
+class TypeAwareAnnotation extends TypeAnnotation
 {
 
 
