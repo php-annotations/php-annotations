@@ -92,7 +92,7 @@ class AnnotationManager
         'type'           => 'mindplay\annotations\standard\TypeAnnotation',
         'usage'          => 'mindplay\annotations\UsageAnnotation',
         'uses'           => false,
-        'var'            => 'mindplay\annotations\standard\TypeAnnotation',
+        'var'            => 'mindplay\annotations\standard\VarAnnotation',
         'version'        => false,
     );
 
