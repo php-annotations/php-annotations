@@ -224,7 +224,7 @@ class AnnotationParser
         }
 
         if (count($annotations)) {
-            throw new AnnotationException("orphaned annotation(s) at end of file {$path}: " . implode(",\r", $annotations));
+            throw new AnnotationException("Orphaned annotation(s) found at end of a file {$path}: " . implode(",\r", $annotations));
         }
 
         $code = "return array(\n";
@@ -348,7 +348,7 @@ class AnnotationParser
             }
 
             if (!class_exists($type, $this->autoload)) {
-                throw new AnnotationException("the annotation type {$type} does not exist");
+                throw new AnnotationException("Annotation type '{$type}' does not exist");
             }
 
             $value = $match[1];
@@ -365,14 +365,14 @@ class AnnotationParser
             } else {
                 # PHP-DOC-style annotation:
                 if (!array_key_exists(__NAMESPACE__ . '\IAnnotationParser', class_implements($type, $this->autoload))) {
-                    throw new AnnotationException("the {$type} Annotation does not support PHP-DOC style syntax (because it does not implement the " . __NAMESPACE__ . "\\IAnnotationParser interface)");
+                    throw new AnnotationException("Annotation type '{$type}' does not support PHP-DOC style syntax (because it does not implement the " . __NAMESPACE__ . "\\IAnnotationParser interface)");
                 }
 
                 /** @var IAnnotationParser $type */
                 $properties = $type::parseAnnotation($value);
 
                 if (!is_array($properties)) {
-                    throw new AnnotationException("the {$type} Annotation did not parse correctly");
+                    throw new AnnotationException("Annotation type '{$type}' did not parse correctly");
                 }
 
                 $array = "array({$quoted_name}, {$quoted_type}";

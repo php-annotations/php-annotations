@@ -203,7 +203,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            "the class 'UsageAndNonUsageAnnotation' must have exactly one UsageAnnotation (no other Annotations are allowed)"
+            "The class 'UsageAndNonUsageAnnotation' must have exactly one UsageAnnotation (no other Annotations are allowed)"
         );
 
         Annotations::getUsage('UsageAndNonUsageAnnotation');
@@ -213,7 +213,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            "the class 'SingleNonUsageAnnotation' must have exactly one UsageAnnotation (no other Annotations are allowed)"
+            "The class 'SingleNonUsageAnnotation' must have exactly one UsageAnnotation (no other Annotations are allowed)"
         );
 
         Annotations::getUsage('SingleNonUsageAnnotation');
@@ -229,7 +229,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            "undefined Annotation type 'NoSuchAnnotation'"
+            "Annotation type 'NoSuchAnnotation' does not exist"
         );
 
         Annotations::getUsage('NoSuchAnnotation');
@@ -239,7 +239,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            "the class 'NoUsageAnnotation' must have exactly one UsageAnnotation"
+            "The class 'NoUsageAnnotation' must have exactly one UsageAnnotation"
         );
 
         Annotations::getUsage('NoUsageAnnotation');
@@ -276,7 +276,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'undefined class NonExistingClass'
+            "Unable to read annotations from an undefined class 'NonExistingClass'"
         );
         Annotations::ofMethod('NonExistingClass');
     }
@@ -285,7 +285,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'undefined method Test::nonExistingMethod()'
+            'Unable to read annotations from an undefined method Test::nonExistingMethod()'
         );
         Annotations::ofMethod('Test', 'nonExistingMethod');
     }
@@ -309,7 +309,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'undefined class NonExistingClass'
+            "Unable to read annotations from an undefined class 'NonExistingClass'"
         );
         Annotations::ofProperty('NonExistingClass', 'sample');
     }
@@ -318,7 +318,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'undefined property Test::$nonExisting'
+            'Unable to read annotations from an undefined property Test::$nonExisting'
         );
         Annotations::ofProperty('Test', 'nonExisting');
     }
@@ -442,7 +442,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'only one annotation of type SingleAnnotation may be applied to the same property'
+            "Only one annotation of 'SingleAnnotation' type may be applied to the same property"
         );
 
         Annotations::ofProperty('Test', 'only_one');
@@ -564,7 +564,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'Unable to read annotations from an undefined class "NonExistingClass"'
+            "Unable to read annotations from an undefined class 'NonExistingClass'"
         );
         Annotations::ofClass('NonExistingClass', '@note');
     }
@@ -573,7 +573,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'Reading annotations from interface/trait "TestInterface" is not supported'
+            "Reading annotations from interface/trait 'TestInterface' is not supported"
         );
         Annotations::ofClass('TestInterface', '@note');
     }
@@ -588,7 +588,7 @@ class AnnotationsTest extends xTest
         eval('trait TestTrait { }');
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'Reading annotations from interface/trait "TestTrait" is not supported'
+            "Reading annotations from interface/trait 'TestTrait' is not supported"
         );
         Annotations::ofClass('TestTrait', '@note');
     }
@@ -674,7 +674,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'annotation type WrongInterfaceAnnotation does not implement the mandatory IAnnotation interface'
+            "Annotation type 'WrongInterfaceAnnotation' does not implement the mandatory IAnnotation interface"
         );
 
         Annotations::ofClass('TestClassWrongInterface');
@@ -704,7 +704,7 @@ class AnnotationsTest extends xTest
 
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'UselessAnnotation cannot be applied to a class'
+            "Annotation type 'UselessAnnotation' cannot be applied to a class"
         );
 
         $this->assertApplyConstrains($annotations, AnnotationManager::MEMBER_CLASS);
@@ -716,7 +716,7 @@ class AnnotationsTest extends xTest
 
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'UselessAnnotation cannot be applied to a method'
+            "Annotation type 'UselessAnnotation' cannot be applied to a method"
         );
 
         $this->assertApplyConstrains($annotations, AnnotationManager::MEMBER_METHOD);
@@ -728,7 +728,7 @@ class AnnotationsTest extends xTest
 
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            'UselessAnnotation cannot be applied to a property'
+            "Annotation type 'UselessAnnotation' cannot be applied to a property"
         );
 
         $this->assertApplyConstrains($annotations, AnnotationManager::MEMBER_PROPERTY);

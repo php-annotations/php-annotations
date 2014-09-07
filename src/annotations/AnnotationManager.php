@@ -276,13 +276,13 @@ class AnnotationManager
                     unset($spec['#name'], $spec['#type']);
 
                     if (!class_exists($type, $this->autoload)) {
-                        throw new AnnotationException("annotation type {$type} not found");
+                        throw new AnnotationException("Annotation type '{$type}' does not exist");
                     }
 
                     $annotation = new $type;
 
                     if (!($annotation instanceof IAnnotation)) {
-                        throw new AnnotationException("annotation type {$type} does not implement the mandatory IAnnotation interface");
+                        throw new AnnotationException("Annotation type '{$type}' does not implement the mandatory IAnnotation interface");
                     }
 
                     if ($annotation instanceof IAnnotationFileAware) {
@@ -325,7 +325,7 @@ class AnnotationManager
 
             // Checks, that annotation can be applied to given class/method/property according to it's @usage annotation.
             if (!$usage->$member) {
-                throw new AnnotationException("{$type} cannot be applied to a {$member}");
+                throw new AnnotationException("Annotation type '{$type}' cannot be applied to a {$member}");
             }
 
             if (!$usage->multiple) {
@@ -339,7 +339,7 @@ class AnnotationManager
                         continue 2; // Another annotation (in inner loop) overrides this one (in outer loop) - skip it.
                     }
 
-                    throw new AnnotationException("only one annotation of type {$type} may be applied to the same {$member}");
+                    throw new AnnotationException("Only one annotation of '{$type}' type may be applied to the same {$member}");
                 }
             }
 
@@ -394,16 +394,16 @@ class AnnotationManager
 
         if (!isset($this->usage[$class])) {
             if (!class_exists($class, $this->autoload)) {
-                throw new AnnotationException("undefined Annotation type '{$class}'");
+                throw new AnnotationException("Annotation type '{$class}' does not exist");
             }
 
             $usage = $this->getAnnotations($class);
 
             if (count($usage) === 0) {
-                throw new AnnotationException("the class '{$class}' must have exactly one UsageAnnotation");
+                throw new AnnotationException("The class '{$class}' must have exactly one UsageAnnotation");
             } else {
                 if (count($usage) !== 1 || !($usage[0] instanceof UsageAnnotation)) {
-                    throw new AnnotationException("the class '{$class}' must have exactly one UsageAnnotation (no other Annotations are allowed)");
+                    throw new AnnotationException("The class '{$class}' must have exactly one UsageAnnotation (no other Annotations are allowed)");
                 } else {
                     $usage = $usage[0];
                 }
@@ -439,10 +439,10 @@ class AnnotationManager
             $isTrait = function_exists('trait_exists') ? trait_exists($class, $this->autoload) : false;
 
             if (interface_exists($class, $this->autoload) || $isTrait) {
-                throw new AnnotationException('Reading annotations from interface/trait "' . $class . '" is not supported');
+                throw new AnnotationException("Reading annotations from interface/trait '{$class}' is not supported");
             }
 
-            throw new AnnotationException('Unable to read annotations from an undefined class "' . $class . '"');
+            throw new AnnotationException("Unable to read annotations from an undefined class '{$class}'");
         }
 
         if ($type === null) {
@@ -477,11 +477,11 @@ class AnnotationManager
         }
 
         if (!class_exists($class, $this->autoload)) {
-            throw new AnnotationException("undefined class {$class}");
+            throw new AnnotationException("Unable to read annotations from an undefined class '{$class}'");
         }
 
         if (!method_exists($class, $method)) {
-            throw new AnnotationException("undefined method {$class}::{$method}()");
+            throw new AnnotationException("Unable to read annotations from an undefined method {$class}::{$method}()");
         }
 
         if ($type === null) {
@@ -517,11 +517,11 @@ class AnnotationManager
         }
 
         if (!class_exists($class, $this->autoload)) {
-            throw new AnnotationException("undefined class {$class}");
+            throw new AnnotationException("Unable to read annotations from an undefined class '{$class}'");
         }
 
         if (!property_exists($class, $property)) {
-            throw new AnnotationException("undefined property {$class}::\${$property}");
+            throw new AnnotationException("Unable to read annotations from an undefined property {$class}::\${$property}");
         }
 
         if ($type === null) {
