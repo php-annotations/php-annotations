@@ -13,8 +13,6 @@
 
 namespace mindplay\annotations;
 
-use mindplay\annotations\AnnotationException;
-
 /**
  * This class is responsible for storing and updating parsed annotation-data in PHP files.
  */

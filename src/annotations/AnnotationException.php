@@ -13,12 +13,10 @@
 
 namespace mindplay\annotations;
 
-use Exception;
-
 /**
  * This exception is thrown by various classes in the annotations package,
  * making it possible to catch annotation-specific exceptions in user code.
  */
-class AnnotationException extends Exception
+class AnnotationException extends \Exception
 {
 }
