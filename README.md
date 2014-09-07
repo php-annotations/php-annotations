@@ -1,17 +1,19 @@
 # php-annotations
-[![Build Status](https://travis-ci.org/php-annotations/php-annotations.png?branch=master)](https://travis-ci.org/php-annotations/php-annotations)
+[![Build Status](https://travis-ci.org/php-annotations/php-annotations.svg?branch=master)](https://travis-ci.org/php-annotations/php-annotations)
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/php-annotations/php-annotations/badges/quality-score.png?s=41628593655dae3740c3a64f172438430ee26b84)](https://scrutinizer-ci.com/g/php-annotations/php-annotations/)
 [![Code Coverage](https://scrutinizer-ci.com/g/php-annotations/php-annotations/badges/coverage.png?s=dbea8860e011cdb7b5352b48c25259ca950fe2c6)](https://scrutinizer-ci.com/g/php-annotations/php-annotations/)
 
+[![Latest Stable Version](https://poser.pugx.org/mindplay/annotations/v/stable.svg)](https://packagist.org/packages/mindplay/annotations) [![Total Downloads](https://poser.pugx.org/mindplay/annotations/downloads.svg)](https://packagist.org/packages/mindplay/annotations) [![Latest Unstable Version](https://poser.pugx.org/mindplay/annotations/v/unstable.svg)](https://packagist.org/packages/mindplay/annotations) [![License](https://poser.pugx.org/mindplay/annotations/license.svg)](https://packagist.org/packages/mindplay/annotations)
+
 Source-code annotations for PHP.
 
-Copyright (C) 2011-2012 Rasmus Schultz <rasmus@mindplay.dk>
+Copyright (C) 2011-2015 Rasmus Schultz <rasmus@mindplay.dk>
 
-https://github.com/mindplay-dk/php-annotations
+https://github.com/php-annotations/php-annotations
 
 For documentation and updates, please visit the project Wiki:
 
-https://github.com/mindplay-dk/php-annotations/wiki
+https://github.com/php-annotations/php-annotations/wiki
 
 
 ## Project Structure
