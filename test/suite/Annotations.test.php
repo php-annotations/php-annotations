@@ -273,8 +273,10 @@ class AnnotationsTest extends xTest
 
     protected function testCanGetMethodWithIncompleteParamAnnotations()
     {
-        $annotations = Annotations::ofMethod(new \ReflectionClass('Test'), 'methodWithParam', 'NoteAnnotation');
+        $annotations = Annotations::ofMethod(new \ReflectionClass('Test'), 'methodWithParam');
         $this->check(count($annotations) > 0, 'from method with incomplete @Param annotation');
+        $this->check($annotations[0]->type == '');
+        $this->check($annotations[0]->name == 'value');
     }
 
     protected function testGetAnnotationsFromMethodOfNonExistingClass()
