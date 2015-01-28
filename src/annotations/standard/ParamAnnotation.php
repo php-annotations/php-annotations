@@ -53,7 +53,10 @@ class ParamAnnotation extends Annotation implements IAnnotationParser, IAnnotati
     {
         $parts = explode(' ', trim($value), 3);
 
-        return array('type' => $parts[0], 'name' => substr($parts[1], 1));
+        if (isset($parts[1]))
+            return array('type' => $parts[0], 'name' => substr($parts[1], 1));
+        else
+            return array('type' => 'unknown', 'name' => substr($parts[0], 1));
     }
 
     /**
