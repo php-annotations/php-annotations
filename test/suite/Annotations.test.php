@@ -46,7 +46,6 @@ class AnnotationsTest extends xTest
 
         // disable some annotations not used during testing:
         Annotations::getManager()->registry['var'] = false;
-        Annotations::getManager()->registry['param'] = false;
         Annotations::getManager()->registry['undefined'] = 'UndefinedAnnotation';
         $testRunner->stopCoverageCollector();
 
@@ -270,6 +269,14 @@ class AnnotationsTest extends xTest
 
         $annotations = Annotations::ofMethod('Test', 'run');
         $this->check(count($annotations) > 0, 'from class name and method name');
+    }
+
+    protected function testCanGetMethodWithIncompleteParamAnnotations()
+    {
+        $annotations = Annotations::ofMethod(new \ReflectionClass('Test'), 'methodWithParam');
+        $this->check(count($annotations) > 0, 'from method with incomplete @Param annotation');
+        $this->check($annotations[0]->type == '');
+        $this->check($annotations[0]->name == 'value');
     }
 
     protected function testGetAnnotationsFromMethodOfNonExistingClass()

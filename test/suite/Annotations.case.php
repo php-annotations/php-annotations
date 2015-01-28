@@ -193,6 +193,13 @@ class Test extends TestBase
     public function run()
     {
     }
+
+    /**
+     * @param $value
+     */
+    public function methodWithParam($value)
+    {
+    }
 }
 
 
