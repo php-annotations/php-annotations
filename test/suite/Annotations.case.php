@@ -196,6 +196,67 @@ class Test extends TestBase
     }
 }
 
+/**
+ * @Note('class-first')
+ */
+class FirstClass
+{
+    /**
+     * @var string
+     * @Note('prop-first')
+     */
+    protected $prop;
+
+    /**
+     * @Note('method-first')
+     */
+    protected function someMethod()
+    {
+
+    }
+}
+
+/**
+ * @Note('class-second')
+ * @stop
+ */
+class SecondClass extends FirstClass
+{
+    /**
+     * @var string
+     * @Note('prop-second')
+     */
+    protected $prop;
+
+    /**
+     * @Note('method-second')
+     */
+    protected function someMethod()
+    {
+
+    }
+}
+
+/**
+ * @Note('class-third')
+ */
+class ThirdClass extends SecondClass
+{
+    /**
+     * @var string
+     * @Note('prop-third')
+     */
+    protected $prop;
+
+    /**
+     * @Note('method-third')
+     */
+    protected function someMethod()
+    {
+
+    }
+}
+
 
 /**
  * Test that using an core class will not break parsing.

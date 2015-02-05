@@ -743,6 +743,57 @@ class AnnotationsTest extends xTest
         $this->check(count($annotations) > 0);
     }
 
+    public function testStopAnnotationPreventsClassLevelAnnotationInheritance()
+    {
+        $annotations = Annotations::ofClass('SecondClass', '@note');
+        $this->check(count($annotations) === 1, 'class level annotation after own "@stop" not present');
+        $this->check($annotations[0]->note === 'class-second', 'non-inherited annotation goes first');
+
+        $annotations = Annotations::ofClass('ThirdClass', '@note');
+        $this->check(count($annotations) === 2, 'class level annotation after parent "@stop" not present');
+        $this->check($annotations[0]->note === 'class-second', 'inherited annotation goes first');
+        $this->check($annotations[1]->note === 'class-third', 'non-inherited annotation goes second');
+    }
+
+    public function testStopAnnotationPreventsPropertyLevelAnnotationInheritance()
+    {
+        $annotations = Annotations::ofProperty('SecondClass', 'prop', '@note');
+        $this->check(count($annotations) === 1, 'property level annotation after own "@stop" not present');
+        $this->check($annotations[0]->note === 'prop-second', 'non-inherited annotation goes first');
+
+        $annotations = Annotations::ofProperty('ThirdClass', 'prop', '@note');
+        $this->check(count($annotations) === 2, 'property level annotation after parent "@stop" not present');
+        $this->check($annotations[0]->note === 'prop-second', 'inherited annotation goes first');
+        $this->check($annotations[1]->note === 'prop-third', 'non-inherited annotation goes second');
+    }
+
+    public function testStopAnnotationPreventsMethodLevelAnnotationInheritance()
+    {
+        $annotations = Annotations::ofMethod('SecondClass', 'someMethod', '@note');
+        $this->check(count($annotations) === 1, 'method level annotation after own "@stop" not present');
+        $this->check($annotations[0]->note === 'method-second', 'non-inherited annotation goes first');
+
+        $annotations = Annotations::ofMethod('ThirdClass', 'someMethod', '@note');
+        $this->check(count($annotations) === 2, 'method level annotation after parent "@stop" not present');
+        $this->check($annotations[0]->note === 'method-second', 'inherited annotation goes first');
+        $this->check($annotations[1]->note === 'method-third', 'non-inherited annotation goes second');
+    }
+
+    public function testDirectAccessToClassIgnoresStopAnnotation()
+    {
+        $annotations = Annotations::ofClass('FirstClass', '@note');
+        $this->check(count($annotations) === 1);
+        $this->check($annotations[0]->note === 'class-first');
+
+        $annotations = Annotations::ofProperty('FirstClass', 'prop', '@note');
+        $this->check(count($annotations) === 1);
+        $this->check($annotations[0]->note === 'prop-first');
+
+        $annotations = Annotations::ofMethod('FirstClass', 'someMethod', '@note');
+        $this->check(count($annotations) === 1);
+        $this->check($annotations[0]->note === 'method-first');
+    }
+
     protected function testFilterUnresolvedAnnotationClass()
     {
         $annotations = Annotations::ofClass('TestBase', false);

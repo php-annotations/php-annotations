@@ -83,6 +83,7 @@ class AnnotationManager
         'throws'         => false,
         'type'           => 'mindplay\annotations\standard\TypeAnnotation',
         'usage'          => 'mindplay\annotations\UsageAnnotation',
+        'stop'           => 'mindplay\annotations\StopAnnotation',
         'uses'           => false,
         'var'            => 'mindplay\annotations\standard\VarAnnotation',
         'version'        => false,
@@ -247,19 +248,10 @@ class AnnotationManager
 
         if (!isset($this->initialized[$key])) {
             $annotations = array();
+            $classAnnotations = array();
 
             if ($member_type !== self::MEMBER_CLASS) {
-                $this->getAnnotations($class_name, self::MEMBER_CLASS);
-            }
-
-            if ($parent = get_parent_class($class_name)) {
-                if ($parent !== __NAMESPACE__ . '\Annotation') {
-                    foreach ($this->getAnnotations($parent, $member_type, $member_name) as $annotation) {
-                        if ($this->getUsage(get_class($annotation))->inherited) {
-                            $annotations[] = $annotation;
-                        }
-                    }
-                }
+                $classAnnotations = $this->getAnnotations($class_name, self::MEMBER_CLASS);
             }
 
             $reflection = new \ReflectionClass($class_name);
@@ -267,6 +259,8 @@ class AnnotationManager
             if ($reflection->getFileName() && !$reflection->isInternal()) {
                 $file = $this->getAnnotationFile($reflection->getFileName());
             }
+
+            $inherit = true; // inherit parent annotations unless directed not to
 
             if (isset($file) && isset($file->data[$key])) {
                 foreach ($file->data[$key] as $spec) {
@@ -293,6 +287,30 @@ class AnnotationManager
 
                     $annotations[] = $annotation;
                 }
+
+                if ($member_type === self::MEMBER_CLASS) {
+                    $classAnnotations = $annotations;
+                }
+            }
+
+            foreach ($classAnnotations as $classAnnotation) {
+                if ($classAnnotation instanceof StopAnnotation) {
+                    $inherit = false; // do not inherit parent annotations
+                }
+            }
+
+            if ($inherit && $parent = get_parent_class($class_name)) {
+                $parent_annotations = array();
+
+                if ($parent !== __NAMESPACE__ . '\Annotation') {
+                    foreach ($this->getAnnotations($parent, $member_type, $member_name) as $annotation) {
+                        if ($this->getUsage(get_class($annotation))->inherited) {
+                            $parent_annotations[] = $annotation;
+                        }
+                    }
+                }
+
+                $annotations = array_merge($parent_annotations, $annotations);
             }
 
             $this->annotations[$key] = $this->applyConstraints($annotations, $member_type);
