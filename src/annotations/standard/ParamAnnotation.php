@@ -53,6 +53,11 @@ class ParamAnnotation extends Annotation implements IAnnotationParser, IAnnotati
     {
         $parts = explode(' ', trim($value), 3);
 
+        if (count($parts) < 2) {
+            // Malformed value, let "initAnnotation" report about it.
+            return array();
+        }
+
         return array('type' => $parts[0], 'name' => substr($parts[1], 1));
     }
 

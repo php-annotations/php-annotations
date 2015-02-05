@@ -46,7 +46,6 @@ class AnnotationsTest extends xTest
 
         // disable some annotations not used during testing:
         Annotations::getManager()->registry['var'] = false;
-        Annotations::getManager()->registry['param'] = false;
         Annotations::getManager()->registry['undefined'] = 'UndefinedAnnotation';
         $testRunner->stopCoverageCollector();
 
@@ -750,6 +749,17 @@ class AnnotationsTest extends xTest
 
         $this->check($annotations === array(), 'empty annotation list when filtering failed');
     }
+
+    public function testMalformedParamAnnotationThrowsException()
+    {
+        $this->setExpectedException(
+            self::ANNOTATION_EXCEPTION,
+            'ParamAnnotation requires a type property'
+        );
+
+        Annotations::ofMethod('BrokenParamAnnotationClass', 'brokenParamAnnotation');
+    }
+
 }
 
 return new AnnotationsTest;

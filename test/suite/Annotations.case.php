@@ -104,7 +104,8 @@ class SingleNonUsageAnnotation extends Annotation
 
 }
 
-class WrongInterfaceAnnotation {
+class WrongInterfaceAnnotation
+{
 
 }
 
@@ -252,6 +253,19 @@ class TestClassFileAwareAnnotation
 
 }
 
-interface TestInterface {
+interface TestInterface
+{
 
+}
+
+class BrokenParamAnnotationClass
+{
+
+    /**
+     * @param $paramName
+     */
+    protected function brokenParamAnnotation($paramName)
+    {
+
+    }
 }
