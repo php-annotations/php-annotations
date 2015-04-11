@@ -15,7 +15,7 @@ https://github.com/php-annotations/php-annotations
 
 For documentation and updates, please visit the project Wiki:
 
-https://github.com/php-annotations/php-annotations/wiki
+http://php-annotations.readthedocs.org/
 
 
 ## Project Structure
