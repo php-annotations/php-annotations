@@ -24,15 +24,17 @@ The files in this project are organized as follows:
 
 ```
 php-annotations         This README and the LGPL license
-  /mindplay
+  /src
     /annotations        The core of the library itself
       /standard         Standard library of annotation classes
   /demo                 Browser-based example/demonstration
+  /docs                 Documentation files (http://php-annotations.readthedocs.org/en/latest/)
   /test                 Unit tests for the core of the library
-    /test.php           Browser-based test suite runner
+    /test.php           Test suite runner
+    /annotations        Fixture Annotation types
     /lib                Unit test library
     /runtime            Run-time cache folder used for tests
-    /suite              The test suite for the unit test framework
+    /suite              Test cases
 ```
 
 The "mindplay" folder is the only folder required for the annotation
