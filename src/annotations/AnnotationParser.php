@@ -69,7 +69,7 @@ class AnnotationParser
     {
         $index = array();
 
-        $annotations = array();
+        $docblocks = array();
         $state = self::SCAN;
         $nesting = 0;
         $class = null;
@@ -154,8 +154,8 @@ class AnnotationParser
                 case self::CLASS_NAME:
                     if ($type == T_STRING) {
                         $class = ($namespace ? $namespace . '\\' : '') . $str;
-                        $index[$class] = $annotations;
-                        $annotations = array();
+                        $index[$class] = $docblocks;
+                        $docblocks = array();
                         $state = self::SCAN_CLASS;
                     }
                     break;
@@ -171,8 +171,8 @@ class AnnotationParser
 
                 case self::MEMBER:
                     if ($type == T_VARIABLE) {
-                        $index[$class . '::' . $str] = $annotations;
-                        $annotations = array();
+                        $index[$class . '::' . $str] = $docblocks;
+                        $docblocks = array();
                         $state = self::SCAN_CLASS;
                     }
                     if ($type == T_FUNCTION) {
@@ -182,8 +182,8 @@ class AnnotationParser
 
                 case self::METHOD_NAME:
                     if ($type == T_STRING) {
-                        $index[$class . '::' . $str] = $annotations;
-                        $annotations = array();
+                        $index[$class . '::' . $str] = $docblocks;
+                        $docblocks = array();
                         $state = self::SCAN_CLASS;
                     }
                     break;
@@ -206,7 +206,7 @@ class AnnotationParser
             }
 
             if ($type == T_COMMENT || $type == T_DOC_COMMENT) {
-                $annotations = array_merge($annotations, $this->findAnnotations($str));
+                $docblocks[] = $str;
             }
 
             if ($type == T_CURLY_OPEN) {
@@ -223,14 +223,16 @@ class AnnotationParser
             echo '</table>';
         }
 
-        if (count($annotations)) {
-            throw new AnnotationException("Orphaned annotation(s) found at end of a file {$path}: " . implode(",\r", $annotations));
-        }
+        unset($docblocks);
 
         $code = "return array(\n";
         $code .= "  '#namespace' => " . var_export($namespace, true) . ",\n";
         $code .= "  '#uses' => " . var_export($uses, true) . ",\n";
-        foreach ($index as $key => $array) {
+        foreach ($index as $key => $docblocks) {
+            $array = array();
+            foreach ($docblocks as $str) {
+                $array = array_merge($array, $this->findAnnotations($str));
+            }
             if (count($array)) {
                 $code .= "  " . trim(var_export($key, true)) . " => array(\n    " . implode(
                     ",\n    ",
