@@ -7,6 +7,7 @@ use mindplay\annotations\AnnotationCache;
 use mindplay\annotations\AnnotationManager;
 use mindplay\annotations\Annotations;
 use mindplay\annotations\Annotation;
+use mindplay\annotations\standard\ReturnAnnotation;
 use mindplay\test\annotations\Package;
 use mindplay\test\lib\xTest;
 use mindplay\test\lib\xTestRunner;
@@ -809,6 +810,22 @@ class AnnotationsTest extends xTest
         );
 
         Annotations::ofMethod('BrokenParamAnnotationClass', 'brokenParamAnnotation');
+    }
+
+    protected function testOrphanedAnnotationsAreIgnored()
+    {
+        $manager = new AnnotationManager();
+        $manager->namespace = 'mindplay\test\Sample';
+        $manager->cache = false;
+
+        /** @var Annotation[] $annotations */
+        $annotations = $manager->getMethodAnnotations('mindplay\test\Sample\OrphanedAnnotations', 'someMethod');
+
+        $this->check(count($annotations) == 1, 'the @return annotation was found');
+        $this->check(
+            $annotations[0] instanceof ReturnAnnotation,
+            'the @return annotation has correct type'
+        );
     }
 
 }
