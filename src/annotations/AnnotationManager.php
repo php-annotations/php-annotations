@@ -135,6 +135,11 @@ class AnnotationManager
     private $_cacheSeed = '';
 
     /**
+     * Whether this version of PHP has support for traits.
+     */
+    private $_traitsSupported;
+
+    /**
      * Initialize the Annotation Manager
      *
      * @param string $cacheSeed only needed if using more than one AnnotationManager in the same application
@@ -145,6 +150,7 @@ class AnnotationManager
         $this->_usageAnnotation = new UsageAnnotation();
         $this->_usageAnnotation->class = true;
         $this->_usageAnnotation->inherited = true;
+        $this->_traitsSupported = version_compare(PHP_VERSION, '5.4.0', '>=');
     }
 
     /**
@@ -262,34 +268,52 @@ class AnnotationManager
 
             $inherit = true; // inherit parent annotations unless directed not to
 
-            if (isset($file) && isset($file->data[$key])) {
-                foreach ($file->data[$key] as $spec) {
-                    $name = $spec['#name']; // currently unused
-                    $type = $spec['#type'];
+            if (isset($file)) {
+                if (isset($file->data[$key])) {
+                    foreach ($file->data[$key] as $spec) {
+                        $name = $spec['#name']; // currently unused
+                        $type = $spec['#type'];
 
-                    unset($spec['#name'], $spec['#type']);
+                        unset($spec['#name'], $spec['#type']);
 
-                    if (!class_exists($type, $this->autoload)) {
-                        throw new AnnotationException("Annotation type '{$type}' does not exist");
+                        if (!class_exists($type, $this->autoload)) {
+                            throw new AnnotationException("Annotation type '{$type}' does not exist");
+                        }
+
+                        $annotation = new $type;
+
+                        if (!($annotation instanceof IAnnotation)) {
+                            throw new AnnotationException("Annotation type '{$type}' does not implement the mandatory IAnnotation interface");
+                        }
+
+                        if ($annotation instanceof IAnnotationFileAware) {
+                            $annotation->setAnnotationFile($file);
+                        }
+
+                        $annotation->initAnnotation($spec);
+
+                        $annotations[] = $annotation;
                     }
 
-                    $annotation = new $type;
+                    if ($member_type === self::MEMBER_CLASS) {
+                        $classAnnotations = $annotations;
+                    }
+                } else if ($this->_traitsSupported && $member_name !== null) {
+                    $traitAnnotations = array();
 
-                    if (!($annotation instanceof IAnnotation)) {
-                        throw new AnnotationException("Annotation type '{$type}' does not implement the mandatory IAnnotation interface");
+                    if (isset($file->traitMethodOverrides[$class_name][$member_name])) {
+                        list($traitName, $originalMemberName) = $file->traitMethodOverrides[$class_name][$member_name];
+                        $traitAnnotations = $this->getAnnotations($traitName, $member_type, $originalMemberName);
+                    } else {
+                        foreach ($reflection->getTraitNames() as $traitName) {
+                            if ($this->classHasMember($traitName, $member_type, $member_name)) {
+                                $traitAnnotations = $this->getAnnotations($traitName, $member_type, $member_name);
+                                break;
+                            }
+                        }
                     }
 
-                    if ($annotation instanceof IAnnotationFileAware) {
-                        $annotation->setAnnotationFile($file);
-                    }
-
-                    $annotation->initAnnotation($spec);
-
-                    $annotations[] = $annotation;
-                }
-
-                if ($member_type === self::MEMBER_CLASS) {
-                    $classAnnotations = $annotations;
+                    $annotations = array_merge($traitAnnotations, $annotations);
                 }
             }
 
@@ -319,6 +343,25 @@ class AnnotationManager
         }
 
         return $this->annotations[$key];
+    }
+
+    /**
+     * Determines whether a class or trait has the specified member.
+     *
+     * @param string $className The name of the class or trait to check
+     * @param string $memberType The type of member, e.g. "property" or "method"
+     * @param string $memberName The member name, e.g. "method" or "$property"
+     *
+     * @return bool whether class or trait has the specified member
+     */
+    protected function classHasMember($className, $memberType, $memberName)
+    {
+        if ($memberType === self::MEMBER_METHOD) {
+            return method_exists($className, $memberName);
+        } else if ($memberType === self::MEMBER_PROPERTY) {
+            return property_exists($className, ltrim($memberName, '$'));
+        }
+        return false;
     }
 
     /**
@@ -453,14 +496,14 @@ class AnnotationManager
             $class = ltrim($class, '\\');
         }
 
-        if (!class_exists($class, $this->autoload)) {
-            $isTrait = function_exists('trait_exists') ? trait_exists($class, $this->autoload) : false;
-
-            if (interface_exists($class, $this->autoload) || $isTrait) {
-                throw new AnnotationException("Reading annotations from interface/trait '{$class}' is not supported");
+        if (!class_exists($class, $this->autoload) &&
+            !(function_exists('trait_exists') && trait_exists($class, $this->autoload))
+        ) {
+            if (interface_exists($class, $this->autoload)) {
+                throw new AnnotationException("Reading annotations from interface '{$class}' is not supported");
             }
 
-            throw new AnnotationException("Unable to read annotations from an undefined class '{$class}'");
+            throw new AnnotationException("Unable to read annotations from an undefined class/trait '{$class}'");
         }
 
         if ($type === null) {

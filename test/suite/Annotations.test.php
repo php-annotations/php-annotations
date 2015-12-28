@@ -12,6 +12,11 @@ use mindplay\test\annotations\Package;
 use mindplay\test\lib\xTest;
 use mindplay\test\lib\xTestRunner;
 
+if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
+    require_once __DIR__ . '/traits/namespaced.php';
+    require_once __DIR__ . '/traits/toplevel.php';
+}
+
 /**
  * This class implements tests for core annotations
  */
@@ -564,7 +569,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            "Unable to read annotations from an undefined class 'NonExistingClass'"
+            "Unable to read annotations from an undefined class/trait 'NonExistingClass'"
         );
         Annotations::ofClass('NonExistingClass', '@note');
     }
@@ -573,7 +578,7 @@ class AnnotationsTest extends xTest
     {
         $this->setExpectedException(
             self::ANNOTATION_EXCEPTION,
-            "Reading annotations from interface/trait 'TestInterface' is not supported"
+            "Reading annotations from interface 'TestInterface' is not supported"
         );
         Annotations::ofClass('TestInterface', '@note');
     }
@@ -585,12 +590,134 @@ class AnnotationsTest extends xTest
             return;
         }
 
-        eval('trait TestTrait { }');
-        $this->setExpectedException(
-            self::ANNOTATION_EXCEPTION,
-            "Reading annotations from interface/trait 'TestTrait' is not supported"
-        );
-        Annotations::ofClass('TestTrait', '@note');
+        $annotations = Annotations::ofClass('SimpleTrait', '@note');
+
+        $this->check(count($annotations) === 1, 'SimpleTrait has one note annotation.');
+    }
+
+    protected function testCanGetMethodAnnotationsIncludedFromTrait()
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            $this->pass();
+            return;
+        }
+
+        $annotations = Annotations::ofMethod('SimpleTraitTester', 'runFromTrait');
+        $this->check(count($annotations) > 0, 'for unnamespaced trait');
+
+        $annotations = Annotations::ofMethod('SimpleTraitTester', 'runFromAnotherTrait');
+        $this->check(count($annotations) > 0, 'for namespaced trait');
+    }
+
+    protected function testHandlesMethodInheritanceWithTraits()
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            $this->pass();
+            return;
+        }
+
+        $annotations = Annotations::ofMethod('InheritanceTraitTester', 'baseTraitAndParent');
+        $this->check(count($annotations) === 2, 'baseTraitAndParent inherits parent annotations');
+        $this->check($annotations[0]->note === 'inheritance-base-trait-tester', 'parent annotation first');
+        $this->check($annotations[1]->note === 'inheritance-base-trait', 'trait annotation second');
+
+        $annotations = Annotations::ofMethod('InheritanceTraitTester', 'traitAndParent');
+        $this->check(count($annotations) === 2, 'traitAndParent inherits parent annotations');
+        $this->check($annotations[0]->note === 'inheritance-base-trait-tester', 'parent annotation first');
+        $this->check($annotations[1]->note === 'inheritance-trait', 'trait annotation second');
+
+        $annotations = Annotations::ofMethod('InheritanceTraitTester', 'traitAndChild');
+        $this->check(count($annotations) === 1, 'traitAndChild does not inherit trait');
+        $this->check($annotations[0]->note === 'inheritance-trait-tester', 'child annotation first');
+
+        $annotations = Annotations::ofMethod('InheritanceTraitTester', 'traitAndParentAndChild');
+        $this->check(count($annotations) === 2, 'traitAndParentAndChild does not inherit trait annotation');
+        $this->check($annotations[0]->note === 'inheritance-base-trait-tester', 'parent annotation first');
+        $this->check($annotations[1]->note === 'inheritance-trait-tester', 'child annotation second');
+    }
+
+    protected function testHandlesMethodAliasingWithTraits()
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            $this->pass();
+            return;
+        }
+
+        $annotations = Annotations::ofMethod('AliasTraitTester', 'baseTraitRun');
+        $this->check(count($annotations) === 2, 'baseTraitRun inherits annotation');
+        $this->check($annotations[0]->note === 'alias-base-trait-tester', 'inherited annotation goes first');
+        $this->check($annotations[1]->note === 'alias-base-trait', 'non-inherited annotation goes second');
+
+        $annotations = Annotations::ofMethod('AliasTraitTester', 'traitRun');
+        $this->check(count($annotations) === 2, 'traitRun inherits annotation');
+        $this->check($annotations[0]->note === 'alias-base-trait-tester', 'inherited annotation goes first');
+        $this->check($annotations[1]->note === 'alias-trait', 'non-inherited annotation goes second');
+
+        $annotations = Annotations::ofMethod('AliasTraitTester', 'run');
+        $this->check(count($annotations) === 2, 'run inherits annotation');
+        $this->check($annotations[0]->note === 'alias-base-trait-tester', 'inherited annotation goes first');
+        $this->check($annotations[1]->note === 'alias-trait-tester', 'non-inherited annotation goes second');
+    }
+
+    protected function testHandlesConflictedMethodSelectionWithTraits()
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            $this->pass();
+            return;
+        }
+
+        $annotations = Annotations::ofMethod('InsteadofTraitTester', 'baseTrait');
+        $this->check(count($annotations) === 2, 'baseTrait inherits annotation');
+        $this->check($annotations[0]->note === 'insteadof-base-trait-tester', 'inherited annotation goes first');
+        $this->check($annotations[1]->note === 'insteadof-base-trait-b', 'non-inherited annotation goes second');
+
+        $annotations = Annotations::ofMethod('InsteadofTraitTester', 'trate');
+        $this->check(count($annotations) === 2, 'trate inherits annotation');
+        $this->check($annotations[0]->note === 'insteadof-base-trait-tester', 'inherited annotation goes first');
+        $this->check($annotations[1]->note === 'insteadof-trait-a', 'non-inherited annotation goes second');
+    }
+
+    protected function testCanGetPropertyAnnotationsIncludedFromTrait()
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            $this->pass();
+            return;
+        }
+
+        $annotations = Annotations::ofProperty('SimpleTraitTester', 'sampleFromTrait');
+        $this->check(count($annotations) > 0, 'for unnamespaced trait');
+
+        $annotations = Annotations::ofProperty('SimpleTraitTester', 'sampleFromAnotherTrait');
+        $this->check(count($annotations) > 0, 'for namespaced trait');
+    }
+
+    protected function testHandlesPropertyConflictWithTraits()
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            $this->pass();
+            return;
+        }
+
+        set_error_handler(function ($errno, $errstring) { });
+        require_once __DIR__ . '/traits/property_conflict.php';
+        restore_error_handler();
+
+        $annotations = Annotations::ofProperty('PropertyConflictTraitTester', 'traitAndChild');
+        $this->check(count($annotations) === 1, 'traitAndChild does not inherit trait');
+        $this->check($annotations[0]->note === 'property-conflict-trait-tester', 'child annotation first');
+
+        $annotations = Annotations::ofProperty('PropertyConflictTraitTester', 'traitAndTraitAndParent');
+        $this->check(count($annotations) === 2, 'traitAndTraitAndParent inherits parent annotations');
+        $this->check($annotations[0]->note === 'property-conflict-base-trait-tester', 'parent annotation first');
+        $this->check($annotations[1]->note === 'property-conflict-trait-two', 'first listed trait annotation second');
+
+        $annotations = Annotations::ofProperty('PropertyConflictTraitTester', 'unannotatedTraitAndAnnotatedTrait');
+        $this->check(count($annotations) === 0, 'unannotatedTraitAndAnnotatedTrait has no annotations');
+
+        $annotations = Annotations::ofProperty('PropertyConflictTraitTester', 'traitAndParentAndChild');
+        $this->check(count($annotations) === 2, 'traitAndParentAndChild does not inherit trait annotation');
+        $this->check($annotations[0]->note === 'property-conflict-base-trait-tester', 'parent annotation first');
+        $this->check($annotations[1]->note === 'property-conflict-trait-tester', 'child annotation second');
     }
 
     protected function testDisallowReadingUndefinedAnnotationProperties()
