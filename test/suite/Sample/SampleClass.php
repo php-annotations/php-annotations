@@ -2,7 +2,9 @@
 
 namespace mindplay\test\Sample;
 
-use mindplay\annotations\Annotation as SampleAlias; // for AnnotationsTest::testCanGetAnnotationFile()
+// for AnnotationsTest::testCanGetAnnotationFile()
+use Test;
+use mindplay\annotations\Annotation as SampleAlias;
 
 /**
  * @mindplay\test\Sample\Sample
