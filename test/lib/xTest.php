@@ -120,10 +120,6 @@ abstract class xTest
 
                 }
 
-                if (is_null($this->result) && !(($exception instanceof xTestException) && $exception->getCode() == xTestException::FAIL)) {
-                    $this->result = (string)$exception;
-                }
-
                 $count++;
 
                 if ($this->result === true) {
@@ -155,6 +151,9 @@ abstract class xTest
     private function assertException(\Exception $e = null)
     {
         if (!is_string($this->expectedException)) {
+            if ($e && !(($e instanceof xTestException) && $e->getCode() == xTestException::FAIL)) {
+                $this->result = (string)$e;
+            }
             return;
         }
 
