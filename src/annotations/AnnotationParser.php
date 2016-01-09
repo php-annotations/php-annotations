@@ -122,7 +122,12 @@ class AnnotationParser
                         $use .= $str;
                     } elseif ($type === self::CHAR) {
                         if ($str === ',' || $str === ';') {
-                            $uses[substr($use, 1 + strrpos($use, '\\'))] = $use;
+                            if (strpos($use, '\\') !== false) {
+                                $uses[substr($use, 1 + strrpos($use, '\\'))] = $use;
+                            }
+                            else {
+                                $uses[$use] = $use;
+                            }
 
                             if ($str === ',') {
                                 $state = self::USE_CLAUSE;

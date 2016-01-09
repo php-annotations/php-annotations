@@ -111,7 +111,7 @@ class AnnotationsTest extends xTest
         $this->check($file->path === $file_path, 'should reflect path to class-file');
         $this->check($file->namespace === 'mindplay\test\Sample', 'should reflect namespace');
         $this->check(
-            $file->uses === array('SampleAlias' => 'mindplay\annotations\Annotation'),
+            $file->uses === array('Test' => 'Test', 'SampleAlias' => 'mindplay\annotations\Annotation'),
             'should reflect use-clause'
         );
     }
