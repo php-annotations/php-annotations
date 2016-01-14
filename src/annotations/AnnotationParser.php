@@ -13,6 +13,10 @@
 
 namespace mindplay\annotations;
 
+if (!defined('T_TRAIT')) {
+    define(__NAMESPACE__ . '\\T_TRAIT', -2);
+}
+
 /**
  * This class implements a parser for source code annotations
  */
@@ -27,6 +31,10 @@ class AnnotationParser
     const NAMESPACE_NAME = 6;
     const USE_CLAUSE = 11;
     const USE_CLAUSE_AS = 12;
+    const TRAIT_USE_CLAUSE = 13;
+    const TRAIT_USE_BLOCK = 14;
+    const TRAIT_USE_AS = 15;
+    const TRAIT_USE_INSTEADOF = 16;
 
     const SKIP = 7;
     const NAME = 8;
@@ -68,6 +76,7 @@ class AnnotationParser
     public function parse($source, $path)
     {
         $index = array();
+        $traitMethodOverrides = array();
 
         $docblocks = array();
         $state = self::SCAN;
@@ -91,7 +100,7 @@ class AnnotationParser
 
             switch ($state) {
                 case self::SCAN:
-                    if ($type == T_CLASS) {
+                    if ($type == T_CLASS || $type == T_TRAIT) {
                         $state = self::CLASS_NAME;
                     }
                     if ($type == T_NAMESPACE) {
@@ -159,6 +168,7 @@ class AnnotationParser
                 case self::CLASS_NAME:
                     if ($type == T_STRING) {
                         $class = ($namespace ? $namespace . '\\' : '') . $str;
+                        $traitMethodOverrides[$class] = array();
                         $index[$class] = $docblocks;
                         $docblocks = array();
                         $state = self::SCAN_CLASS;
@@ -171,6 +181,59 @@ class AnnotationParser
                     }
                     if ($type == T_FUNCTION) {
                         $state = self::METHOD_NAME;
+                    }
+                    if ($type == T_USE) {
+                        $state = self::TRAIT_USE_CLAUSE;
+                        $use = '';
+                    }
+                    break;
+
+                case self::TRAIT_USE_CLAUSE:
+                    if ($type === self::CHAR) {
+                        if ($str === '{') {
+                            $state = self::TRAIT_USE_BLOCK;
+                            $use = '';
+                        } elseif ($str === ';') {
+                            $state = self::SCAN_CLASS;
+                        }
+                    }
+                    break;
+
+                case self::TRAIT_USE_BLOCK:
+                    if ($type == T_STRING || $type == T_NS_SEPARATOR || $type == T_DOUBLE_COLON) {
+                        $use .= $str;
+                    } elseif ($type === T_INSTEADOF) {
+                        $state = self::TRAIT_USE_INSTEADOF;
+                    } elseif ($type === T_AS) {
+                        $state = self::TRAIT_USE_AS;
+                        $use_as = '';
+                    } elseif ($type === self::CHAR) {
+                        if ($str === ';') {
+                            $use = '';
+                        } elseif ($str === '}') {
+                            $state = self::SCAN_CLASS;
+                        }
+                    }
+                    break;
+
+                case self::TRAIT_USE_INSTEADOF:
+                    if ($type === self::CHAR && $str === ';') {
+                        $traitMethodOverrides[$class][substr($use, strrpos($use, '::') + 2)] = $use;
+                        $state = self::TRAIT_USE_BLOCK;
+                        $use = '';
+                    }
+                    break;
+
+                case self::TRAIT_USE_AS:
+                    if ($type === T_STRING) {
+                        $use_as .= $str;
+                    } elseif ($type === self::CHAR && $str === ';') {
+                        // Ignore use... as statements that only change method visibility.
+                        if ($use_as !== '') {
+                            $traitMethodOverrides[$class][$use_as] = $use;
+                        }
+                        $state = self::TRAIT_USE_BLOCK;
+                        $use = '';
                     }
                     break;
 
@@ -233,6 +296,8 @@ class AnnotationParser
         $code = "return array(\n";
         $code .= "  '#namespace' => " . var_export($namespace, true) . ",\n";
         $code .= "  '#uses' => " . var_export($uses, true) . ",\n";
+        $code .= "  '#traitMethodOverrides' => " . var_export($traitMethodOverrides, true) . ",\n";
+
         foreach ($index as $key => $docblocks) {
             $array = array();
             foreach ($docblocks as $str) {

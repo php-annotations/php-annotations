@@ -60,6 +60,11 @@ class AnnotationFile
     public $uses;
 
     /**
+     * @var string[] $traitMethodOverrides hash mapping FQCN to a hash mapping aliased method names to (trait, original method name)
+     */
+    public $traitMethodOverrides;
+
+    /**
      * @param string $path absolute path to php source-file
      * @param array $data annotation data (as provided by AnnotationParser)
      */
@@ -69,6 +74,25 @@ class AnnotationFile
         $this->data = $data;
         $this->namespace = $data['#namespace'];
         $this->uses = $data['#uses'];
+
+        if (isset($data['#traitMethodOverrides'])) {
+            foreach ($data['#traitMethodOverrides'] as $class => $methods) {
+                $this->traitMethodOverrides[$class] = array_map(array($this, 'resolveMethod'), $methods);
+            }
+        }
+    }
+
+    /**
+     * Qualify the class name in a method reference like 'Class::method'.
+     *
+     * @param string $raw_method Raw method string.
+     *
+     * @return string[] of fully-qualified class name, method name
+     */
+    public function resolveMethod($raw_method)
+    {
+        list($class, $method) = explode('::', $raw_method, 2);
+        return array(ltrim($this->resolveType($class), '\\'), $method);
     }
 
     /**
