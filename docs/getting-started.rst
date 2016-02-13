@@ -12,7 +12,7 @@ Library can be installed using Composer like so:
 
     {
         "require": {
-            "mindplay/annotations": "~1.2@dev"
+            "mindplay/annotations": "~1.2"
         }
     }
 
