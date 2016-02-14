@@ -3,13 +3,13 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+...
+
+## [1.3.0] - 2016-02-14
 ### Added
 * Run tests on PHP 7 as well.
 * Trait property/method annotations are accessible as part of class annotations by [@benesch].
 * Allow trait introspection for annotations by [@benesch].
-
-### Changed
-...
 
 ### Fixed
 * The root namespace importing (e.g. "use PDO;") wasn't working by [@benesch].
@@ -45,7 +45,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 * Standard annotation stubs (e.g. "@display", "@format", "@length", etc.) were removed.
-* Removed incomplete support for "@usage" annotation inheritance. 
+* Removed incomplete support for "@usage" annotation inheritance.
 
 ## [1.1.0] - 2012-10-10
 ### Changed
