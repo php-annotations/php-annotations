@@ -18,6 +18,8 @@ namespace mindplay\annotations;
  */
 class AnnotationManager
 {
+    const CACHE_FORMAT_VERSION = 3;
+
     const MEMBER_CLASS = 'class';
 
     const MEMBER_PROPERTY = 'property';
@@ -193,7 +195,8 @@ class AnnotationManager
                 $code = $this->getParser()->parseFile($path);
                 $data = eval($code);
             } else {
-                $key = basename($path) . '-' . sprintf('%x', crc32($path . $this->_cacheSeed));
+                $checksum = crc32($path . ':' . $this->_cacheSeed . ':' . self::CACHE_FORMAT_VERSION);
+                $key = basename($path) . '-' . sprintf('%x', $checksum);
 
                 if (($this->cache->exists($key) === false) || (filemtime($path) > $this->cache->getTimestamp($key))) {
                     $code = $this->getParser()->parseFile($path);
