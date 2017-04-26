@@ -58,7 +58,7 @@ class PropertyAnnotation extends Annotation implements IAnnotationParser, IAnnot
 		}
 		$result=array('type' => $parts[0], 'name' => substr($parts[1], 1));
 
-		if(isset($parts[2])){
+		if (isset($parts[2])){
 			$result['description']=$parts[2];
 		}
 		return $result;
