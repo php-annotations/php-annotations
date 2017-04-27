@@ -30,21 +30,21 @@ class PropertyAnnotation extends Annotation implements IAnnotationParser, IAnnot
     /**
      * Specifies the property type.
      *
-     * @var string 
+     * @var string
      */
     public $type;
-    
+
     /**
      * Specifies the property name.
      *
      * @var string
      */
     public $name;
-    
+
     /**
      * Specifies the property description.
      *
-     * @var string 
+     * @var string
      */
     public $description;
 
@@ -64,14 +64,14 @@ class PropertyAnnotation extends Annotation implements IAnnotationParser, IAnnot
      */
     public static function parseAnnotation($value)
     {
-        $parts = explode(' ', trim($value), 3);
+        $parts = \explode(' ', \trim($value), 3);
 
-        if (count($parts) < 2) {
+        if (\count($parts) < 2) {
             // Malformed value, let "initAnnotation" report about it.
             return array();
         }
 
-        $result = array('type' => $parts[0], 'name' => substr($parts[1], 1));
+        $result = array('type' => $parts[0], 'name' => \substr($parts[1], 1));
 
         if (isset($parts[2])) {
             $result['description'] = $parts[2];
