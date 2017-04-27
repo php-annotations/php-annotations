@@ -63,7 +63,7 @@ class PropertyAnnotation extends Annotation implements IAnnotationParser, IAnnot
     {
         $parts = explode(' ', trim($value), 3);
 
-        if (\sizeof($parts) < 2) {
+        if (\count($parts) < 2) {
             // Malformed value, let "initAnnotation" report about it.
             return array();
         }
