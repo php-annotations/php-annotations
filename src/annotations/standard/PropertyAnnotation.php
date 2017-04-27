@@ -14,34 +14,35 @@
 namespace mindplay\annotations\standard;
 
 use mindplay\annotations\Annotation;
-use mindplay\annotations\IAnnotationParser;
 use mindplay\annotations\AnnotationException;
-use mindplay\annotations\IAnnotationFileAware;
 use mindplay\annotations\AnnotationFile;
+use mindplay\annotations\IAnnotationFileAware;
+use mindplay\annotations\IAnnotationParser;
+
 
 /**
- * Defines a magic/virtual property and it's type
+ * Defines a magic/virtual property and it's type.
  *
  * @usage('class'=>true, 'inherited'=>true)
  */
 class PropertyAnnotation extends Annotation implements IAnnotationParser, IAnnotationFileAware
 {
     /**
-     * Specifies the property type
+     * Specifies the property type.
      *
      * @var string 
      */
     public $type;
     
     /**
-     * Specifies the property name
+     * Specifies the property name.
      *
      * @var string
      */
     public $name;
     
     /**
-     * Specifies the property description
+     * Specifies the property description.
      *
      * @var string 
      */
@@ -55,9 +56,11 @@ class PropertyAnnotation extends Annotation implements IAnnotationParser, IAnnot
     protected $file;
 
     /**
+     * Parse the standard PHP-DOC "property" annotation.
+     *
      * @param string $value The raw string value of the Annotation.
      *
-     * @return array An array of Annotation properties.
+     * @return array ['type', 'name'] or ['type', 'name', 'description'] if description is set.
      */
     public static function parseAnnotation($value)
     {
