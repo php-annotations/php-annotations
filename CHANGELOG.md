@@ -8,11 +8,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.3.1] - 2019-01-15
 ### Added
 * Added missing "RangeAnnotation" to demo script by [@lsces]
-* Added "PropertyAnnotation" implementation
+* Added "PropertyAnnotation" implementation by [@jcheron]
 
 ### Changed
-* slash before php global functions
-* Documentation getting-started.rst
+* slash added before php global functions (To prevent php from searching for the function in the current namespace.)
 
 ## [1.3.0] - 2016-02-14
 ### Added
@@ -75,3 +74,4 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [1.1.0]: https://github.com/php-annotations/php-annotations/compare/v1.0.0...v1.1.0
 [@benesch]: https://github.com/benesch
 [@lsces]: https://github.com/lsces
+[@jcheron]: https://github.com/jcheron
