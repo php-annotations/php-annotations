@@ -7,11 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.3.1] - 2019-01-15
 ### Added
-* Added missing "RangeAnnotation" to demo script by [@lsces]
-* Added "PropertyAnnotation" implementation by [@jcheron]
+* Added missing "RangeAnnotation" to demo script by [@lsces].
+* Added "PropertyAnnotation" implementation by [@jcheron].
 
 ### Changed
-* slash added before php global functions (To prevent php from searching for the function in the current namespace.)
+* Added slash added before PHP global functions to improve namespace resolution speed by [@jcheron].
 
 ## [1.3.0] - 2016-02-14
 ### Added
