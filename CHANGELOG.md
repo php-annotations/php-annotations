@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ...
+
 ## [1.4.0] - 2020-12-12
 ### PHP 8 compatibility
 * Fix namespace parsing for annotations by [@jcheron] (see [namespaced names as single token RFC](https://wiki.php.net/rfc/namespaced_names_as_token)).
