@@ -200,7 +200,7 @@ class AnnotationParser
                     break;
 
                 case self::TRAIT_USE_BLOCK:
-                    if ($type == T_STRING || $type == T_NS_SEPARATOR || $type == T_DOUBLE_COLON) {
+                	if ($type == T_STRING || $type == T_NAME_QUALIFIED || $type == T_NAME_FULLY_QUALIFIED || $type == T_NAME_RELATIVE || $type == T_DOUBLE_COLON) {
                         $use .= $str;
                     } elseif ($type === T_INSTEADOF) {
                         $state = self::TRAIT_USE_INSTEADOF;
