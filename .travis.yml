@@ -27,10 +27,10 @@ matrix:
         - XDEBUG_MODE=off
 
 before_script:
-  - if [[ $COVERAGE == no ]]; composer remove phpunit/php-code-coverage ; fi
+  - if [[ $COVERAGE == no ]]; then composer remove phpunit/php-code-coverage; fi
   - composer install --prefer-source
 
 script: php test/test.php
 
 after_script:
-  - if [[ $COVERAGE != no ]]; wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover clover.xml; fi
+  - if [[ $COVERAGE != no ]]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover clover.xml; fi
