@@ -27,8 +27,7 @@ matrix:
         - XDEBUG_MODE=off
 
 before_script:
-  - if [[ $COVERAGE == no ]]; then composer remove phpunit/php-code-coverage; fi
-  - composer install --prefer-source
+  - composer update --prefer-source
 
 script: php test/test.php
 
