@@ -57,12 +57,13 @@ class xTestRunner
 
         $this->rootPath = $rootPath;
         $this->resultPrinter = $resultPrinter;
-
-        try {
-            $this->coverage = new \PHP_CodeCoverage();
-            $this->coverage->filter()->addDirectoryToWhitelist($rootPath);
-        } catch (\PHP_CodeCoverage_Exception $e) {
-            // can't collect coverage
+        if (version_compare(phpversion(), '8.0.0', '<')) {
+	        try {
+	            $this->coverage = new \PHP_CodeCoverage();
+	            $this->coverage->filter()->addDirectoryToWhitelist($rootPath);
+	        } catch (\PHP_CodeCoverage_Exception $e) {
+	            // can't collect coverage
+	        }
         }
     }
 

@@ -66,12 +66,17 @@ class AnnotationParser
     public function __construct(AnnotationManager $manager)
     {
         $this->manager = $manager;
-        if(defined('T_NAME_QUALIFIED')){
-        	$this->isNamespaceCallable=function($type){
+        if (defined('T_NAME_QUALIFIED'))
+        {
+        	$this->isNamespaceCallable = function($type)
+        	{
         		return $type == T_STRING || $type == T_NAME_QUALIFIED || $type == T_NAME_FULLY_QUALIFIED || $type == T_NAME_RELATIVE;
         	};
-        }else{
-        	$this->isNamespaceCallable=function($type){
+        }
+        else
+        {
+        	$this->isNamespaceCallable = function($type)
+        	{
         		return $type == T_STRING || $type == T_NS_SEPARATOR;
         	};
         }
