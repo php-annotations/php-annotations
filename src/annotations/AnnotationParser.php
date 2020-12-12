@@ -114,7 +114,7 @@ class AnnotationParser
                     break;
 
                 case self::NAMESPACE_NAME:
-                    if ($type == T_STRING || $type == T_NS_SEPARATOR) {
+                	if ($type == T_STRING || $type == T_NAME_QUALIFIED || $type == T_NAME_FULLY_QUALIFIED || $type == T_NAME_RELATIVE) {
                         $namespace .= $str;
                     } else {
                         if ($str == ';') {
@@ -127,7 +127,7 @@ class AnnotationParser
                     if ($type == T_AS) {
                         $use_as = '';
                         $state = self::USE_CLAUSE_AS;
-                    } elseif ($type == T_STRING || $type == T_NS_SEPARATOR) {
+                    } elseif ($type == T_STRING || $type == T_NAME_QUALIFIED || $type == T_NAME_FULLY_QUALIFIED || $type == T_NAME_RELATIVE) {
                         $use .= $str;
                     } elseif ($type === self::CHAR) {
                         if ($str === ',' || $str === ';') {
@@ -149,7 +149,7 @@ class AnnotationParser
                     break;
 
                 case self::USE_CLAUSE_AS:
-                    if ($type === T_STRING || $type === T_NS_SEPARATOR) {
+                	if ($type == T_STRING || $type == T_NAME_QUALIFIED || $type == T_NAME_FULLY_QUALIFIED || $type == T_NAME_RELATIVE) {
                         $use_as .= $str;
                     } elseif ($type === self::CHAR) {
                         if ($str === ',' || $str === ';') {
