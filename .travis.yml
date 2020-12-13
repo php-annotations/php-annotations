@@ -27,7 +27,7 @@ matrix:
         - XDEBUG_MODE=off
 
 before_script:
-  - composer update --prefer-source
+  - composer install --prefer-source
 
 script: php test/test.php
 
