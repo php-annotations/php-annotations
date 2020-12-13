@@ -24,7 +24,6 @@ matrix:
     - php: 8.0
       env:
         - COVERAGE=no
-        - XDEBUG_MODE=off
 
 before_script:
   - composer install --prefer-source
