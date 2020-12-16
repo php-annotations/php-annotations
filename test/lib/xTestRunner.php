@@ -59,8 +59,8 @@ class xTestRunner
         if (!is_dir($rootPath)) {
             throw new \Exception("{$rootPath} is not a directory");
         }
-        
-        $this->hasCoverage=version_compare(PHP_VERSION, '8.0.0', '<');
+
+        $this->hasCoverage = version_compare(PHP_VERSION, '8.0.0', '<');
         
         $this->rootPath = $rootPath;
         $this->resultPrinter = $resultPrinter;
@@ -142,8 +142,8 @@ class xTestRunner
         } else {
             restore_error_handler();
         }
-        if($this->hasCoverage){
-       		$this->resultPrinter->createCodeCoverageReport($this->coverage);
+        if ($this->hasCoverage){
+            $this->resultPrinter->createCodeCoverageReport($this->coverage);
         }
         $this->resultPrinter->suiteFooter($this);
 

@@ -66,19 +66,14 @@ class AnnotationParser
     public function __construct(AnnotationManager $manager)
     {
         $this->manager = $manager;
-        if (defined('T_NAME_QUALIFIED'))
-        {
-        	$this->isNamespaceCallable = function($type)
-        	{
-        		return $type == T_STRING || $type == T_NAME_QUALIFIED || $type == T_NAME_FULLY_QUALIFIED || $type == T_NAME_RELATIVE;
-        	};
-        }
-        else
-        {
-        	$this->isNamespaceCallable = function($type)
-        	{
-        		return $type == T_STRING || $type == T_NS_SEPARATOR;
-        	};
+        if (defined('T_NAME_QUALIFIED')) {
+            $this->isNamespaceCallable = function($type) {
+                return $type == T_STRING || $type == T_NAME_QUALIFIED || $type == T_NAME_FULLY_QUALIFIED || $type == T_NAME_RELATIVE;
+            };
+        } else {
+            $this->isNamespaceCallable = function($type) {
+                return $type == T_STRING || $type == T_NS_SEPARATOR;
+            };
         }
     }
 
@@ -167,7 +162,7 @@ class AnnotationParser
                     break;
 
                 case self::USE_CLAUSE_AS:
-                	if ($isNamespace($type)) {
+                    if ($isNamespace($type)) {
                         $use_as .= $str;
                     } elseif ($type === self::CHAR) {
                         if ($str === ',' || $str === ';') {
@@ -218,7 +213,7 @@ class AnnotationParser
                     break;
 
                 case self::TRAIT_USE_BLOCK:
-                	if ($isNamespace($type) || $type == T_DOUBLE_COLON) {
+                    if ($isNamespace($type) || $type == T_DOUBLE_COLON) {
                         $use .= $str;
                     } elseif ($type === T_INSTEADOF) {
                         $state = self::TRAIT_USE_INSTEADOF;
