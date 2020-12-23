@@ -127,7 +127,7 @@ class AnnotationParser
                     break;
 
                 case self::NAMESPACE_NAME:
-                	if ($isNamespace($type)) {
+                    if ($isNamespace($type)) {
                         $namespace .= $str;
                     } else {
                         if ($str == ';') {

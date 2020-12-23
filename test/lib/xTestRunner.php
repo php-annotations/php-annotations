@@ -61,16 +61,16 @@ class xTestRunner
         }
 
         $this->hasCoverage = version_compare(PHP_VERSION, '8.0.0', '<');
-        
+
         $this->rootPath = $rootPath;
         $this->resultPrinter = $resultPrinter;
         if ($this->hasCoverage) {
-	        try {
-	            $this->coverage = new \PHP_CodeCoverage();
-	            $this->coverage->filter()->addDirectoryToWhitelist($rootPath);
-	        } catch (\PHP_CodeCoverage_Exception $e) {
-	            // can't collect coverage
-	        }
+            try {
+                $this->coverage = new \PHP_CodeCoverage();
+                $this->coverage->filter()->addDirectoryToWhitelist($rootPath);
+            } catch (\PHP_CodeCoverage_Exception $e) {
+                // can't collect coverage
+            }
         }
     }
 
