@@ -106,6 +106,11 @@ class AnnotationsTest extends xTest
         // absolute path to the class-file used for testing
         $file_path = $class_reflection->getFileName();
 
+        if (PHP_VERSION_ID < 80000 && getenv('EMULATE_PHP8_PARSER_TOKENS') === 'true') {
+            define('T_NAME_QUALIFIED', 'T_NAME_QUALIFIED');
+            define('T_NAME_FULLY_QUALIFIED', 'T_NAME_FULLY_QUALIFIED');
+        }
+
         // Now get the AnnotationFile instance:
 
         /** @var AnnotationFile $file */
