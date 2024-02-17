@@ -55,7 +55,7 @@ class AnnotationParser
      * @var AnnotationManager Internal reference to the AnnotationManager associated with this parser.
      */
     protected $manager;
-    
+
     protected $isNamespaceCallable;
 
     /**
@@ -66,7 +66,7 @@ class AnnotationParser
     public function __construct(AnnotationManager $manager)
     {
         $this->manager = $manager;
-        if (defined('T_NAME_QUALIFIED')) {
+        if (PHP_VERSION_ID >= 80000) {
             $this->isNamespaceCallable = function($type) {
                 return $type == T_STRING || $type == T_NAME_QUALIFIED || $type == T_NAME_FULLY_QUALIFIED || $type == T_NAME_RELATIVE;
             };
@@ -105,7 +105,7 @@ class AnnotationParser
         if ($this->debug) {
             echo '<table><tr><th>Line</th><th>Type</th><th>String</th><th>State</th><th>Nesting</th></tr>';
         }
-        
+
         $isNamespace=$this->isNamespaceCallable;
 
         foreach (\token_get_all($source) as $token) {

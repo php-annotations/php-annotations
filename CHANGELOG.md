@@ -3,7 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-...
+### Fixed
+* Solved a notice about missing T_NAME_RELATIVE constant on PHP <8.0 with "phpdocumentor/type-resolver" package installed.
 
 ## [1.3.3] - 2022-07-16
 ### Changed
