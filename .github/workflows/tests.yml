@@ -59,10 +59,10 @@ jobs:
         if: "${{ matrix.php < '8.0' }}"
         run: |
           wget https://scrutinizer-ci.com/ocular.phar
-          php ocular.phar code-coverage:upload --repository=g/php-annotations/php-annotations --format=php-clover coverage.clover
+          php ocular.phar code-coverage:upload --repository=g/php-annotations/php-annotations --format=php-clover clover.xml
 
       - name: Upload Coverage to Scrutinizer CI (PHP >= 8.0)
         if: "${{ matrix.php >= '8.0' }}"
         run: |
            composer require scrutinizer/ocular
-           vendor/bin/ocular code-coverage:upload --repository=g/php-annotations/php-annotations --format=php-clover coverage.clover
+           vendor/bin/ocular code-coverage:upload --repository=g/php-annotations/php-annotations --format=php-clover clover.xml
