@@ -3,7 +3,7 @@
 [![Join the chat at https://gitter.im/php-annotations/php-annotations](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/php-annotations/php-annotations?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![CI](https://github.com/php-annotations/php-annotations/actions/workflows/tests.yml/badge.svg)](https://github.com/php-annotations/php-annotations/actions/workflows/tests.yml)
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/php-annotations/php-annotations/badges/quality-score.png?s=41628593655dae3740c3a64f172438430ee26b84)](https://scrutinizer-ci.com/g/php-annotations/php-annotations/)
-[![Code Coverage](https://scrutinizer-ci.com/g/php-annotations/php-annotations/badges/coverage.png?s=dbea8860e011cdb7b5352b48c25259ca950fe2c6)](https://scrutinizer-ci.com/g/php-annotations/php-annotations/)
+[![codecov](https://codecov.io/gh/php-annotations/php-annotations/graph/badge.svg?token=iAB52dISoO)](https://codecov.io/gh/php-annotations/php-annotations)
 
 [![Latest Stable Version](https://poser.pugx.org/mindplay/annotations/v/stable.svg)](https://packagist.org/packages/mindplay/annotations) [![Total Downloads](https://poser.pugx.org/mindplay/annotations/downloads.svg)](https://packagist.org/packages/mindplay/annotations) [![Latest Unstable Version](https://poser.pugx.org/mindplay/annotations/v/unstable.svg)](https://packagist.org/packages/mindplay/annotations) [![License](https://poser.pugx.org/mindplay/annotations/license.svg)](https://packagist.org/packages/mindplay/annotations)
 
