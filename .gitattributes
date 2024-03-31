@@ -1,0 +1,10 @@
+.github/ export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+CHANGELOG.md export-ignore
+composer.lock export-ignore
+demo/ export-ignore
+docs/ export-ignore
+php-doc[[:space:]]notes.txt export-ignore
+test/ export-ignore
+todo.txt export-ignore
